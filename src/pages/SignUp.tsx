@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -97,7 +96,6 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
-      {/* Left side - Branding and features */}
       <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
         <div className="mb-8">
           <WedPalLogo className="text-4xl md:text-5xl mb-2" />
@@ -136,7 +134,6 @@ const SignUp: React.FC = () => {
         </div>
       </div>
       
-      {/* Right side - Sign Up form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8">
         <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
           <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
