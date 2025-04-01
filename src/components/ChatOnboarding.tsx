@@ -1,11 +1,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
+import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatMessage from './ChatMessage';
 import { useAuth } from './AuthProvider';
 import SparkleAnimation from './SparkleAnimation';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FormData {
   partner1Name: string;
@@ -16,9 +17,19 @@ interface FormData {
   guestCount: string;
   honeymoonDestination: string;
   needNewHome: string;
+  email: string;
+  password: string;
 }
 
-const QUESTIONS = [
+interface QuestionType {
+  id: string;
+  message: string | ((formData: FormData) => string);
+  field: keyof FormData | Array<keyof FormData>;
+  icon: JSX.Element;
+  placeholder: string | string[];
+}
+
+const QUESTIONS: QuestionType[] = [
   {
     id: 'welcome',
     message: "Hi there! 💕 I'm your AI wedding planner. Let's start planning your dream wedding together! What are your names?",
@@ -67,6 +78,20 @@ const QUESTIONS = [
     field: 'needNewHome',
     icon: <Home className="w-5 h-5 text-wedding-pink-dark" />,
     placeholder: "Yes / No / Already have one"
+  },
+  {
+    id: 'email',
+    message: "Finally, what's your email address?",
+    field: 'email',
+    icon: <Mail className="w-5 h-5 text-wedding-pink-dark" />,
+    placeholder: "yourname@example.com"
+  },
+  {
+    id: 'password',
+    message: (formData) => `Create a password as strong as your love for ${formData.partner2Name}`,
+    field: 'password',
+    icon: <Lock className="w-5 h-5 text-wedding-pink-dark" />,
+    placeholder: "Your strong password"
   }
 ];
 
@@ -81,6 +106,8 @@ const ChatOnboarding: React.FC = () => {
     guestCount: '',
     honeymoonDestination: '',
     needNewHome: '',
+    email: '',
+    password: '',
   });
   const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -88,11 +115,13 @@ const ChatOnboarding: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isTyping, setIsTyping] = useState(false);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Add the initial AI message when component mounts
     if (messages.length === 0) {
-      setMessages([{ content: QUESTIONS[0].message, sender: 'ai' }]);
+      setMessages([{ content: QUESTIONS[0].message as string, sender: 'ai' }]);
     }
     
     // Scroll to bottom of messages
@@ -115,6 +144,50 @@ const ChatOnboarding: React.FC = () => {
     navigate('/auth');
   };
 
+  const createAccount = async () => {
+    try {
+      setIsCreatingAccount(true);
+      
+      // Sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (error) throw error;
+      
+      if (data && data.user) {
+        // Add wedding details to the database
+        const { error: profileError } = await supabase
+          .from('wedding_profiles')
+          .insert([
+            {
+              user_id: data.user.id,
+              partner1_name: formData.partner1Name,
+              partner2_name: formData.partner2Name,
+              wedding_date: formData.weddingDate,
+              budget: formData.budget,
+              theme: formData.theme,
+              guest_count: formData.guestCount,
+              honeymoon_destination: formData.honeymoonDestination,
+              need_new_home: formData.needNewHome,
+            },
+          ]);
+          
+        if (profileError) throw profileError;
+        
+        // Redirect to dashboard with wedding data
+        navigate('/dashboard', { state: { formData } });
+      }
+    } catch (err: any) {
+      setError(err.message);
+      // Add error message to chat
+      setMessages(prev => [...prev, { content: `Error creating account: ${err.message}. Please try again.`, sender: 'ai' }]);
+    } finally {
+      setIsCreatingAccount(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -122,9 +195,9 @@ const ChatOnboarding: React.FC = () => {
     let userResponse = '';
     
     if (Array.isArray(question.field)) {
-      userResponse = `${formData[question.field[0] as keyof FormData]} & ${formData[question.field[1] as keyof FormData]}`;
+      userResponse = `${formData[question.field[0]]} & ${formData[question.field[1]]}`;
     } else {
-      userResponse = formData[question.field as keyof FormData];
+      userResponse = formData[question.field];
     }
     
     // Add user's response to messages
@@ -137,6 +210,15 @@ const ChatOnboarding: React.FC = () => {
         setShowAnimation(false);
         moveToNextQuestion();
       }, 8000); // Animation + message display time
+    } else if (currentStep === QUESTIONS.length - 1) {
+      // Last question (password) - create account
+      setTimeout(() => {
+        setMessages(prev => [...prev, { 
+          content: "Thanks for all your information! Creating your account now...", 
+          sender: 'ai' 
+        }]);
+        createAccount();
+      }, 500); // Reduced typing delay
     } else {
       moveToNextQuestion();
     }
@@ -148,14 +230,16 @@ const ChatOnboarding: React.FC = () => {
       setIsTyping(true);
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
-        setMessages(prev => [...prev, { content: QUESTIONS[currentStep + 1].message, sender: 'ai' }]);
+        
+        // Get the next message content
+        const nextQuestion = QUESTIONS[currentStep + 1];
+        const messageContent = typeof nextQuestion.message === 'function' 
+          ? nextQuestion.message(formData) 
+          : nextQuestion.message;
+          
+        setMessages(prev => [...prev, { content: messageContent, sender: 'ai' }]);
         setIsTyping(false);
-      }, 1000); // Simulating typing delay
-    } else {
-      // All questions answered, proceed to sign up
-      setTimeout(() => {
-        navigate('/auth', { state: { formData, isSignUp: true } });
-      }, 1000);
+      }, 500); // Reduced typing delay
     }
   };
 
@@ -223,7 +307,7 @@ const ChatOnboarding: React.FC = () => {
         )}
         
         {/* Input form */}
-        {!showAnimation && (
+        {!showAnimation && !isCreatingAccount && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {currentStep === 0 ? (
               <div className="flex flex-col md:flex-row gap-2">
@@ -256,6 +340,36 @@ const ChatOnboarding: React.FC = () => {
                   />
                 </div>
               </div>
+            ) : currentStep === QUESTIONS.length - 1 ? (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  {QUESTIONS[currentStep].icon}
+                </div>
+                <input
+                  type="password"
+                  name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
+                  value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}
+                  onChange={handleInputChange}
+                  placeholder={placeholders[0]}
+                  required
+                  className="wedding-input pl-10 w-full"
+                />
+              </div>
+            ) : currentStep === QUESTIONS.length - 2 ? (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  {QUESTIONS[currentStep].icon}
+                </div>
+                <input
+                  type="email"
+                  name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
+                  value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}
+                  onChange={handleInputChange}
+                  placeholder={placeholders[0]}
+                  required
+                  className="wedding-input pl-10 w-full"
+                />
+              </div>
             ) : (
               <div className="relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -264,7 +378,7 @@ const ChatOnboarding: React.FC = () => {
                 <input
                   type="text"
                   name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
-                  value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] as keyof FormData : currentQuestion.field as keyof FormData]}
+                  value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}
                   onChange={handleInputChange}
                   placeholder={placeholders[0]}
                   required
@@ -273,11 +387,17 @@ const ChatOnboarding: React.FC = () => {
               </div>
             )}
             
-            <Button type="submit" className="wedding-button w-full">
-              {isTyping ? "Thinking..." : "Send"}
-              <ArrowRight className="w-4 h-4 ml-1" />
+            <Button type="submit" className="wedding-button w-full" disabled={isCreatingAccount}>
+              {isCreatingAccount ? "Creating Account..." : (isTyping ? "Thinking..." : "Send")}
+              {!isCreatingAccount && !isTyping && <ArrowRight className="w-4 h-4 ml-1" />}
             </Button>
           </form>
+        )}
+        
+        {isCreatingAccount && (
+          <div className="text-center py-4">
+            <div className="animate-pulse">Creating your wedding account...</div>
+          </div>
         )}
       </div>
       
