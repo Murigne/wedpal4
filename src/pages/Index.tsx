@@ -3,6 +3,7 @@ import React from 'react';
 import LandingSearchBox from '@/components/LandingSearchBox';
 import HeartAnimation from '@/components/HeartAnimation';
 import WedPalLogo from '@/components/WedPalLogo';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   // Add CSS for dynamic gradient
@@ -35,6 +36,14 @@ const Index = () => {
       
       <HeartAnimation />
       <LandingSearchBox />
+      
+      {/* Navigation buttons at the bottom */}
+      <div className="absolute bottom-6 w-full flex justify-center gap-3 px-4 z-10">
+        <Button variant="outline" className="bg-white/60 backdrop-blur-sm text-gray-800 hover:bg-white/80">Contact Us</Button>
+        <Button variant="outline" className="bg-white/60 backdrop-blur-sm text-gray-800 hover:bg-white/80">About</Button>
+        <Button variant="outline" className="bg-white/60 backdrop-blur-sm text-gray-800 hover:bg-white/80">Help</Button>
+        <Button variant="outline" className="bg-white/60 backdrop-blur-sm text-gray-800 hover:bg-white/80">FAQ</Button>
+      </div>
       
       {/* Gradient overlay for smooth transition */}
       <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
