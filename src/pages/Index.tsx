@@ -30,7 +30,7 @@ const Index = () => {
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* WedPal Logo repositioned further from the corner */}
       <div className="absolute top-6 left-8 z-10">
-        <WedPalLogo className="text-white drop-shadow-lg" />
+        <WedPalLogo className="drop-shadow-lg" />
       </div>
       
       <HeartAnimation />

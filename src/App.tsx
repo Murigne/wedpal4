@@ -8,8 +8,8 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import VendorMarketplace from "./pages/VendorMarketplace";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 import AuthProvider from "./components/AuthProvider";
-import ChatOnboarding from "./components/ChatOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -22,9 +22,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/onboarding" element={<ChatOnboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/vendors" element={<VendorMarketplace />} />
+            <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
