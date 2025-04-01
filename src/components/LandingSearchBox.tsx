@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ const questions = [
   { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
   { id: 'date', question: "When are you planning to get married?", type: 'date' },
   { id: 'colors', question: "What are your wedding colours? (Select up to 3)", type: 'color' },
-  { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number' },
+  { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number', prefix: 'GHS' },
   { id: 'venue', question: "Do you prefer an indoor or outdoor wedding?", type: 'radio', options: ['Indoor', 'Outdoor', 'Both'] },
   { id: 'guests', question: "How many guests are you expecting?", type: 'number' },
   { id: 'vendors', question: "Do you need vendor recommendations?", type: 'radio', options: ['Yes', 'No', 'Not sure yet'] },
@@ -88,10 +88,41 @@ const LandingSearchBox = () => {
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     setPopoverOpen(false);
+    
+    // If date is selected, move to the next question automatically
+    if (date) {
+      handleSubmit(new Event('submit') as any);
+    }
   };
 
   const handleRadioChange = (value: string) => {
     setInputValue(value);
+  };
+
+  // Format number with commas for readability
+  const formatNumberWithCommas = (value: string): string => {
+    // Remove non-numeric characters
+    const numericValue = value.replace(/[^\d]/g, '');
+    // Add commas as thousands separators
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/[^\d]/g, '');
+    if (/^\d*$/.test(rawValue)) {
+      const formattedValue = formatNumberWithCommas(rawValue);
+      setInputValue(formattedValue);
+    }
+  };
+
+  // Handle keyboard events for date selection
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement | HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (currentQuestion.type === 'date' && selectedDate) {
+        handleSubmit(new Event('submit') as any);
+        e.preventDefault();
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,8 +140,8 @@ const LandingSearchBox = () => {
       if (selectedColors.length === 0) return;
       answerValue = selectedColors;
     } else if (currentQuestion.type === 'number') {
-      if (!inputValue.trim() || isNaN(Number(inputValue))) return;
-      answerValue = Number(inputValue);
+      if (!inputValue.trim() || isNaN(Number(inputValue.replace(/,/g, '')))) return;
+      answerValue = Number(inputValue.replace(/,/g, ''));
     } else if (currentQuestion.type === 'text' || currentQuestion.type === 'radio') {
       if (!inputValue.trim()) return;
     }
@@ -172,6 +203,9 @@ const LandingSearchBox = () => {
         setSelectedColors(answers[currentQuestion.id] || []);
       } else if (currentQuestion.type === 'radio') {
         setInputValue(answers[currentQuestion.id] || '');
+      } else if (currentQuestion.type === 'number') {
+        const value = answers[currentQuestion.id] || '';
+        setInputValue(value ? formatNumberWithCommas(String(value)) : '');
       } else {
         setInputValue(String(answers[currentQuestion.id] || ''));
       }
@@ -193,7 +227,7 @@ const LandingSearchBox = () => {
       <HeartAnimation avoidTextAreas={true} />
       
       <h1 className="text-5xl md:text-7xl font-bold text-center text-white drop-shadow-md mt-4">
-        Wanna get married? <br/> We can help <span className="text-pink-300">: )</span>
+        Planning a wedding? <br/> We can help <span className="text-pink-300">: )</span>
       </h1>
       
       <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] shadow-xl p-6 md:p-8">
@@ -231,6 +265,7 @@ const LandingSearchBox = () => {
                     placeholder="Type your answer here..."
                     className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
                     autoFocus
+                    onKeyDown={handleKeyDown}
                   />
                   <Button 
                     type="submit"
@@ -245,19 +280,19 @@ const LandingSearchBox = () => {
 
               {currentQuestion.type === 'number' && (
                 <div className="relative">
+                  {currentQuestion.prefix && (
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                      <span className="text-gray-500">{currentQuestion.prefix} </span>
+                    </div>
+                  )}
                   <Input
                     type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
                     value={inputValue}
-                    onChange={(e) => {
-                      if (/^\d*$/.test(e.target.value)) {
-                        setInputValue(e.target.value);
-                      }
-                    }}
+                    onChange={handleNumberInputChange}
                     placeholder="Enter a number..."
-                    className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                    className={`w-full pl-${currentQuestion.prefix ? '16' : '4'} pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300`}
                     autoFocus
+                    onKeyDown={handleKeyDown}
                   />
                   <Button 
                     type="submit"
@@ -280,6 +315,7 @@ const LandingSearchBox = () => {
                           "w-full justify-start pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-left",
                           !selectedDate && "text-muted-foreground"
                         )}
+                        onKeyDown={handleKeyDown}
                       >
                         {selectedDate ? format(selectedDate, "PPP") : "Select a date..."}
                         <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />

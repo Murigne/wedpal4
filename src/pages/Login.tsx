@@ -60,7 +60,7 @@ const Login: React.FC = () => {
             <br /><br />
             ✨ From personalized plans to budget friendly vendors, we simplify every step of the wedding planning journey
             <br /><br />
-            Our AI-powered platform ensures a seamless, beautiful, and memorable wedding experience.
+            ✨ Our AI-powered platform ensures a seamless, beautiful, and memorable wedding experience.
             <br /><br />
             ✨ Weddings are fun - planning them should be equally fun and stress-free don't you think? 😊
           </p>
