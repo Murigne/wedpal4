@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -14,9 +13,7 @@ import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import HeartAnimation from './HeartAnimation';
 
-// Define the questions for our form
 const questions = [
   { id: 'name', question: "What's your name?", type: 'text' },
   { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
@@ -29,7 +26,6 @@ const questions = [
   { id: 'honeymoon', question: "What's your dream honeymoon location?", type: 'text' }
 ];
 
-// Define wedding color options
 const colorOptions = [
   { name: 'Blush Pink', value: '#FFC0CB', class: 'bg-pink-300' },
   { name: 'Burgundy', value: '#800020', class: 'bg-red-900' },
@@ -89,7 +85,7 @@ const LandingSearchBox = () => {
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    setPopoverOpen(false); // Close popover after date selection
+    setPopoverOpen(false);
   };
 
   const handleRadioChange = (value: string) => {
@@ -104,7 +100,6 @@ const LandingSearchBox = () => {
     const currentQuestion = questions[currentQuestionIndex];
     let answerValue: any = inputValue;
     
-    // Handle different input types
     if (currentQuestion.type === 'date') {
       if (!selectedDate) return;
       answerValue = selectedDate;
@@ -118,7 +113,6 @@ const LandingSearchBox = () => {
       if (!inputValue.trim()) return;
     }
     
-    // Store answer
     setAnswers(prev => ({
       ...prev,
       [currentQuestion.id]: answerValue
@@ -126,7 +120,6 @@ const LandingSearchBox = () => {
     
     setIsTransitioning(true);
     
-    // Apply theme colors if wedding colors were selected
     if (currentQuestion.id === 'colors') {
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
       if (selectedColors.length > 1) {
@@ -136,7 +129,6 @@ const LandingSearchBox = () => {
         document.documentElement.style.setProperty('--wedding-color-tertiary', selectedColors[2]);
       }
       
-      // Update gradient background based on selected colors
       const gradientColors = selectedColors.length >= 2 
         ? selectedColors 
         : [...selectedColors, ...(selectedColors.length === 1 ? [adjustColor(selectedColors[0], -30)] : ['#e73c7e', '#23a6d5'])];
@@ -147,25 +139,20 @@ const LandingSearchBox = () => {
       document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
     }
     
-    // Clear input for next question
     setTimeout(() => {
       setInputValue('');
       setSelectedDate(undefined);
       
-      // Check if we're at the last question
       if (currentQuestionIndex === questions.length - 1) {
-        // Redirect to registration after a delay
         setTimeout(() => navigate('/auth'), 500);
         return;
       }
       
-      // Move to next question after a short delay
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setIsTransitioning(false);
     }, 300);
   };
 
-  // Helper function to adjust color brightness
   const adjustColor = (hex: string, amount: number) => {
     return '#' + hex.replace(/^#/, '').replace(/../g, color => {
       const colorNum = parseInt(color, 16);
@@ -174,7 +161,6 @@ const LandingSearchBox = () => {
     });
   };
 
-  // Update input value when going back to a previously answered question
   useEffect(() => {
     const currentQuestion = questions[currentQuestionIndex];
     if (answers[currentQuestion.id] !== undefined) {
@@ -194,20 +180,16 @@ const LandingSearchBox = () => {
     }
   }, [currentQuestionIndex, answers]);
 
-  // Get the current question
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-10">
-      {/* Heart animation */}
+    <div className="w-full max-w-3xl mx-auto space-y-10 z-10 relative">
       <HeartAnimation />
       
-      {/* Heading - moved higher up */}
       <h1 className="text-5xl md:text-7xl font-bold text-center text-white drop-shadow-md mt-4">
-        Wanna get married? <br/> We are here to help <span className="text-pink-300">: )</span>
+        Wanna get married? <br/> We can help <span className="text-pink-300">: )</span>
       </h1>
       
-      {/* Question container */}
       <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] shadow-xl p-6 md:p-8">
         <AnimatePresence mode="wait">
           <motion.div 
@@ -224,7 +206,6 @@ const LandingSearchBox = () => {
           </motion.div>
         </AnimatePresence>
         
-        {/* Input form */}
         <form onSubmit={handleSubmit} className="relative">
           <AnimatePresence mode="wait">
             <motion.div
@@ -264,7 +245,6 @@ const LandingSearchBox = () => {
                     pattern="[0-9]*"
                     value={inputValue}
                     onChange={(e) => {
-                      // Only allow numbers
                       if (/^\d*$/.test(e.target.value)) {
                         setInputValue(e.target.value);
                       }
@@ -346,7 +326,6 @@ const LandingSearchBox = () => {
                     ))}
                   </div>
                   
-                  {/* Custom color input */}
                   <div className="flex gap-2 items-center mt-4">
                     <Input
                       type="text"
@@ -367,7 +346,6 @@ const LandingSearchBox = () => {
                     </Button>
                   </div>
                   
-                  {/* Color preview */}
                   {customColor && /^#[0-9A-F]{6}$/i.test(customColor) && (
                     <div className="flex items-center gap-2 mt-2">
                       <div className="w-6 h-6 rounded-full" style={{ backgroundColor: customColor }}></div>
@@ -416,9 +394,7 @@ const LandingSearchBox = () => {
           </AnimatePresence>
         </form>
         
-        {/* Progress indicator */}
         <div className="mt-6 flex justify-between items-center">
-          {/* Back button */}
           <Button
             variant="ghost"
             size="icon"
@@ -432,7 +408,6 @@ const LandingSearchBox = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           
-          {/* Progress dots */}
           <div className="flex gap-1">
             {questions.map((_, index) => (
               <div 
@@ -442,12 +417,10 @@ const LandingSearchBox = () => {
             ))}
           </div>
           
-          {/* Placeholder for symmetry */}
           <div className="w-10"></div>
         </div>
       </div>
       
-      {/* Login button */}
       <div className="flex justify-center">
         <Button 
           variant="outline" 

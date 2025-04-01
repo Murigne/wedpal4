@@ -1,6 +1,7 @@
 
 import React from 'react';
 import LandingSearchBox from '@/components/LandingSearchBox';
+import HeartAnimation from '@/components/HeartAnimation';
 
 const Index = () => {
   // Add CSS for dynamic gradient
@@ -20,8 +21,19 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative">
+      <HeartAnimation />
       <LandingSearchBox />
+      
+      {/* Mistletoe at the bottom */}
+      <div className="absolute bottom-0 left-0 w-full">
+        <img 
+          src="/mistletoe.png" 
+          alt="Mistletoe decoration" 
+          className="w-full h-auto object-cover" 
+          style={{ maxHeight: '120px' }}
+        />
+      </div>
     </div>
   );
 };
