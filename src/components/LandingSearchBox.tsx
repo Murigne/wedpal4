@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowLeft, SendHorizonal, Heart } from 'lucide-react';
+import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import HeartAnimation from './HeartAnimation';
 
 // Define the questions for our form
 const questions = [
@@ -51,6 +52,8 @@ const LandingSearchBox = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [customColor, setCustomColor] = useState('');
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const form = useForm();
   const navigate = useNavigate();
 
@@ -77,8 +80,16 @@ const LandingSearchBox = () => {
     });
   };
 
+  const handleAddCustomColor = () => {
+    if (customColor && selectedColors.length < 3 && /^#[0-9A-F]{6}$/i.test(customColor)) {
+      setSelectedColors(prev => [...prev, customColor]);
+      setCustomColor('');
+    }
+  };
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
+    setPopoverOpen(false); // Close popover after date selection
   };
 
   const handleRadioChange = (value: string) => {
@@ -124,6 +135,16 @@ const LandingSearchBox = () => {
       if (selectedColors.length > 2) {
         document.documentElement.style.setProperty('--wedding-color-tertiary', selectedColors[2]);
       }
+      
+      // Update gradient background based on selected colors
+      const gradientColors = selectedColors.length >= 2 
+        ? selectedColors 
+        : [...selectedColors, ...(selectedColors.length === 1 ? [adjustColor(selectedColors[0], -30)] : ['#e73c7e', '#23a6d5'])];
+      
+      const root = document.documentElement;
+      const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
+      root.style.setProperty('--dynamic-gradient', gradientStyle);
+      document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
     }
     
     // Clear input for next question
@@ -142,6 +163,15 @@ const LandingSearchBox = () => {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setIsTransitioning(false);
     }, 300);
+  };
+
+  // Helper function to adjust color brightness
+  const adjustColor = (hex: string, amount: number) => {
+    return '#' + hex.replace(/^#/, '').replace(/../g, color => {
+      const colorNum = parseInt(color, 16);
+      const newColorNum = Math.max(Math.min(colorNum + amount, 255), 0);
+      return newColorNum.toString(16).padStart(2, '0');
+    });
   };
 
   // Update input value when going back to a previously answered question
@@ -168,27 +198,17 @@ const LandingSearchBox = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-6">
-      {/* Image of bouquet of flowers at the top right */}
-      <div className="absolute top-6 right-6 h-24 w-24 opacity-80">
-        <img src="/bouquet.png" alt="Wedding Bouquet" className="animate-float" />
-      </div>
-
-      {/* Heart icon with animated border at bottom right */}
-      <div className="fixed bottom-6 right-6">
-        <div className="relative">
-          <div className="absolute inset-0 rounded-full heart-border"></div>
-          <Heart className="w-12 h-12 text-pink-500 fill-pink-500 z-10" />
-        </div>
-      </div>
+    <div className="w-full max-w-3xl mx-auto space-y-10">
+      {/* Heart animation */}
+      <HeartAnimation />
       
-      {/* Heading */}
-      <h1 className="text-4xl md:text-6xl font-bold text-center text-white drop-shadow-md">
+      {/* Heading - moved higher up */}
+      <h1 className="text-5xl md:text-7xl font-bold text-center text-white drop-shadow-md mt-4">
         Wanna get married? <br/> We are here to help <span className="text-pink-300">: )</span>
       </h1>
       
       {/* Question container */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 md:p-8">
+      <div className="bg-white/90 backdrop-blur-sm rounded-[2rem] shadow-xl p-6 md:p-8">
         <AnimatePresence mode="wait">
           <motion.div 
             key={currentQuestionIndex}
@@ -227,11 +247,11 @@ const LandingSearchBox = () => {
                   />
                   <Button 
                     type="submit"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-9 w-9"
                     disabled={isTransitioning}
                   >
-                    <SendHorizonal className="h-5 w-5" />
+                    <SendHorizonal className="h-4 w-4" />
                   </Button>
                 </div>
               )}
@@ -239,27 +259,34 @@ const LandingSearchBox = () => {
               {currentQuestion.type === 'number' && (
                 <div className="relative">
                   <Input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => {
+                      // Only allow numbers
+                      if (/^\d*$/.test(e.target.value)) {
+                        setInputValue(e.target.value);
+                      }
+                    }}
                     placeholder="Enter a number..."
                     className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
                     autoFocus
                   />
                   <Button 
                     type="submit"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-9 w-9"
                     disabled={isTransitioning}
                   >
-                    <SendHorizonal className="h-5 w-5" />
+                    <SendHorizonal className="h-4 w-4" />
                   </Button>
                 </div>
               )}
               
               {currentQuestion.type === 'date' && (
                 <div className="relative">
-                  <Popover>
+                  <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -284,11 +311,11 @@ const LandingSearchBox = () => {
                   </Popover>
                   <Button 
                     type="submit"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-9 w-9"
                     disabled={!selectedDate || isTransitioning}
                   >
-                    <SendHorizonal className="h-5 w-5" />
+                    <SendHorizonal className="h-4 w-4" />
                   </Button>
                 </div>
               )}
@@ -318,6 +345,36 @@ const LandingSearchBox = () => {
                       </div>
                     ))}
                   </div>
+                  
+                  {/* Custom color input */}
+                  <div className="flex gap-2 items-center mt-4">
+                    <Input
+                      type="text"
+                      value={customColor}
+                      onChange={(e) => setCustomColor(e.target.value)}
+                      placeholder="#RRGGBB"
+                      className="flex-1 rounded-full border border-gray-200"
+                      pattern="^#[0-9A-F]{6}$"
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleAddCustomColor}
+                      disabled={!/^#[0-9A-F]{6}$/i.test(customColor) || selectedColors.length >= 3}
+                      className="rounded-full"
+                    >
+                      Add Custom Color
+                    </Button>
+                  </div>
+                  
+                  {/* Color preview */}
+                  {customColor && /^#[0-9A-F]{6}$/i.test(customColor) && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="w-6 h-6 rounded-full" style={{ backgroundColor: customColor }}></div>
+                      <span className="text-sm">Color preview</span>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-end">
                     <Button 
                       type="submit"
