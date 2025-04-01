@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User, Mail, Lock } from 'lucide-react';
@@ -119,12 +118,9 @@ const ChatOnboarding: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Add the initial AI message when component mounts
     if (messages.length === 0) {
       setMessages([{ content: QUESTIONS[0].message as string, sender: 'ai' }]);
     }
-    
-    // Scroll to bottom of messages
     scrollToBottom();
   }, [messages]);
 
@@ -148,42 +144,15 @@ const ChatOnboarding: React.FC = () => {
     try {
       setIsCreatingAccount(true);
       
-      // Sign up with Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
+      navigate('/auth', { 
+        state: { 
+          formData,
+          isSignUp: true 
+        } 
       });
-      
-      if (error) throw error;
-      
-      if (data && data.user) {
-        // Add wedding details to the database - FIX HERE: Change "wedding_profiles" to "wedding_details"
-        const { error: profileError } = await supabase
-          .from('wedding_details')
-          .insert([
-            {
-              user_id: data.user.id,
-              partner1_name: formData.partner1Name,
-              partner2_name: formData.partner2Name,
-              wedding_date: formData.weddingDate,
-              budget: formData.budget,
-              theme: formData.theme,
-              guest_count: formData.guestCount,
-              honeymoon_destination: formData.honeymoonDestination,
-              need_new_home: formData.needNewHome,
-            },
-          ]);
-          
-        if (profileError) throw profileError;
-        
-        // Redirect to dashboard with wedding data
-        navigate('/dashboard', { state: { formData } });
-      }
     } catch (err: any) {
       setError(err.message);
-      // Add error message to chat
       setMessages(prev => [...prev, { content: `Error creating account: ${err.message}. Please try again.`, sender: 'ai' }]);
-    } finally {
       setIsCreatingAccount(false);
     }
   };
@@ -200,38 +169,33 @@ const ChatOnboarding: React.FC = () => {
       userResponse = formData[question.field];
     }
     
-    // Add user's response to messages
     setMessages(prev => [...prev, { content: userResponse, sender: 'user' }]);
     
-    // If this is the first question (names), show the special animation after submitting
     if (currentStep === 0) {
       setShowAnimation(true);
       setTimeout(() => {
         setShowAnimation(false);
         moveToNextQuestion();
-      }, 8000); // Animation + message display time
+      }, 8000);
     } else if (currentStep === QUESTIONS.length - 1) {
-      // Last question (password) - create account
       setTimeout(() => {
         setMessages(prev => [...prev, { 
           content: "Thanks for all your information! Creating your account now...", 
           sender: 'ai' 
         }]);
         createAccount();
-      }, 500); // Reduced typing delay
+      }, 500);
     } else {
       moveToNextQuestion();
     }
   };
 
   const moveToNextQuestion = () => {
-    // Move to next question or finish
     if (currentStep < QUESTIONS.length - 1) {
       setIsTyping(true);
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
         
-        // Get the next message content
         const nextQuestion = QUESTIONS[currentStep + 1];
         const messageContent = typeof nextQuestion.message === 'function' 
           ? nextQuestion.message(formData) 
@@ -239,24 +203,21 @@ const ChatOnboarding: React.FC = () => {
           
         setMessages(prev => [...prev, { content: messageContent, sender: 'ai' }]);
         setIsTyping(false);
-      }, 500); // Reduced typing delay
+      }, 500);
     }
   };
 
-  // Get initials for animation
   const getInitials = () => {
     const p1Initial = formData.partner1Name ? formData.partner1Name.charAt(0).toUpperCase() : '';
     const p2Initial = formData.partner2Name ? formData.partner2Name.charAt(0).toUpperCase() : '';
     return `${p1Initial} & ${p2Initial}`;
   };
 
-  // Get welcome message for animation
   const getWelcomeMessage = () => {
     return `${formData.partner1Name}, ${formData.partner2Name} – we are excited about this beautiful journey you are about to embark on. As you answer the next series of questions, we hope we can bring your dream wedding to life.`;
   };
 
   const currentQuestion = QUESTIONS[currentStep];
-  // Fix for type error: Ensure that placeholder is always treated as an array when needed
   const placeholders = Array.isArray(currentQuestion.placeholder) 
     ? currentQuestion.placeholder 
     : [currentQuestion.placeholder];
@@ -275,7 +236,6 @@ const ChatOnboarding: React.FC = () => {
           </Button>
         </div>
         
-        {/* Chat messages container */}
         <div className="bg-white/70 rounded-lg p-3 mb-4 h-[400px] overflow-y-auto shadow-inner">
           <div className="flex flex-col gap-4">
             {messages.map((msg, idx) => (
@@ -298,7 +258,6 @@ const ChatOnboarding: React.FC = () => {
           </div>
         </div>
         
-        {/* Magical animation overlay */}
         {showAnimation && (
           <SparkleAnimation 
             initials={getInitials()}
@@ -306,7 +265,6 @@ const ChatOnboarding: React.FC = () => {
           />
         )}
         
-        {/* Input form */}
         {!showAnimation && !isCreatingAccount && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {currentStep === 0 ? (

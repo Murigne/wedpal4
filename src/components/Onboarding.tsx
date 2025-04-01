@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
@@ -10,7 +9,6 @@ import { useAuth } from './AuthProvider';
 import { toast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
 
-// Define type for the wedding details from Supabase
 type WeddingDetails = Database['public']['Tables']['wedding_details']['Row'];
 
 interface FormData {
@@ -95,16 +93,12 @@ const Onboarding: React.FC = () => {
   const [isFetchingData, setIsFetchingData] = useState(true);
 
   useEffect(() => {
-    // Add the initial AI message when component mounts
     if (messages.length === 0) {
       setMessages([{ content: QUESTIONS[0].message, sender: 'ai' }]);
     }
-    
-    // Scroll to bottom of messages
     scrollToBottom();
   }, [messages]);
 
-  // Fetch existing data if user is logged in
   useEffect(() => {
     const fetchWeddingDetails = async () => {
       if (!user) {
@@ -121,7 +115,6 @@ const Onboarding: React.FC = () => {
 
         if (error) {
           if (error.code === 'PGRST116') {
-            // No data found, which is fine for new users
             setIsFetchingData(false);
             return;
           }
@@ -129,7 +122,6 @@ const Onboarding: React.FC = () => {
         }
 
         if (data) {
-          // If we have existing data, set it and navigate to dashboard
           setFormData({
             partner1Name: data.partner1_name || '',
             partner2Name: data.partner2_name || '',
@@ -181,8 +173,12 @@ const Onboarding: React.FC = () => {
 
   const saveDataToSupabase = async () => {
     if (!user) {
-      // If not logged in, redirect to auth page with a return path
-      navigate('/auth');
+      navigate('/auth', { 
+        state: { 
+          formData,
+          isSignUp: true 
+        } 
+      });
       return;
     }
 
@@ -230,17 +226,14 @@ const Onboarding: React.FC = () => {
       userResponse = formData[question.field as keyof FormData];
     }
     
-    // Add user's response to messages
     setMessages(prev => [...prev, { content: userResponse, sender: 'user' }]);
     
-    // Move to next question or finish
     if (currentStep < QUESTIONS.length - 1) {
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
         setMessages(prev => [...prev, { content: QUESTIONS[currentStep + 1].message, sender: 'ai' }]);
       }, 500);
     } else {
-      // All questions answered, save data and proceed to dashboard
       await saveDataToSupabase();
       
       setTimeout(() => {
@@ -284,7 +277,6 @@ const Onboarding: React.FC = () => {
           )}
         </div>
         
-        {/* Chat messages container */}
         <div className="bg-white/70 rounded-lg p-3 mb-4 h-[400px] overflow-y-auto shadow-inner">
           <div className="flex flex-col gap-4">
             {messages.map((msg, idx) => (
@@ -298,7 +290,6 @@ const Onboarding: React.FC = () => {
           </div>
         </div>
         
-        {/* Input form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {currentStep === 0 ? (
             <div className="flex flex-col md:flex-row gap-2">

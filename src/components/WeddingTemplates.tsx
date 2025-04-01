@@ -37,9 +37,11 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
 }) => {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [customColors, setCustomColors] = useState<string[]>(userColors);
+  const [newCustomColor, setNewCustomColor] = useState<string>("#FFFFFF");
   
   // Generate templates based on user preferences and budget
-  const templates = generateTemplates(userBudget, userPreferences, userColors);
+  const templates = generateTemplates(userBudget, userPreferences, customColors);
   
   const handleApplyTheme = (themeId: string) => {
     setSelectedTheme(themeId);
@@ -47,6 +49,22 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
       title: "Theme Applied",
       description: `${templates.find(t => t.id === themeId)?.name} theme has been applied to your wedding plan.`,
     });
+  };
+
+  const addCustomColor = () => {
+    if (customColors.length < 6) {
+      setCustomColors([...customColors, newCustomColor]);
+      toast({
+        title: "Color Added",
+        description: "Your custom color has been added to the palette.",
+      });
+    } else {
+      toast({
+        title: "Color Limit Reached",
+        description: "You can have up to 6 custom colors in your palette.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -66,6 +84,44 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
         </div>
       </CardHeader>
       <CardContent>
+        {editMode && (
+          <div className="mb-6 p-4 bg-white/80 rounded-lg border border-gray-100">
+            <h3 className="text-sm font-medium mb-3">Wedding Color Palette</h3>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {customColors.map((color, index) => (
+                <div 
+                  key={index}
+                  className="w-10 h-10 rounded-full cursor-pointer border border-gray-200 shadow-sm"
+                  style={{ backgroundColor: color }}
+                  onClick={() => {
+                    const updatedColors = [...customColors];
+                    updatedColors.splice(index, 1);
+                    setCustomColors(updatedColors);
+                  }}
+                  title="Click to remove"
+                />
+              ))}
+              {customColors.length < 6 && (
+                <div className="flex">
+                  <input 
+                    type="color"
+                    value={newCustomColor}
+                    onChange={(e) => setNewCustomColor(e.target.value)}
+                    className="w-10 h-10 p-1 rounded-l-full cursor-pointer border border-gray-200"
+                  />
+                  <button 
+                    className="bg-wedding-pink hover:bg-wedding-pink-dark text-white rounded-r-lg px-2 text-sm"
+                    onClick={addCustomColor}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Click a color to remove it. Add up to 6 colors.</p>
+          </div>
+        )}
+        
         <Tabs defaultValue={templates[0]?.id}>
           <TabsList className="grid grid-cols-4 mb-4">
             {templates.map((theme) => (

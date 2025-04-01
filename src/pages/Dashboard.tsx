@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Tasks for the progress tracker
   const [tasks, setTasks] = useState([
     { id: '1', title: 'Create wedding account', completed: true },
     { id: '2', title: 'Set wedding date and budget', completed: true },
@@ -38,28 +36,23 @@ const Dashboard = () => {
   ]);
   
   useEffect(() => {
-    // Check if formData exists in location state
     if (location.state?.formData) {
       setFormData(location.state.formData);
-      // Welcome toast
       toast({
         title: "Wedding Plans Created!",
         description: `We've created some beautiful wedding plans for ${location.state.formData.partner1Name} & ${location.state.formData.partner2Name}.`,
         duration: 5000,
       });
       
-      // Save to supabase if user is logged in
       if (user) {
         saveWeddingDetails(location.state.formData);
       }
       
       setLoading(false);
     } else {
-      // If no data in location state but user is logged in, try to fetch from Supabase
       if (user) {
         fetchWeddingDetails();
       } else {
-        // Redirect to homepage if no data and no user
         navigate('/');
       }
     }
@@ -140,7 +133,6 @@ const Dashboard = () => {
   const monthsLeft = (weddingDate.getFullYear() - today.getFullYear()) * 12 + 
                      (weddingDate.getMonth() - today.getMonth());
   
-  // Generate timeline based on months left
   const generateTimeline = () => {
     const timeline = [];
     
@@ -194,16 +186,23 @@ const Dashboard = () => {
     return timeline;
   };
 
-  // Extract wedding colors or use default
-  const weddingColors = formData.theme && Array.isArray(formData.theme) && formData.theme.length > 0 
-    ? formData.theme 
-    : ['#FAD2E1', '#F8BBD0', '#fff1e6'];
+  const weddingColors = formData.theme && 
+    (typeof formData.theme === 'string' ? 
+      (formData.theme.startsWith('[') ? JSON.parse(formData.theme) : [formData.theme, '#F8BBD0', '#fff1e6']) : 
+      Array.isArray(formData.theme) ? formData.theme : ['#FAD2E1', '#F8BBD0', '#fff1e6']);
+
+  useEffect(() => {
+    if (weddingColors && weddingColors.length > 0) {
+      document.documentElement.style.setProperty('--wedding-pink', weddingColors[0] || '#FAD2E1');
+      document.documentElement.style.setProperty('--wedding-pink-dark', weddingColors[1] || '#F8BBD0');
+      document.documentElement.style.setProperty('--wedding-cream', weddingColors[2] || '#fff1e6');
+    }
+  }, [weddingColors]);
 
   return (
     <div className="min-h-screen pb-20 relative">
       <FloatingHearts count={10} />
       
-      {/* Header */}
       <div 
         className="py-6 px-4 mb-8"
         style={{
@@ -240,7 +239,6 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Navigation Tabs */}
       <div className="container max-w-6xl mx-auto px-4 mb-6">
         <div className="flex overflow-x-auto pb-2 no-scrollbar">
           <Button
@@ -274,19 +272,16 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Main content */}
       <div className="container max-w-6xl mx-auto px-4">
         {activeTab === 'overview' && (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Wedding Progress */}
               <div className="lg:col-span-2">
                 <WeddingProgressTracker 
                   tasks={tasks} 
                   className="mb-8"
                 />
                 
-                {/* Wedding Plans */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-semibold">Your Wedding Plans</h2>
@@ -345,7 +340,6 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              {/* Timeline */}
               <div className="lg:col-span-1">
                 <h2 className="text-2xl font-semibold mb-6">Your Wedding Timeline</h2>
                 <div className="bg-white/50 rounded-lg p-4 shadow-sm">
@@ -362,7 +356,6 @@ const Dashboard = () => {
               </div>
             </div>
             
-            {/* Quick links */}
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="wedding-card text-center">
                 <h3 className="text-lg font-medium mb-3">Vendor Marketplace</h3>
