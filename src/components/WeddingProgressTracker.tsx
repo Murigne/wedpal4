@@ -44,7 +44,6 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
         <Progress 
           value={progressPercentage} 
           className="h-3 mb-6 bg-wedding-pink/20"
-          indicatorClassName="bg-wedding-pink"
         />
         
         <div className="space-y-2">
