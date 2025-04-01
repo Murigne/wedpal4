@@ -157,9 +157,9 @@ const ChatOnboarding: React.FC = () => {
       if (error) throw error;
       
       if (data && data.user) {
-        // Add wedding details to the database
+        // Add wedding details to the database - FIX HERE: Change "wedding_profiles" to "wedding_details"
         const { error: profileError } = await supabase
-          .from('wedding_profiles')
+          .from('wedding_details')
           .insert([
             {
               user_id: data.user.id,
