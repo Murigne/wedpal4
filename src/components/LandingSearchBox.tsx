@@ -1,47 +1,135 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, SendHorizonal } from 'lucide-react';
+import { ArrowRight, ArrowLeft, SendHorizonal, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar } from '@/components/ui/calendar';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Define the questions for our form
 const questions = [
-  { id: 'name', question: "What's your name?" },
-  { id: 'partnerName', question: "What's your partner's name?" },
-  { id: 'date', question: "When are you planning to get married?" },
-  { id: 'location', question: "Do you have a location in mind?" },
-  { id: 'guests', question: "How many guests are you planning to invite?" },
-  { id: 'style', question: "What style of wedding are you dreaming of? (e.g., rustic, elegant, beach...)" },
-  { id: 'budget', question: "What's your approximate budget?" }
+  { id: 'name', question: "What's your name?", type: 'text' },
+  { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
+  { id: 'date', question: "When are you planning to get married?", type: 'date' },
+  { id: 'colors', question: "What are your wedding colours? (Select up to 3)", type: 'color' },
+  { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number' },
+  { id: 'venue', question: "Do you prefer an indoor or outdoor wedding?", type: 'radio', options: ['Indoor', 'Outdoor', 'Both'] },
+  { id: 'guests', question: "How many guests are you expecting?", type: 'number' },
+  { id: 'vendors', question: "Do you need vendor recommendations?", type: 'radio', options: ['Yes', 'No', 'Not sure yet'] },
+  { id: 'honeymoon', question: "What's your dream honeymoon location?", type: 'text' }
+];
+
+// Define wedding color options
+const colorOptions = [
+  { name: 'Blush Pink', value: '#FFC0CB', class: 'bg-pink-300' },
+  { name: 'Burgundy', value: '#800020', class: 'bg-red-900' },
+  { name: 'Dusty Blue', value: '#6699CC', class: 'bg-blue-400' },
+  { name: 'Emerald Green', value: '#50C878', class: 'bg-green-500' },
+  { name: 'Gold', value: '#FFD700', class: 'bg-yellow-400' },
+  { name: 'Ivory', value: '#FFFFF0', class: 'bg-yellow-50' },
+  { name: 'Lavender', value: '#E6E6FA', class: 'bg-purple-200' },
+  { name: 'Navy Blue', value: '#000080', class: 'bg-blue-900' },
+  { name: 'Peach', value: '#FFE5B4', class: 'bg-orange-200' },
+  { name: 'Sage Green', value: '#9CAF88', class: 'bg-green-300' },
+  { name: 'Silver', value: '#C0C0C0', class: 'bg-gray-300' },
+  { name: 'Teal', value: '#008080', class: 'bg-teal-600' },
 ];
 
 const LandingSearchBox = () => {
   const [inputValue, setInputValue] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const form = useForm();
   const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    if (currentQuestionIndex > 0) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+        setIsTransitioning(false);
+      }, 300);
+    }
+  };
+
+  const handleColorSelection = (colorValue: string) => {
+    setSelectedColors(prev => {
+      if (prev.includes(colorValue)) {
+        return prev.filter(c => c !== colorValue);
+      } else {
+        if (prev.length < 3) {
+          return [...prev, colorValue];
+        }
+        return prev;
+      }
+    });
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
+
+  const handleRadioChange = (value: string) => {
+    setInputValue(value);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inputValue.trim()) return;
+    if (isTransitioning) return;
     
     const currentQuestion = questions[currentQuestionIndex];
+    let answerValue: any = inputValue;
+    
+    // Handle different input types
+    if (currentQuestion.type === 'date') {
+      if (!selectedDate) return;
+      answerValue = selectedDate;
+    } else if (currentQuestion.type === 'color') {
+      if (selectedColors.length === 0) return;
+      answerValue = selectedColors;
+    } else if (currentQuestion.type === 'number') {
+      if (!inputValue.trim() || isNaN(Number(inputValue))) return;
+      answerValue = Number(inputValue);
+    } else if (currentQuestion.type === 'text' || currentQuestion.type === 'radio') {
+      if (!inputValue.trim()) return;
+    }
     
     // Store answer
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.id]: inputValue
+      [currentQuestion.id]: answerValue
     }));
     
     setIsTransitioning(true);
     
-    // Clear input
+    // Apply theme colors if wedding colors were selected
+    if (currentQuestion.id === 'colors') {
+      document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
+      if (selectedColors.length > 1) {
+        document.documentElement.style.setProperty('--wedding-color-secondary', selectedColors[1]);
+      }
+      if (selectedColors.length > 2) {
+        document.documentElement.style.setProperty('--wedding-color-tertiary', selectedColors[2]);
+      }
+    }
+    
+    // Clear input for next question
     setTimeout(() => {
       setInputValue('');
+      setSelectedDate(undefined);
       
       // Check if we're at the last question
       if (currentQuestionIndex === questions.length - 1) {
@@ -53,14 +141,50 @@ const LandingSearchBox = () => {
       // Move to next question after a short delay
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setIsTransitioning(false);
-    }, 500);
+    }, 300);
   };
 
+  // Update input value when going back to a previously answered question
+  useEffect(() => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (answers[currentQuestion.id] !== undefined) {
+      if (currentQuestion.type === 'date') {
+        setSelectedDate(answers[currentQuestion.id]);
+      } else if (currentQuestion.type === 'color') {
+        setSelectedColors(answers[currentQuestion.id] || []);
+      } else if (currentQuestion.type === 'radio') {
+        setInputValue(answers[currentQuestion.id] || '');
+      } else {
+        setInputValue(String(answers[currentQuestion.id] || ''));
+      }
+    } else {
+      setInputValue('');
+      setSelectedDate(undefined);
+      setSelectedColors([]);
+    }
+  }, [currentQuestionIndex, answers]);
+
+  // Get the current question
+  const currentQuestion = questions[currentQuestionIndex];
+
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4">
+    <div className="w-full max-w-3xl mx-auto space-y-6">
+      {/* Image of bouquet of flowers at the top right */}
+      <div className="absolute top-6 right-6 h-24 w-24 opacity-80">
+        <img src="/bouquet.png" alt="Wedding Bouquet" className="animate-float" />
+      </div>
+
+      {/* Heart icon with animated border at bottom right */}
+      <div className="fixed bottom-6 right-6">
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full heart-border"></div>
+          <Heart className="w-12 h-12 text-pink-500 fill-pink-500 z-10" />
+        </div>
+      </div>
+      
       {/* Heading */}
-      <h1 className="text-4xl md:text-5xl font-display text-center text-white drop-shadow-md">
-        Wanna get married? We are here to help <span className="text-pink-300">: )</span>
+      <h1 className="text-4xl md:text-6xl font-bold text-center text-white drop-shadow-md">
+        Wanna get married? <br/> We are here to help <span className="text-pink-300">: )</span>
       </h1>
       
       {/* Question container */}
@@ -71,47 +195,198 @@ const LandingSearchBox = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.3 }}
             className="mb-6"
           >
-            <h2 className="text-2xl md:text-3xl font-display text-gray-800 mb-4">
-              {questions[currentQuestionIndex].question}
+            <h2 className="text-2xl md:text-3xl font-medium text-gray-800 mb-4">
+              {currentQuestion.question}
             </h2>
           </motion.div>
         </AnimatePresence>
         
         {/* Input form */}
         <form onSubmit={handleSubmit} className="relative">
-          <div className="relative">
-            <Input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Type your answer here..."
-              className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
-              autoFocus
-            />
-            <Button 
-              type="submit"
-              size="icon"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full"
-              disabled={isTransitioning}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`input-${currentQuestionIndex}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="w-full"
             >
-              <SendHorizonal className="h-5 w-5" />
-            </Button>
-          </div>
+              {currentQuestion.type === 'text' && (
+                <div className="relative">
+                  <Input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Type your answer here..."
+                    className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                    autoFocus
+                  />
+                  <Button 
+                    type="submit"
+                    size="icon"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    disabled={isTransitioning}
+                  >
+                    <SendHorizonal className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+
+              {currentQuestion.type === 'number' && (
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Enter a number..."
+                    className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                    autoFocus
+                  />
+                  <Button 
+                    type="submit"
+                    size="icon"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    disabled={isTransitioning}
+                  >
+                    <SendHorizonal className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+              
+              {currentQuestion.type === 'date' && (
+                <div className="relative">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-left",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        {selectedDate ? format(selectedDate, "PPP") : "Select a date..."}
+                        <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={handleDateSelect}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Button 
+                    type="submit"
+                    size="icon"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-10 w-10"
+                    disabled={!selectedDate || isTransitioning}
+                  >
+                    <SendHorizonal className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+
+              {currentQuestion.type === 'color' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                    {colorOptions.map((color) => (
+                      <div 
+                        key={color.value} 
+                        className="relative"
+                        onClick={() => handleColorSelection(color.value)}
+                      >
+                        <div 
+                          className={cn(
+                            "w-full aspect-square rounded-md cursor-pointer transition-transform",
+                            selectedColors.includes(color.value) ? "ring-2 ring-offset-2 ring-black scale-95" : "hover:scale-105"
+                          )}
+                          style={{ backgroundColor: color.value }}
+                        />
+                        {selectedColors.includes(color.value) && (
+                          <div className="absolute top-1 right-1 h-4 w-4 bg-black rounded-full flex items-center justify-center text-white text-xs">
+                            {selectedColors.indexOf(color.value) + 1}
+                          </div>
+                        )}
+                        <span className="text-xs mt-1 text-center block text-gray-700">{color.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-end">
+                    <Button 
+                      type="submit"
+                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
+                      disabled={selectedColors.length === 0 || isTransitioning}
+                    >
+                      Next <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {currentQuestion.type === 'radio' && currentQuestion.options && (
+                <div className="space-y-4">
+                  <RadioGroup 
+                    value={inputValue} 
+                    onValueChange={handleRadioChange}
+                    className="flex flex-col space-y-3"
+                  >
+                    {currentQuestion.options.map((option) => (
+                      <div key={option} className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 cursor-pointer hover:bg-gray-50">
+                        <RadioGroupItem value={option} id={option} />
+                        <Label htmlFor={option} className="cursor-pointer flex-1">{option}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                  <div className="flex justify-end">
+                    <Button 
+                      type="submit"
+                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
+                      disabled={!inputValue || isTransitioning}
+                    >
+                      Next <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </form>
         
         {/* Progress indicator */}
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex justify-between items-center">
+          {/* Back button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleGoBack}
+            disabled={currentQuestionIndex === 0 || isTransitioning}
+            className={cn(
+              "text-gray-500 hover:text-gray-700",
+              (currentQuestionIndex === 0 || isTransitioning) ? "opacity-0" : "opacity-100"
+            )}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          
+          {/* Progress dots */}
           <div className="flex gap-1">
             {questions.map((_, index) => (
               <div 
                 key={index}
-                className={`h-1 w-8 rounded-full ${index === currentQuestionIndex ? 'bg-pink-500' : index < currentQuestionIndex ? 'bg-pink-300' : 'bg-gray-200'}`}
+                className={`h-1 w-6 rounded-full ${index === currentQuestionIndex ? 'bg-pink-500' : index < currentQuestionIndex ? 'bg-pink-300' : 'bg-gray-200'}`}
               ></div>
             ))}
           </div>
+          
+          {/* Placeholder for symmetry */}
+          <div className="w-10"></div>
         </div>
       </div>
       
@@ -124,11 +399,6 @@ const LandingSearchBox = () => {
         >
           Already planning? Login
         </Button>
-      </div>
-      
-      {/* Footer text */}
-      <div className="text-center text-white/80 text-sm mt-4">
-        <p className="font-sans">Start planning your perfect day with us</p>
       </div>
     </div>
   );
