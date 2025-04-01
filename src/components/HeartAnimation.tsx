@@ -43,18 +43,24 @@ const HeartAnimation: React.FC = () => {
       heartContainer.appendChild(svg);
       
       // Create vertices (small circles)
-      for (let i = 0; i < 6; i++) {
+      const numVertices = 6 + Math.floor(Math.random() * 4); // 6-9 vertices
+      for (let i = 0; i < numVertices; i++) {
         const circle = document.createElement('div');
         circle.className = 'heart-vertex';
         
         // Position circles along the heart path
-        const angle = (i / 6) * Math.PI * 2;
-        const radius = 15; // Smaller radius
+        const angle = (i / numVertices) * Math.PI * 2;
+        const radius = 15 + Math.random() * 5; // Random radius variation
         const circleX = 20 + Math.cos(angle) * radius;
         const circleY = 20 + Math.sin(angle) * radius;
         
         circle.style.left = `${circleX}px`;
         circle.style.top = `${circleY}px`;
+        
+        // Random size variation
+        const size = 3 + Math.random() * 2;
+        circle.style.width = `${size}px`;
+        circle.style.height = `${size}px`;
         
         // Random delay for animation
         circle.style.animationDelay = `${Math.random() * 2}s`;
@@ -66,7 +72,9 @@ const HeartAnimation: React.FC = () => {
       
       // Remove heart after animation completes
       setTimeout(() => {
-        heartContainer.remove();
+        if (heartContainer.parentNode === container) {
+          container.removeChild(heartContainer);
+        }
       }, 4000);
     };
     

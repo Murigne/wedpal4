@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { Check, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
 import { Database } from '@/integrations/supabase/types';
+import HeartAnimation from '@/components/HeartAnimation';
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -37,7 +38,6 @@ const SignUp: React.FC = () => {
       
       if (error) throw error;
       
-      // If we have form data from onboarding, save it
       if (formData) {
         await saveUserData();
       }
@@ -96,6 +96,8 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
+      <HeartAnimation />
+      
       <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
         <div className="mb-8">
           <WedPalLogo className="text-4xl md:text-5xl mb-2" />
