@@ -30,14 +30,22 @@ const Auth: React.FC = () => {
       if (isSignUp) {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        toast.success("Sign up successful! Please check your email for verification.");
+        toast({
+          title: "Success",
+          description: "Sign up successful! Please check your email for verification.",
+          variant: "default",
+        });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate('/');
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

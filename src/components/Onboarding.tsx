@@ -114,7 +114,7 @@ const Onboarding: React.FC = () => {
 
       try {
         const { data, error } = await supabase
-          .from<WeddingDetails>('wedding_details')
+          .from('wedding_details')
           .select('*')
           .eq('user_id', user.id)
           .single();
@@ -152,9 +152,13 @@ const Onboarding: React.FC = () => {
             needNewHome: data.need_new_home || '',
           } } });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching wedding details:', error);
-        toast.error('Failed to load your saved wedding details');
+        toast({
+          title: "Error",
+          description: "Failed to load your saved wedding details",
+          variant: "destructive",
+        });
       } finally {
         setIsFetchingData(false);
       }
@@ -184,7 +188,7 @@ const Onboarding: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from<WeddingDetails>('wedding_details')
+        .from('wedding_details')
         .upsert({
           user_id: user.id,
           partner1_name: formData.partner1Name,
@@ -199,10 +203,18 @@ const Onboarding: React.FC = () => {
         }, { onConflict: 'user_id' });
 
       if (error) throw error;
-      toast.success('Your wedding details have been saved!');
-    } catch (error) {
+      toast({
+        title: "Success",
+        description: "Your wedding details have been saved!",
+        variant: "default",
+      });
+    } catch (error: any) {
       console.error('Error saving wedding details:', error);
-      toast.error('Failed to save your wedding details');
+      toast({
+        title: "Error", 
+        description: "Failed to save your wedding details",
+        variant: "destructive",
+      });
     }
   };
 
@@ -288,11 +300,11 @@ const Onboarding: React.FC = () => {
         
         {/* Input form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isFirstQuestion ? (
+          {currentStep === 0 ? (
             <div className="flex flex-col md:flex-row gap-2">
               <div className="flex-1 relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  {currentQuestion.icon}
+                  {QUESTIONS[currentStep].icon}
                 </div>
                 <input
                   type="text"
@@ -306,7 +318,7 @@ const Onboarding: React.FC = () => {
               </div>
               <div className="flex-1 relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  {currentQuestion.icon}
+                  {QUESTIONS[currentStep].icon}
                 </div>
                 <input
                   type="text"
@@ -322,14 +334,14 @@ const Onboarding: React.FC = () => {
           ) : (
             <div className="relative">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                {currentQuestion.icon}
+                {QUESTIONS[currentStep].icon}
               </div>
               <input
                 type="text"
-                name={currentQuestion.field as string}
-                value={formData[currentQuestion.field as keyof FormData]}
+                name={QUESTIONS[currentStep].field as string}
+                value={formData[QUESTIONS[currentStep].field as keyof FormData]}
                 onChange={handleInputChange}
-                placeholder={currentQuestion.placeholder}
+                placeholder={QUESTIONS[currentStep].placeholder}
                 required
                 className="wedding-input pl-10 w-full"
               />
