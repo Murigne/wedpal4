@@ -28,7 +28,7 @@ const Index = () => {
       {/* Bouquet of flowers at the bottom */}
       <div className="absolute bottom-0 left-0 w-full">
         <img 
-          src="/bouquet.png" 
+          src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07" 
           alt="Bouquet of flowers" 
           className="w-full h-auto object-cover" 
           style={{ maxHeight: '150px' }}
