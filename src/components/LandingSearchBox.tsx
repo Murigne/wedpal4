@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -189,7 +190,7 @@ const LandingSearchBox = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-10 z-10 relative">
-      <HeartAnimation />
+      <HeartAnimation avoidTextAreas={true} />
       
       <h1 className="text-5xl md:text-7xl font-bold text-center text-white drop-shadow-md mt-4">
         Wanna get married? <br/> We can help <span className="text-pink-300">: )</span>

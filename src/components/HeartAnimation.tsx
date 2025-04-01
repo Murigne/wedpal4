@@ -1,7 +1,11 @@
 
 import React, { useEffect, useRef } from 'react';
 
-const HeartAnimation: React.FC = () => {
+interface HeartAnimationProps {
+  avoidTextAreas?: boolean;
+}
+
+const HeartAnimation: React.FC<HeartAnimationProps> = ({ avoidTextAreas = false }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -19,6 +23,34 @@ const HeartAnimation: React.FC = () => {
       // Random position on the screen
       const x = Math.random() * (window.innerWidth - 80);
       const y = Math.random() * (window.innerHeight - 80);
+      
+      // If avoidTextAreas is true, avoid placing hearts in areas with text
+      if (avoidTextAreas) {
+        // Get all text elements on the page
+        const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, label, button, input, textarea, a, li, span');
+        
+        // Check if the heart overlaps with any text element
+        let overlaps = false;
+        const padding = 40; // Extra padding around text elements
+        
+        textElements.forEach(element => {
+          const rect = element.getBoundingClientRect();
+          
+          if (
+            x + 40 > rect.left - padding && 
+            x < rect.right + padding && 
+            y + 40 > rect.top - padding && 
+            y < rect.bottom + padding
+          ) {
+            overlaps = true;
+          }
+        });
+        
+        // If overlaps, try another position
+        if (overlaps) {
+          return;
+        }
+      }
       
       heartContainer.style.left = `${x}px`;
       heartContainer.style.top = `${y}px`;
@@ -89,7 +121,7 @@ const HeartAnimation: React.FC = () => {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [avoidTextAreas]);
   
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-0 overflow-hidden" />

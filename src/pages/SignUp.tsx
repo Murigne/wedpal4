@@ -96,7 +96,7 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
-      <HeartAnimation />
+      <HeartAnimation avoidTextAreas={true} />
       
       <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
         <div className="mb-8">
@@ -104,13 +104,13 @@ const SignUp: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-medium mb-6">Where Love Brews</h2>
           
           <p className="text-base md:text-lg mb-8 opacity-90 leading-relaxed">
-            WedPal takes the stress out of wedding planning, no matter your budget. 💍✨
+            ✨ WedPal takes the stress out of wedding planning, no matter your budget!
             <br /><br />
-            From personalized plans to budget-friendly vendors and crowdfunding, we simplify every step.
+            ✨ From personalized plans to budget friendly vendors, we simplify every step of the wedding planning journey
             <br /><br />
             Our AI-powered platform ensures a seamless, beautiful, and memorable wedding experience.
             <br /><br />
-            You focus on love—we handle the logistics! ❤️
+            ✨ Weddings are fun - planning them should be equally fun and stress-free don't you think? 😊
           </p>
           
           <ul className="space-y-4">
