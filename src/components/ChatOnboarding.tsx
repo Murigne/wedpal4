@@ -21,7 +21,16 @@ interface FormData {
   password: string;
 }
 
-const QUESTIONS = [
+interface QuestionType {
+  id: string;
+  message: string | ((formData: FormData) => string);
+  field: string | string[];
+  icon: JSX.Element;
+  placeholder: string | string[];
+  isPassword?: boolean;
+}
+
+const QUESTIONS: QuestionType[] = [
   {
     id: 'welcome',
     message: "Hi there! 💕 I'm your AI wedding planner. Let's start planning your dream wedding together! What are your names?",
