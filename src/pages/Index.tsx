@@ -2,6 +2,7 @@
 import React from 'react';
 import LandingSearchBox from '@/components/LandingSearchBox';
 import HeartAnimation from '@/components/HeartAnimation';
+import WedPalLogo from '@/components/WedPalLogo';
 
 const Index = () => {
   // Add CSS for dynamic gradient
@@ -27,6 +28,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* WedPal Logo at the top left */}
+      <div className="absolute top-4 left-4 z-10">
+        <WedPalLogo className="drop-shadow-lg" />
+      </div>
+      
       <HeartAnimation />
       <LandingSearchBox />
       
