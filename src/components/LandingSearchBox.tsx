@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -89,7 +88,6 @@ const LandingSearchBox = () => {
     setSelectedDate(date);
     setPopoverOpen(false);
     
-    // If date is selected, move to the next question automatically
     if (date) {
       handleSubmit(new Event('submit') as any);
     }
@@ -99,11 +97,8 @@ const LandingSearchBox = () => {
     setInputValue(value);
   };
 
-  // Format number with commas for readability
   const formatNumberWithCommas = (value: string): string => {
-    // Remove non-numeric characters
     const numericValue = value.replace(/[^\d]/g, '');
-    // Add commas as thousands separators
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
@@ -115,7 +110,6 @@ const LandingSearchBox = () => {
     }
   };
 
-  // Handle keyboard events for date selection
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement | HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (currentQuestion.type === 'date' && selectedDate) {
@@ -280,9 +274,9 @@ const LandingSearchBox = () => {
 
               {currentQuestion.type === 'number' && (
                 <div className="relative">
-                  {currentQuestion.prefix && (
+                  {currentQuestion.id === 'budget' && inputValue && (
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                      <span className="text-gray-500">{currentQuestion.prefix} </span>
+                      <span className="text-gray-500">GHS </span>
                     </div>
                   )}
                   <Input
@@ -290,7 +284,7 @@ const LandingSearchBox = () => {
                     value={inputValue}
                     onChange={handleNumberInputChange}
                     placeholder="Enter a number..."
-                    className={`w-full pl-${currentQuestion.prefix ? '16' : '4'} pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300`}
+                    className={`w-full ${currentQuestion.id === 'budget' && inputValue ? 'pl-16' : 'pl-4'} pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300`}
                     autoFocus
                     onKeyDown={handleKeyDown}
                   />
