@@ -28,10 +28,10 @@ const Index = () => {
       {/* Mistletoe at the bottom */}
       <div className="absolute bottom-0 left-0 w-full">
         <img 
-          src="/lovable-uploads/df40d746-a5f8-4808-bbea-eae29212e78a.png" 
+          src="/mistletoe.png" 
           alt="Mistletoe decoration" 
           className="w-full h-auto object-cover" 
-          style={{ maxHeight: '150px' }}
+          style={{ maxHeight: '120px' }}
         />
       </div>
     </div>
