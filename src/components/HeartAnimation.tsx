@@ -2,46 +2,81 @@
 import React, { useEffect, useRef } from 'react';
 
 const HeartAnimation: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const sparklesRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (!sparklesRef.current) return;
+    if (!containerRef.current) return;
     
-    // Create sparkles
-    const createSparkle = () => {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'sparkle';
+    // Create small hearts at random positions
+    const createHeart = () => {
+      const container = containerRef.current;
+      if (!container) return;
       
-      // Random position near the heart
-      const heartWidth = 800;
-      const heartHeight = 800;
+      // Create a new heart container
+      const heartContainer = document.createElement('div');
+      heartContainer.className = 'absolute';
       
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+      // Random position on the screen
+      const x = Math.random() * (window.innerWidth - 80);
+      const y = Math.random() * (window.innerHeight - 80);
       
-      // Random position along the heart path
-      const angle = Math.random() * Math.PI * 2;
-      const distance = Math.random() * 120 + 200; // Position along heart outline
-      const x = centerX + Math.cos(angle) * distance - 6;
-      const y = centerY + Math.sin(angle) * distance - 6;
+      heartContainer.style.left = `${x}px`;
+      heartContainer.style.top = `${y}px`;
+      heartContainer.style.width = '40px';
+      heartContainer.style.height = '40px';
       
-      sparkle.style.left = `${x}px`;
-      sparkle.style.top = `${y}px`;
+      // Create SVG for the heart
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '40');
+      svg.setAttribute('height', '40');
+      svg.setAttribute('viewBox', '0 0 40 40');
       
-      // Random delay
-      sparkle.style.animationDelay = `${Math.random() * 2}s`;
+      // Create heart path
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M20,15 C17,10 10,10 10,15 C10,20 15,22 20,30 C25,22 30,20 30,15 C30,10 23,10 20,15 Z');
+      path.setAttribute('stroke', 'rgba(255, 255, 255, 0.6)');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('fill', 'none');
+      path.classList.add('small-heart-path');
       
-      sparklesRef.current?.appendChild(sparkle);
+      svg.appendChild(path);
+      heartContainer.appendChild(svg);
       
-      // Remove sparkle after animation
+      // Create vertices (small circles)
+      for (let i = 0; i < 6; i++) {
+        const circle = document.createElement('div');
+        circle.className = 'heart-vertex';
+        
+        // Position circles along the heart path
+        const angle = (i / 6) * Math.PI * 2;
+        const radius = 15; // Smaller radius
+        const circleX = 20 + Math.cos(angle) * radius;
+        const circleY = 20 + Math.sin(angle) * radius;
+        
+        circle.style.left = `${circleX}px`;
+        circle.style.top = `${circleY}px`;
+        
+        // Random delay for animation
+        circle.style.animationDelay = `${Math.random() * 2}s`;
+        
+        heartContainer.appendChild(circle);
+      }
+      
+      container.appendChild(heartContainer);
+      
+      // Remove heart after animation completes
       setTimeout(() => {
-        sparkle.remove();
-      }, 2000);
+        heartContainer.remove();
+      }, 4000);
     };
     
-    // Create sparkles periodically
-    const interval = setInterval(createSparkle, 200);
+    // Create hearts periodically
+    const interval = setInterval(createHeart, 800);
+    
+    // Create some initial hearts
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createHeart, i * 400);
+    }
     
     return () => {
       clearInterval(interval);
@@ -49,25 +84,7 @@ const HeartAnimation: React.FC = () => {
   }, []);
   
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <div ref={sparklesRef} className="absolute inset-0"></div>
-      <svg 
-        ref={svgRef}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        width="800" 
-        height="800" 
-        viewBox="0 0 100 100" 
-        fill="none"
-      >
-        <path
-          className="infinite-heart-path"
-          d="M50,30 C35,10 10,20 10,40 C10,60 25,65 50,90 C75,65 90,60 90,40 C90,20 65,10 50,30 Z"
-          stroke="rgba(255, 255, 255, 0.6)"
-          strokeWidth="1"
-          fill="none"
-        />
-      </svg>
-    </div>
+    <div ref={containerRef} className="fixed inset-0 pointer-events-none z-0 overflow-hidden" />
   );
 };
 
