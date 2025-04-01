@@ -12,6 +12,11 @@ const Index = () => {
         background: var(--dynamic-gradient, linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab));
         background-size: 400% 400%;
       }
+      
+      .gradient-overlay {
+        background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+        pointer-events: none;
+      }
     `;
     document.head.appendChild(style);
     
@@ -21,9 +26,12 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative">
+    <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <HeartAnimation />
       <LandingSearchBox />
+      
+      {/* Gradient overlay for smooth transition */}
+      <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
       
       {/* Bouquet of flowers at the bottom */}
       <div className="absolute bottom-0 left-0 w-full">
