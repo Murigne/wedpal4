@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,9 @@ import WeddingTemplates from '@/components/WeddingTemplates';
 import CustomVendorSelector from '@/components/CustomVendorSelector';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
+import { Database } from '@/integrations/supabase/types';
+
+type WeddingDetails = Database['public']['Tables']['wedding_details']['Row'];
 
 const Dashboard = () => {
   const location = useLocation();

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { Check, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
+import { Database } from '@/integrations/supabase/types';
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
