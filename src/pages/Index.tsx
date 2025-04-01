@@ -24,6 +24,16 @@ const Index = () => {
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative">
       <HeartAnimation />
       <LandingSearchBox />
+      
+      {/* Bouquet of flowers at the bottom */}
+      <div className="absolute bottom-0 left-0 w-full">
+        <img 
+          src="/bouquet.png" 
+          alt="Bouquet of flowers" 
+          className="w-full h-auto object-cover" 
+          style={{ maxHeight: '150px' }}
+        />
+      </div>
     </div>
   );
 };
