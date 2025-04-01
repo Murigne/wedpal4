@@ -172,6 +172,10 @@ const ChatOnboarding: React.FC = () => {
   };
 
   const currentQuestion = QUESTIONS[currentStep];
+  // Fix for type error: Ensure that placeholder is always treated as an array when needed
+  const placeholders = Array.isArray(currentQuestion.placeholder) 
+    ? currentQuestion.placeholder 
+    : [currentQuestion.placeholder];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden animated-gradient">
@@ -232,7 +236,7 @@ const ChatOnboarding: React.FC = () => {
                     name="partner1Name"
                     value={formData.partner1Name}
                     onChange={handleInputChange}
-                    placeholder={QUESTIONS[currentStep].placeholder[0]}
+                    placeholder={placeholders[0]}
                     required
                     className="wedding-input pl-10 w-full"
                   />
@@ -246,7 +250,7 @@ const ChatOnboarding: React.FC = () => {
                     name="partner2Name"
                     value={formData.partner2Name}
                     onChange={handleInputChange}
-                    placeholder={QUESTIONS[currentStep].placeholder[1]}
+                    placeholder={placeholders[1] || ""}
                     required
                     className="wedding-input pl-10 w-full"
                   />
@@ -259,10 +263,10 @@ const ChatOnboarding: React.FC = () => {
                 </div>
                 <input
                   type="text"
-                  name={QUESTIONS[currentStep].field as string}
-                  value={formData[QUESTIONS[currentStep].field as keyof FormData]}
+                  name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
+                  value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] as keyof FormData : currentQuestion.field as keyof FormData]}
                   onChange={handleInputChange}
-                  placeholder={QUESTIONS[currentStep].placeholder}
+                  placeholder={placeholders[0]}
                   required
                   className="wedding-input pl-10 w-full"
                 />
