@@ -145,7 +145,7 @@ const LandingSearchBox = () => {
       setSelectedDate(undefined);
       
       if (currentQuestionIndex === questions.length - 1) {
-        setTimeout(() => navigate('/auth'), 500);
+        navigate('/signup');
         return;
       }
       
@@ -182,6 +182,10 @@ const LandingSearchBox = () => {
   }, [currentQuestionIndex, answers]);
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-10 z-10 relative">
@@ -425,7 +429,7 @@ const LandingSearchBox = () => {
       <div className="flex justify-center">
         <Button 
           variant="outline" 
-          onClick={() => navigate('/auth')}
+          onClick={handleLoginClick}
           className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-white/30"
         >
           Already planning? Login

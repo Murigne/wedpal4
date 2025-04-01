@@ -137,14 +137,14 @@ const ChatOnboarding: React.FC = () => {
   };
 
   const handleLoginClick = () => {
-    navigate('/auth');
+    navigate('/login');
   };
 
   const createAccount = async () => {
     try {
       setIsCreatingAccount(true);
       
-      navigate('/auth', { 
+      navigate('/signup', { 
         state: { 
           formData,
           isSignUp: true 

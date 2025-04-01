@@ -171,9 +171,13 @@ const Onboarding: React.FC = () => {
     }));
   };
 
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   const saveDataToSupabase = async () => {
     if (!user) {
-      navigate('/auth', { 
+      navigate('/signup', { 
         state: { 
           formData,
           isSignUp: true 
@@ -240,10 +244,6 @@ const Onboarding: React.FC = () => {
         navigate('/dashboard', { state: { formData } });
       }, 1000);
     }
-  };
-
-  const handleLoginClick = () => {
-    navigate('/auth');
   };
 
   if (isFetchingData) {

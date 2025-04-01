@@ -1,57 +1,54 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import WedPalLogo from '@/components/WedPalLogo';
+import HeartAnimation from '@/components/HeartAnimation';
+import { User, Mail, Lock, ArrowRight } from 'lucide-react';
 
-const Auth: React.FC = () => {
+const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
   const location = useLocation();
   const formData = location.state?.formData;
   
-  useEffect(() => {
-    // Check if we were directed here from onboarding
-    if (location.state?.isSignUp) {
-      setIsSignUp(true);
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
     }
     
-    // Redirect authenticated users
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate, location.state]);
-
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        
-        // If we have form data, save it when the user signs up
-        if (formData && !error) {
-          await saveUserData();
-        }
-        
-        toast({
-          title: "Success",
-          description: "Sign up successful! Please check your email for verification.",
-          variant: "default",
-        });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        navigate('/dashboard');
+      const { error } = await supabase.auth.signUp({ email, password });
+      
+      if (error) throw error;
+      
+      // If we have form data from onboarding, save it
+      if (formData) {
+        await saveUserData();
       }
+      
+      toast({
+        title: "Success",
+        description: "Sign up successful! Please check your email for verification.",
+        variant: "default",
+      });
+      
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -89,47 +86,79 @@ const Auth: React.FC = () => {
     }
   };
 
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden animated-gradient">
+      {/* WedPal Logo */}
+      <div className="absolute top-6 left-8 z-10">
+        <WedPalLogo className="drop-shadow-lg" />
+      </div>
+      
+      <HeartAnimation />
+      
       <div className="wedding-card w-full max-w-md backdrop-blur-sm">
         <h1 className="text-3xl font-bold text-center mb-6 text-foreground">
-          Forever <span className="text-wedding-pink-dark">Together</span>
+          Create Your <span className="text-wedding-pink-dark">Wedding Account</span>
         </h1>
         
-        <form onSubmit={handleAuth} className="space-y-4">
+        <form onSubmit={handleSignUp} className="space-y-4">
           <div className="relative">
-            <input
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Mail className="h-5 w-5 text-wedding-pink-dark" />
+            </div>
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email Address"
               required
-              className="wedding-input w-full"
+              className="wedding-input pl-10 w-full"
             />
           </div>
           
           <div className="relative">
-            <input
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-wedding-pink-dark" />
+            </div>
+            <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               required
-              className="wedding-input w-full"
+              className="wedding-input pl-10 w-full"
+            />
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-wedding-pink-dark" />
+            </div>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              required
+              className="wedding-input pl-10 w-full"
             />
           </div>
           
           <Button type="submit" className="wedding-button w-full" disabled={loading}>
-            {loading ? 'Please wait...' : isSignUp ? 'Sign Up' : 'Log In'}
+            {loading ? 'Creating Account...' : 'Sign Up'}
+            <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
           
           <div className="text-center mt-4">
             <button 
               type="button" 
               className="text-sm text-muted-foreground hover:text-wedding-pink-dark"
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={handleLoginClick}
             >
-              {isSignUp ? 'Already have an account? Log In' : 'Need an account? Sign Up'}
+              Already have an account? Log In
             </button>
           </div>
         </form>
@@ -138,4 +167,4 @@ const Auth: React.FC = () => {
   );
 };
 
-export default Auth;
+export default SignUp;

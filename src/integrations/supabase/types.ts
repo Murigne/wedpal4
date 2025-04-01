@@ -9,51 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      wedding_details: {
-        Row: {
-          budget: string | null
-          created_at: string | null
-          guest_count: string | null
-          honeymoon_destination: string | null
-          id: string
-          need_new_home: string | null
-          partner1_name: string | null
-          partner2_name: string | null
-          theme: string | null
-          updated_at: string | null
-          user_id: string
-          wedding_date: string | null
-        }
-        Insert: {
-          budget?: string | null
-          created_at?: string | null
-          guest_count?: string | null
-          honeymoon_destination?: string | null
-          id?: string
-          need_new_home?: string | null
-          partner1_name?: string | null
-          partner2_name?: string | null
-          theme?: string | null
-          updated_at?: string | null
-          user_id: string
-          wedding_date?: string | null
-        }
-        Update: {
-          budget?: string | null
-          created_at?: string | null
-          guest_count?: string | null
-          honeymoon_destination?: string | null
-          id?: string
-          need_new_home?: string | null
-          partner1_name?: string | null
-          partner2_name?: string | null
-          theme?: string | null
-          updated_at?: string | null
-          user_id?: string
-          wedding_date?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
