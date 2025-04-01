@@ -36,11 +36,13 @@ const WedPalLogo: React.FC<WedPalLogoProps> = ({ className = "" }) => {
       letters.forEach((letter, index) => {
         setTimeout(() => {
           letter.classList.add('animating');
-          letter.style.animation = 'gradient-shift 2s ease';
+          // Cast to HTMLElement to access style property
+          (letter as HTMLElement).style.animation = 'gradient-shift 2s ease';
           
           // Reset animation after it completes
           setTimeout(() => {
-            letter.style.animation = '';
+            // Cast to HTMLElement to access style property
+            (letter as HTMLElement).style.animation = '';
             letter.classList.remove('animating');
           }, 2000);
         }, index * 200); // Stagger the animation for each letter
