@@ -1,10 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight } from 'lucide-react';
+import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import FloatingHearts from './FloatingHearts';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './AuthProvider';
+import { toast } from '@/components/ui/sonner';
 
 interface FormData {
   partner1Name: string;
@@ -84,6 +87,8 @@ const Onboarding: React.FC = () => {
   const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isFetchingData, setIsFetchingData] = useState(true);
 
   useEffect(() => {
     // Add the initial AI message when component mounts
@@ -94,6 +99,65 @@ const Onboarding: React.FC = () => {
     // Scroll to bottom of messages
     scrollToBottom();
   }, [messages]);
+
+  // Fetch existing data if user is logged in
+  useEffect(() => {
+    const fetchWeddingDetails = async () => {
+      if (!user) {
+        setIsFetchingData(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('wedding_details')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) {
+          if (error.code === 'PGRST116') {
+            // No data found, which is fine for new users
+            setIsFetchingData(false);
+            return;
+          }
+          throw error;
+        }
+
+        if (data) {
+          // If we have existing data, set it and navigate to dashboard
+          setFormData({
+            partner1Name: data.partner1_name || '',
+            partner2Name: data.partner2_name || '',
+            weddingDate: data.wedding_date || '',
+            budget: data.budget || '',
+            theme: data.theme || '',
+            guestCount: data.guest_count || '',
+            honeymoonDestination: data.honeymoon_destination || '',
+            needNewHome: data.need_new_home || '',
+          });
+          
+          navigate('/dashboard', { state: { formData: {
+            partner1Name: data.partner1_name || '',
+            partner2Name: data.partner2_name || '',
+            weddingDate: data.wedding_date || '',
+            budget: data.budget || '',
+            theme: data.theme || '',
+            guestCount: data.guest_count || '',
+            honeymoonDestination: data.honeymoon_destination || '',
+            needNewHome: data.need_new_home || '',
+          } } });
+        }
+      } catch (error) {
+        console.error('Error fetching wedding details:', error);
+        toast.error('Failed to load your saved wedding details');
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchWeddingDetails();
+  }, [user, navigate]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -107,7 +171,38 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const saveDataToSupabase = async () => {
+    if (!user) {
+      // If not logged in, redirect to auth page with a return path
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('wedding_details')
+        .upsert({
+          user_id: user.id,
+          partner1_name: formData.partner1Name,
+          partner2_name: formData.partner2Name,
+          wedding_date: formData.weddingDate,
+          budget: formData.budget,
+          theme: formData.theme,
+          guest_count: formData.guestCount,
+          honeymoon_destination: formData.honeymoonDestination,
+          need_new_home: formData.needNewHome,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+      if (error) throw error;
+      toast.success('Your wedding details have been saved!');
+    } catch (error) {
+      console.error('Error saving wedding details:', error);
+      toast.error('Failed to save your wedding details');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const question = QUESTIONS[currentStep];
@@ -129,24 +224,49 @@ const Onboarding: React.FC = () => {
         setMessages(prev => [...prev, { content: QUESTIONS[currentStep + 1].message, sender: 'ai' }]);
       }, 500);
     } else {
-      // All questions answered, proceed to dashboard
+      // All questions answered, save data and proceed to dashboard
+      await saveDataToSupabase();
+      
       setTimeout(() => {
         navigate('/dashboard', { state: { formData } });
       }, 1000);
     }
   };
 
+  const handleLoginClick = () => {
+    navigate('/auth');
+  };
+
+  if (isFetchingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center animated-gradient">
+        <div className="wedding-card p-8 text-center">
+          <p>Loading your wedding details...</p>
+        </div>
+      </div>
+    );
+  }
+
   const currentQuestion = QUESTIONS[currentStep];
   const isFirstQuestion = Array.isArray(currentQuestion.field);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden animated-gradient">
       <FloatingHearts count={15} />
       
       <div className="wedding-card w-full max-w-md md:max-w-lg backdrop-blur-sm mb-8">
-        <h1 className="text-3xl font-bold text-center mb-6 text-foreground">
-          Forever <span className="text-wedding-pink-dark">Together</span>
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-center text-foreground">
+            Forever <span className="text-wedding-pink-dark">Together</span>
+          </h1>
+          
+          {!user && (
+            <Button onClick={handleLoginClick} variant="outline" size="sm" className="flex items-center gap-1">
+              <User size={16} />
+              Login
+            </Button>
+          )}
+        </div>
         
         {/* Chat messages container */}
         <div className="bg-white/70 rounded-lg p-3 mb-4 h-[400px] overflow-y-auto shadow-inner">
