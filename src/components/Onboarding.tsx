@@ -7,7 +7,11 @@ import FloatingHearts from './FloatingHearts';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthProvider';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/hooks/use-toast';
+import { Database } from '@/integrations/supabase/types';
+
+// Define type for the wedding details from Supabase
+type WeddingDetails = Database['public']['Tables']['wedding_details']['Row'];
 
 interface FormData {
   partner1Name: string;
@@ -110,7 +114,7 @@ const Onboarding: React.FC = () => {
 
       try {
         const { data, error } = await supabase
-          .from('wedding_details')
+          .from<WeddingDetails>('wedding_details')
           .select('*')
           .eq('user_id', user.id)
           .single();
@@ -180,7 +184,7 @@ const Onboarding: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('wedding_details')
+        .from<WeddingDetails>('wedding_details')
         .upsert({
           user_id: user.id,
           partner1_name: formData.partner1Name,

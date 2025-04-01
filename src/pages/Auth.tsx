@@ -6,7 +6,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import FloatingHearts from '@/components/FloatingHearts';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/hooks/use-toast';
 
 const Auth: React.FC = () => {
   const [email, setEmail] = useState('');

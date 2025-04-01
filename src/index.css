@@ -5,35 +5,69 @@
 
 @layer base {
   :root {
-    --background: 350 100% 98%;
-    --foreground: 350 10% 15%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
 
-    --card: 350 30% 96%;
-    --card-foreground: 350 10% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 350 10% 15%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 350 95% 85%;
-    --primary-foreground: 350 10% 15%;
+    --primary: 346 77% 49.4%;
+    --primary-foreground: 355.7 100% 97.3%;
 
-    --secondary: 270 30% 90%;
-    --secondary-foreground: 270 10% 25%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --muted: 350 10% 92%;
-    --muted-foreground: 350 10% 45%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 30 80% 65%;
-    --accent-foreground: 30 10% 15%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 350 20% 85%;
-    --input: 350 20% 85%;
-    --ring: 350 90% 85%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 346 77% 49.4%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;
+
+    --wedding-pink: 346 77% 60%;
+    --wedding-pink-dark: 346 77% 49.4%;
+    --wedding-pink-light: 346 77% 95%;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 346 77% 49.4%;
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 346 77% 49.4%;
   }
 }
 
@@ -41,87 +75,39 @@
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground antialiased;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627,25.173 L42.771,29.253 L40.949,33.533 L48.386,44.859 C48.825,45.548 49.041,46.348 48.997,47.153 C48.952,47.959 48.649,48.729 48.134,49.364 C47.618,49.999 46.918,50.468 46.129,50.696 C45.341,50.925 44.505,50.902 43.73,50.63 L30.636,46.031 L30.636,50.834 C30.636,51.639 30.398,52.426 29.952,53.103 C29.507,53.781 28.874,54.318 28.13,54.65 C27.386,54.982 26.565,55.096 25.761,54.98 C24.958,54.865 24.206,54.524 23.595,54.001 L14.214,46.058 L4.833,54.001 C4.222,54.524 3.47,54.865 2.667,54.98 C1.864,55.096 1.042,54.982 0.298,54.65 C-0.446,54.318 -1.079,53.781 -1.524,53.103 C-1.97,52.426 -2.208,51.639 -2.208,50.834 L-2.208,46.031 L-15.302,50.63 C-16.077,50.902 -16.913,50.925 -17.702,50.696 C-18.49,50.468 -19.19,49.999 -19.706,49.364 C-20.221,48.729 -20.525,47.959 -20.569,47.153 C-20.613,46.348 -20.397,45.548 -19.958,44.859 L-12.521,33.533 L-14.343,29.253 L-26.199,25.173 C-27.017,24.897 -27.726,24.377 -28.225,23.687 C-28.725,22.997 -28.993,22.171 -28.993,21.325 C-28.993,20.479 -28.725,19.653 -28.225,18.963 C-27.726,18.273 -27.017,17.753 -26.199,17.476 L-14.343,13.396 L-12.521,9.116 L-19.958,2.138 C-20.397,1.45 -20.613,0.65 -20.569,0.151 C-20.525,-1.644 -20.221,-2.414 -19.706,-3.049 C-19.19,-3.684 -18.49,-4.152 -17.702,-4.381 C-16.913,-4.609 -16.077,-4.587 -15.302,-4.315 L-2.208,-0.275 L-2.208,-5.078 C-2.208,-5.883 -1.97,-6.671 -1.524,-7.348 C-1.079,-8.025 -0.446,-8.562 0.298,-8.894 C1.042,-9.227 1.864,-9.341 2.667,-9.225 C3.47,-9.109 4.222,-8.769 4.833,-8.245 L14.214,-0.302 L23.595,-8.245 C24.206,-8.769 24.958,-9.109 25.761,-9.225 C26.565,-9.341 27.386,-9.227 28.13,-8.894 C28.874,-8.562 29.507,-8.025 29.952,-7.348 C30.398,-6.671 30.636,-5.883 30.636,-5.078 L30.636,-0.275 L43.73,-4.315 C44.505,-4.587 45.341,-4.609 46.129,-4.381 C46.918,-4.152 47.618,-3.684 48.134,-3.049 C48.649,-2.414 48.952,-1.644 48.997,-0.151 C49.041,0.65 48.825,1.45 48.386,2.138 L40.949,9.116 L42.771,13.396 L54.627,17.476 C55.445,17.753 56.155,18.273 56.654,18.963 C57.154,19.653 57.422,20.479 57.422,21.325 C57.422,22.171 57.154,22.997 56.654,23.687 C56.155,24.377 55.445,24.897 54.627,25.173 Z' fill='%23ffd7e1' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+    @apply bg-background text-foreground;
   }
+}
 
-  .wedding-card {
-    @apply bg-card rounded-lg shadow-md p-6 border border-wedding-pink/20;
-    background-image: linear-gradient(to bottom right, rgba(253, 226, 228, 0.7), rgba(255, 241, 230, 0.7));
+/* Wedding Theme Styles */
+.wedding-card {
+  @apply bg-white/90 backdrop-filter backdrop-blur-lg rounded-lg p-6 shadow-lg border border-pink-100;
+}
+
+.wedding-input {
+  @apply p-2 px-4 rounded-full border border-gray-300 focus:border-pink-400 focus:ring-1 focus:ring-pink-400 focus:outline-none text-gray-800;
+}
+
+.wedding-button {
+  @apply bg-pink-500 hover:bg-pink-600 text-white rounded-full flex items-center justify-center gap-2 transition-colors;
+}
+
+/* Animated gradient background */
+.animated-gradient {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
   }
-
-  .wedding-input {
-    @apply bg-white/70 border border-wedding-pink rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:border-transparent transition-all;
+  50% {
+    background-position: 100% 50%;
   }
-
-  .wedding-button {
-    @apply bg-wedding-pink hover:bg-wedding-pink-dark text-foreground font-medium rounded-full px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2;
-  }
-
-  .wedding-button-secondary {
-    @apply bg-wedding-lavender hover:bg-wedding-lavender-dark text-foreground font-medium rounded-full px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-300;
-  }
-
-  .wedding-button-accent {
-    @apply bg-wedding-gold hover:bg-wedding-gold-dark text-foreground font-medium rounded-full px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-300;
-  }
-
-  .chat-bubble {
-    @apply rounded-2xl p-4 max-w-[80%] animate-fade-in;
-  }
-
-  .chat-bubble-ai {
-    @apply chat-bubble bg-wedding-pink/40 text-left ml-2;
-  }
-
-  .chat-bubble-user {
-    @apply chat-bubble bg-wedding-lavender/40 text-right ml-auto mr-2;
-  }
-
-  .floating-heart {
-    @apply absolute animate-float text-wedding-pink opacity-70;
-  }
-
-  /* Animated gradient background */
-  .animated-gradient {
-    background: linear-gradient(-45deg, #ffb6c1, #ffdfd3, #ffecd9, #f8debd);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-  }
-
-  @keyframes gradient {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  @keyframes animate-fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-
-  .animate-fade-in {
-    animation: animate-fade-in 0.5s ease-out forwards;
-  }
-
-  @keyframes animate-float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-
-  .animate-float {
-    animation: animate-float 3s ease-in-out infinite;
+  100% {
+    background-position: 0% 50%;
   }
 }
