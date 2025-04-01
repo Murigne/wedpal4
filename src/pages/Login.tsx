@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { Check, Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
+import HeartAnimation from '@/components/HeartAnimation';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -46,6 +47,8 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
+      <HeartAnimation />
+      
       {/* Left side - Branding and features */}
       <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
         <div className="mb-8">
