@@ -1,12 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, SendHorizonal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Define the questions for our form
 const questions = [
-  { id: 'intro', question: "Tell us about your dream wedding...", isInitial: true },
   { id: 'name', question: "What's your name?" },
   { id: 'partnerName', question: "What's your partner's name?" },
   { id: 'date', question: "When are you planning to get married?" },
@@ -16,19 +17,11 @@ const questions = [
   { id: 'budget', question: "What's your approximate budget?" }
 ];
 
-// Define a message type for our chat
-type Message = {
-  content: string;
-  sender: 'ai' | 'user';
-};
-
 const LandingSearchBox = () => {
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    { content: questions[0].question, sender: 'ai' }
-  ]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,41 +31,28 @@ const LandingSearchBox = () => {
     
     const currentQuestion = questions[currentQuestionIndex];
     
-    // Add user's answer to messages
-    setMessages(prev => [...prev, { content: inputValue, sender: 'user' }]);
-    
     // Store answer
     setAnswers(prev => ({
       ...prev,
       [currentQuestion.id]: inputValue
     }));
     
+    setIsTransitioning(true);
+    
     // Clear input
-    setInputValue('');
-    
-    // Check if we're at the last question
-    if (currentQuestionIndex === questions.length - 1) {
-      // Add a final message
-      setTimeout(() => {
-        setMessages(prev => [
-          ...prev, 
-          { 
-            content: `Thank you ${answers.name || ''}! We're excited to help plan your special day. Let's create an account to get started.`, 
-            sender: 'ai' 
-          }
-        ]);
-        
-        // Redirect to registration after a delay
-        setTimeout(() => navigate('/auth'), 3000);
-      }, 500);
-      return;
-    }
-    
-    // Move to next question after a short delay
     setTimeout(() => {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      setMessages(prev => [...prev, { content: questions[nextIndex].question, sender: 'ai' }]);
+      setInputValue('');
+      
+      // Check if we're at the last question
+      if (currentQuestionIndex === questions.length - 1) {
+        // Redirect to registration after a delay
+        setTimeout(() => navigate('/auth'), 500);
+        return;
+      }
+      
+      // Move to next question after a short delay
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+      setIsTransitioning(false);
     }, 500);
   };
 
@@ -83,37 +63,56 @@ const LandingSearchBox = () => {
         Wanna get married? We are here to help <span className="text-pink-300">: )</span>
       </h1>
       
-      {/* Chat container */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 h-96 flex flex-col overflow-hidden">
-        {/* Chat messages */}
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4 pb-2">
-          {messages.map((msg, index) => (
-            <div 
-              key={index} 
-              className={`${msg.sender === 'ai' ? 'chat-bubble-ai' : 'chat-bubble-user'}`}
-            >
-              {msg.content}
-            </div>
-          ))}
-        </div>
+      {/* Question container */}
+      <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 md:p-8">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentQuestionIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            <h2 className="text-2xl md:text-3xl font-display text-gray-800 mb-4">
+              {questions[currentQuestionIndex].question}
+            </h2>
+          </motion.div>
+        </AnimatePresence>
         
         {/* Input form */}
-        <form onSubmit={handleSubmit} className="relative border-t pt-4">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={questions[currentQuestionIndex].question}
-            className="w-full pl-4 pr-14 py-3 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
-          />
-          <Button 
-            type="submit"
-            size="icon"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full"
-          >
-            <SendHorizonal className="h-5 w-5" />
-          </Button>
+        <form onSubmit={handleSubmit} className="relative">
+          <div className="relative">
+            <Input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Type your answer here..."
+              className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
+              autoFocus
+            />
+            <Button 
+              type="submit"
+              size="icon"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full"
+              disabled={isTransitioning}
+            >
+              <SendHorizonal className="h-5 w-5" />
+            </Button>
+          </div>
         </form>
+        
+        {/* Progress indicator */}
+        <div className="mt-6 flex justify-center">
+          <div className="flex gap-1">
+            {questions.map((_, index) => (
+              <div 
+                key={index}
+                className={`h-1 w-8 rounded-full ${index === currentQuestionIndex ? 'bg-pink-500' : index < currentQuestionIndex ? 'bg-pink-300' : 'bg-gray-200'}`}
+              ></div>
+            ))}
+          </div>
+        </div>
       </div>
       
       {/* Login button */}
