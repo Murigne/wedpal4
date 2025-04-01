@@ -5,15 +5,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { Check, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
-import HeartAnimation from '@/components/HeartAnimation';
-import { User, Mail, Lock, ArrowRight } from 'lucide-react';
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state?.formData;
@@ -90,78 +90,152 @@ const SignUp: React.FC = () => {
     navigate('/login');
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden animated-gradient">
-      {/* WedPal Logo */}
-      <div className="absolute top-6 left-8 z-10">
-        <WedPalLogo className="drop-shadow-lg" />
+    <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
+      {/* Left side - Branding and features */}
+      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
+        <div className="mb-8">
+          <WedPalLogo className="text-4xl md:text-5xl mb-2" />
+          <h2 className="text-2xl md:text-3xl font-medium mb-6">Where Love Brews</h2>
+          
+          <p className="text-base md:text-lg mb-8 opacity-90 leading-relaxed">
+            WedPal takes the stress out of wedding planning, no matter your budget. 💍✨
+            <br /><br />
+            From personalized plans to budget-friendly vendors and crowdfunding, we simplify every step.
+            <br /><br />
+            Our AI-powered platform ensures a seamless, beautiful, and memorable wedding experience.
+            <br /><br />
+            You focus on love—we handle the logistics! ❤️
+          </p>
+          
+          <ul className="space-y-4">
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">Stress Free</span>
+            </li>
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">Budget Friendly & Personalized</span>
+            </li>
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">Memorable & Seamless Experience</span>
+            </li>
+          </ul>
+        </div>
       </div>
       
-      <HeartAnimation />
-      
-      <div className="wedding-card w-full max-w-md backdrop-blur-sm">
-        <h1 className="text-3xl font-bold text-center mb-6 text-foreground">
-          Create Your <span className="text-wedding-pink-dark">Wedding Account</span>
-        </h1>
-        
-        <form onSubmit={handleSignUp} className="space-y-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-wedding-pink-dark" />
+      {/* Right side - Sign Up form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+        <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
+          <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+          
+          <form onSubmit={handleSignUp} className="space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
             </div>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
-              required
-              className="wedding-input pl-10 w-full"
-            />
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-wedding-pink-dark" />
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
             </div>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-              className="wedding-input pl-10 w-full"
-            />
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-wedding-pink-dark" />
+            
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
             </div>
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              required
-              className="wedding-input pl-10 w-full"
-            />
-          </div>
-          
-          <Button type="submit" className="wedding-button w-full" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
-            <ArrowRight className="w-4 h-4 ml-1" />
-          </Button>
-          
-          <div className="text-center mt-4">
-            <button 
-              type="button" 
-              className="text-sm text-muted-foreground hover:text-wedding-pink-dark"
-              onClick={handleLoginClick}
+            
+            <Button 
+              type="submit" 
+              className="wedding-button w-full py-6"
+              disabled={loading}
             >
-              Already have an account? Log In
-            </button>
-          </div>
-        </form>
+              {loading ? "Creating Account..." : "Sign Up"}
+            </Button>
+            
+            <p className="text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <button 
+                type="button"
+                onClick={handleLoginClick} 
+                className="text-pink-500 hover:text-pink-700 font-medium"
+              >
+                Log in
+              </button>
+            </p>
+            
+            <div className="text-center text-xs text-gray-400 mt-6">
+              Need assistance? Contact Support
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
