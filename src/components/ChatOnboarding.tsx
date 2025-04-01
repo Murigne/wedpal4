@@ -1,13 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User, Mail, Lock } from 'lucide-react';
+import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatMessage from './ChatMessage';
 import { useAuth } from './AuthProvider';
 import SparkleAnimation from './SparkleAnimation';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
 
 interface FormData {
   partner1Name: string;
@@ -18,12 +16,6 @@ interface FormData {
   guestCount: string;
   honeymoonDestination: string;
   needNewHome: string;
-}
-
-interface SignUpData {
-  email: string;
-  password: string;
-  confirmPassword: string;
 }
 
 const QUESTIONS = [
@@ -90,15 +82,8 @@ const ChatOnboarding: React.FC = () => {
     honeymoonDestination: '',
     needNewHome: '',
   });
-  const [signUpData, setSignUpData] = useState<SignUpData>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
   const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -114,13 +99,6 @@ const ChatOnboarding: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    // If user is already logged in, redirect to dashboard
-    if (user) {
-      navigate('/dashboard', { state: { formData } });
-    }
-  }, [user, navigate, formData]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -128,14 +106,6 @@ const ChatOnboarding: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSignUpInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSignUpData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -182,93 +152,10 @@ const ChatOnboarding: React.FC = () => {
         setIsTyping(false);
       }, 1000); // Simulating typing delay
     } else {
-      // All questions answered, show sign up form
+      // All questions answered, proceed to sign up
       setTimeout(() => {
-        setMessages(prev => [...prev, { 
-          content: "Thank you for sharing your wedding plans! Let's create your account so you can access your personalized dashboard.", 
-          sender: 'ai' 
-        }]);
-        setShowSignUp(true);
+        navigate('/auth', { state: { formData, isSignUp: true } });
       }, 1000);
-    }
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (signUpData.password !== signUpData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: signUpData.email,
-        password: signUpData.password,
-        options: {
-          data: {
-            partner1_name: formData.partner1Name,
-            partner2_name: formData.partner2Name,
-          }
-        }
-      });
-      
-      if (error) throw error;
-      
-      // Save wedding details
-      await saveWeddingDetails(signUpData.email);
-      
-      toast({
-        title: "Success",
-        description: "Account created! Please check your email for verification.",
-        variant: "default",
-      });
-      
-      // Navigate to auth page after signup
-      navigate('/auth', { state: { formData, isSignUp: true } });
-      
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const saveWeddingDetails = async (email: string) => {
-    try {
-      // Get the user ID from the email (this is a workaround since we don't have the user ID yet)
-      const { data: userData } = await supabase
-        .from('wedding_details')
-        .insert({
-          partner1_name: formData.partner1Name,
-          partner2_name: formData.partner2Name,
-          wedding_date: formData.weddingDate,
-          budget: formData.budget,
-          theme: formData.theme,
-          guest_count: formData.guestCount,
-          honeymoon_destination: formData.honeymoonDestination,
-          need_new_home: formData.needNewHome,
-          updated_at: new Date().toISOString(),
-          // The user_id will be updated later when the user logs in
-          user_id: '00000000-0000-0000-0000-000000000000',
-        })
-        .select();
-        
-      if (!userData) {
-        console.error('Failed to save wedding details');
-      }
-    } catch (error) {
-      console.error('Error saving wedding details:', error);
     }
   };
 
@@ -335,8 +222,8 @@ const ChatOnboarding: React.FC = () => {
           />
         )}
         
-        {/* Input form for questions */}
-        {!showAnimation && !showSignUp && (
+        {/* Input form */}
+        {!showAnimation && (
           <form onSubmit={handleSubmit} className="space-y-4">
             {currentStep === 0 ? (
               <div className="flex flex-col md:flex-row gap-2">
@@ -390,66 +277,6 @@ const ChatOnboarding: React.FC = () => {
               {isTyping ? "Thinking..." : "Send"}
               <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
-          </form>
-        )}
-        
-        {/* Sign Up Form */}
-        {!showAnimation && showSignUp && (
-          <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Mail className="w-5 h-5 text-wedding-pink-dark" />
-              </div>
-              <input
-                type="email"
-                name="email"
-                value={signUpData.email}
-                onChange={handleSignUpInputChange}
-                placeholder="Email Address"
-                required
-                className="wedding-input pl-10 w-full"
-              />
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Lock className="w-5 h-5 text-wedding-pink-dark" />
-              </div>
-              <input
-                type="password"
-                name="password"
-                value={signUpData.password}
-                onChange={handleSignUpInputChange}
-                placeholder="Password"
-                required
-                className="wedding-input pl-10 w-full"
-                minLength={6}
-              />
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Lock className="w-5 h-5 text-wedding-pink-dark" />
-              </div>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={signUpData.confirmPassword}
-                onChange={handleSignUpInputChange}
-                placeholder="Confirm Password"
-                required
-                className="wedding-input pl-10 w-full"
-                minLength={6}
-              />
-            </div>
-            
-            <Button type="submit" className="wedding-button w-full" disabled={isLoading}>
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </Button>
-            
-            <div className="text-center mt-2 text-sm text-muted-foreground">
-              Already have an account? <button type="button" onClick={handleLoginClick} className="text-wedding-pink-dark hover:underline">Log In</button>
-            </div>
           </form>
         )}
       </div>
