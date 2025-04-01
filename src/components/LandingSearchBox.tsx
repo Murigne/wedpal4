@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import HeartAnimation from '@/components/HeartAnimation';
 
 const questions = [
   { id: 'name', question: "What's your name?", type: 'text' },
