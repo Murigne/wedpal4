@@ -1,11 +1,11 @@
 
 import React from 'react';
-import Onboarding from '@/components/Onboarding';
+import ChatOnboarding from '@/components/ChatOnboarding';
 
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <Onboarding />
+      <ChatOnboarding />
     </div>
   );
 };

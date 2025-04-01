@@ -38,6 +38,8 @@
     --wedding-pink: 346 77% 60%;
     --wedding-pink-dark: 346 77% 49.4%;
     --wedding-pink-light: 346 77% 95%;
+    
+    --gold: 45 100% 60%;
   }
 
   .dark {
@@ -110,4 +112,53 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* Chat UI Styles */
+.chat-bubble-ai {
+  @apply bg-white/80 text-gray-800 p-3 rounded-xl rounded-tl-none max-w-[80%] self-start shadow-sm;
+}
+
+.chat-bubble-user {
+  @apply bg-pink-500/90 text-white p-3 rounded-xl rounded-tr-none max-w-[80%] self-end shadow-sm;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #888;
+  margin-right: 4px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Gold text styles */
+.text-gold {
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
