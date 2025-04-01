@@ -28,8 +28,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* WedPal Logo at the top left */}
-      <div className="absolute top-4 left-4 z-10">
+      {/* WedPal Logo repositioned further from the corner */}
+      <div className="absolute top-6 left-8 z-10">
         <WedPalLogo className="drop-shadow-lg" />
       </div>
       
