@@ -3,6 +3,7 @@ import React from 'react';
 import LandingSearchBox from '@/components/LandingSearchBox';
 import HeartAnimation from '@/components/HeartAnimation';
 import WedPalLogo from '@/components/WedPalLogo';
+import ChatOnboarding from '@/components/ChatOnboarding';
 
 const Index = () => {
   // Add CSS for dynamic gradient
@@ -34,7 +35,7 @@ const Index = () => {
       </div>
       
       <HeartAnimation />
-      <LandingSearchBox />
+      <ChatOnboarding />
       
       {/* Gradient overlay for smooth transition */}
       <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
