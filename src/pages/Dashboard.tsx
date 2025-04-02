@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,9 +28,7 @@ const Dashboard = () => {
   const [preferredBudget, setPreferredBudget] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
   
-  // Simulated user data - in a real app, this would come from your backend
   useEffect(() => {
-    // Check if we have user data in location state (from onboarding)
     if (location.state?.formData) {
       const formData = location.state.formData;
       setUserName(formData.partner1Name || 'User');
@@ -39,12 +36,10 @@ const Dashboard = () => {
       setWeddingDate(formData.weddingDate ? new Date(formData.weddingDate).toLocaleDateString() : '');
       setPreferredBudget(formData.budget || '$15,000 - $25,000');
       
-      // If we have user selected colors, use them
       if (location.state.userColors && location.state.userColors.length) {
         setWeddingColors(location.state.userColors);
       }
     } else {
-      // Demo data if we don't have user input
       setUserName('Alex');
       setPartnerName('Jamie');
       setWeddingDate('June 15, 2025');
@@ -52,7 +47,6 @@ const Dashboard = () => {
     }
   }, [location]);
 
-  // Set CSS variables for wedding colors
   useEffect(() => {
     if (weddingColors.length > 0) {
       document.documentElement.style.setProperty('--wedding-color-primary', weddingColors[0]);
@@ -63,7 +57,6 @@ const Dashboard = () => {
         document.documentElement.style.setProperty('--wedding-color-tertiary', weddingColors[2]);
       }
       
-      // Update gradient background
       const gradientColors = weddingColors.length >= 2 
         ? weddingColors 
         : [...weddingColors, ...(['#FFC0CB', '#E7F0FD'].filter(c => !weddingColors.includes(c)))];
@@ -73,7 +66,6 @@ const Dashboard = () => {
     }
   }, [weddingColors]);
 
-  // Sample task data
   const tasks = [
     { id: '1', title: 'Set your wedding date', completed: true, dueDate: 'Completed' },
     { id: '2', title: 'Create guest list', completed: false, dueDate: '3 months before' },
@@ -83,7 +75,6 @@ const Dashboard = () => {
     { id: '6', title: 'Send invitations', completed: false, dueDate: '3 months before' }
   ];
 
-  // Sample wedding plans
   const weddingPlans = [
     {
       title: 'Intimate Celebration',
@@ -128,10 +119,24 @@ const Dashboard = () => {
         'Video & photography package',
         'Custom decor & lighting'
       ]
+    },
+    {
+      title: 'Destination Wedding',
+      description: 'A memorable getaway celebration in a picturesque location',
+      price: '$25,000 - $35,000',
+      timeline: '12-15 months',
+      guests: '50-80 people',
+      features: [
+        'Exotic location venue',
+        'Travel arrangements',
+        'Local cuisine experience',
+        'Multi-day celebration',
+        'Photography & videography',
+        'Accommodation coordination'
+      ]
     }
   ];
 
-  // User preferences for theme generation
   const userPreferences = {
     indoor: true,
     outdoor: false,
@@ -143,7 +148,6 @@ const Dashboard = () => {
     <div className="min-h-screen w-full animated-gradient dynamic-gradient relative">
       <HeartAnimation avoidTextAreas={true} count={10} />
       
-      {/* Top Navigation */}
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
         <div className="container mx-auto flex items-center justify-between">
           <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
@@ -162,7 +166,6 @@ const Dashboard = () => {
       </header>
       
       <main className="container mx-auto px-4 md:px-6 py-8">
-        {/* Welcome Section */}
         <div className="mb-8 text-white">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
@@ -173,11 +176,8 @@ const Dashboard = () => {
           </p>
         </div>
         
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Wedding Plans */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-3 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center">
@@ -189,7 +189,7 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                   {weddingPlans.map((plan, index) => (
                     <WeddingPlanCard
                       key={index}
@@ -200,7 +200,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            {/* Wedding Theme Templates */}
             <WeddingTemplates
               userBudget={preferredBudget}
               userPreferences={userPreferences}
@@ -208,12 +207,9 @@ const Dashboard = () => {
             />
           </div>
           
-          {/* Sidebar - 1/3 width */}
-          <div className="space-y-6">
-            {/* Progress Tracker */}
-            <WeddingProgressTracker tasks={tasks} />
+          <div className="lg:col-span-1 space-y-6">
+            <WeddingProgressTracker tasks={tasks} className="w-full" />
             
-            {/* Quick Actions */}
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
@@ -238,7 +234,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            {/* Upcoming Tasks */}
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -264,7 +259,6 @@ const Dashboard = () => {
   );
 };
 
-// Helper function to calculate days until the wedding
 const calculateDaysUntil = (dateString: string) => {
   try {
     const weddingDate = new Date(dateString);

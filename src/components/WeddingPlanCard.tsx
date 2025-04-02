@@ -39,8 +39,8 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         </div>
       )}
       
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-muted-foreground text-sm mb-4">{description}</p>
+      <h3 className="text-xl font-semibold mb-2 text-center">{title}</h3>
+      <p className="text-muted-foreground text-sm mb-4 text-center">{description}</p>
       
       <div className="bg-white/50 rounded-lg p-3 mb-4">
         <div className="flex items-center justify-between mb-2">
