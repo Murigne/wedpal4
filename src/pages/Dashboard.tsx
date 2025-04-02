@@ -144,8 +144,8 @@ const Dashboard = () => {
       <HeartAnimation avoidTextAreas={true} count={10} />
       
       {/* Top Navigation */}
-      <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
+        <div className="container mx-auto flex items-center justify-between">
           <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
           
           <div className="flex items-center gap-4">
@@ -161,7 +161,7 @@ const Dashboard = () => {
         </div>
       </header>
       
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 md:px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-8 text-white">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
