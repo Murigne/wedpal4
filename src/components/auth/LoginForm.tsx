@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,26 +20,14 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate login for now - we'll add real auth later
     try {
-      // Simple validation
-      if (!email || !password) {
-        throw new Error('Please enter both email and password');
-      }
-      
-      // For now just simulate a successful login
-      setTimeout(() => {
-        toast({
-          title: "Success",
-          description: "You have successfully logged in",
-        });
-        navigate('/'); // Redirect to home page
-      }, 1000);
-      
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      navigate('/'); // Redirect to home page instead of dashboard
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Login failed",
+        description: error.message,
         variant: "destructive",
       });
     } finally {

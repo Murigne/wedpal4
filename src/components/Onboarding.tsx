@@ -1,11 +1,15 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import FloatingHearts from './FloatingHearts';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './AuthProvider';
 import { toast } from '@/hooks/use-toast';
+import { Database } from '@/integrations/supabase/types';
+
+type WeddingDetails = Database['public']['Tables']['wedding_details']['Row'];
 
 interface FormData {
   partner1Name: string;
@@ -85,13 +89,75 @@ const Onboarding: React.FC = () => {
   const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  
+  const { user } = useAuth();
+  const [isFetchingData, setIsFetchingData] = useState(true);
+
   useEffect(() => {
     if (messages.length === 0) {
       setMessages([{ content: QUESTIONS[0].message, sender: 'ai' }]);
     }
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const fetchWeddingDetails = async () => {
+      if (!user) {
+        setIsFetchingData(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('wedding_details')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) {
+          if (error.code === 'PGRST116') {
+            setIsFetchingData(false);
+            return;
+          }
+          throw error;
+        }
+
+        if (data) {
+          setFormData({
+            partner1Name: data.partner1_name || '',
+            partner2Name: data.partner2_name || '',
+            weddingDate: data.wedding_date || '',
+            budget: data.budget || '',
+            theme: data.theme || '',
+            guestCount: data.guest_count || '',
+            honeymoonDestination: data.honeymoon_destination || '',
+            needNewHome: data.need_new_home || '',
+          });
+          
+          navigate('/dashboard', { state: { formData: {
+            partner1Name: data.partner1_name || '',
+            partner2Name: data.partner2_name || '',
+            weddingDate: data.wedding_date || '',
+            budget: data.budget || '',
+            theme: data.theme || '',
+            guestCount: data.guest_count || '',
+            honeymoonDestination: data.honeymoon_destination || '',
+            needNewHome: data.need_new_home || '',
+          } } });
+        }
+      } catch (error: any) {
+        console.error('Error fetching wedding details:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load your saved wedding details",
+          variant: "destructive",
+        });
+      } finally {
+        setIsFetchingData(false);
+      }
+    };
+
+    fetchWeddingDetails();
+  }, [user, navigate]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -107,6 +173,49 @@ const Onboarding: React.FC = () => {
 
   const handleLoginClick = () => {
     navigate('/login');
+  };
+
+  const saveDataToSupabase = async () => {
+    if (!user) {
+      navigate('/signup', { 
+        state: { 
+          formData,
+          isSignUp: true 
+        } 
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('wedding_details')
+        .upsert({
+          user_id: user.id,
+          partner1_name: formData.partner1Name,
+          partner2_name: formData.partner2Name,
+          wedding_date: formData.weddingDate,
+          budget: formData.budget,
+          theme: formData.theme,
+          guest_count: formData.guestCount,
+          honeymoon_destination: formData.honeymoonDestination,
+          need_new_home: formData.needNewHome,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+
+      if (error) throw error;
+      toast({
+        title: "Success",
+        description: "Your wedding details have been saved!",
+        variant: "default",
+      });
+    } catch (error: any) {
+      console.error('Error saving wedding details:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to save your wedding details",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,17 +238,23 @@ const Onboarding: React.FC = () => {
         setMessages(prev => [...prev, { content: QUESTIONS[currentStep + 1].message, sender: 'ai' }]);
       }, 500);
     } else {
-      // We'll handle this section once Supabase is reconnected
-      toast({
-        title: "Success!",
-        description: "Your wedding details have been saved! (This is a placeholder - we'll connect to the database later)",
-      });
+      await saveDataToSupabase();
       
       setTimeout(() => {
-        navigate('/');
+        navigate('/dashboard', { state: { formData } });
       }, 1000);
     }
   };
+
+  if (isFetchingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center animated-gradient">
+        <div className="wedding-card p-8 text-center">
+          <p>Loading your wedding details...</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentQuestion = QUESTIONS[currentStep];
   const isFirstQuestion = Array.isArray(currentQuestion.field);
@@ -154,10 +269,12 @@ const Onboarding: React.FC = () => {
             Forever <span className="text-wedding-pink-dark">Together</span>
           </h1>
           
-          <Button onClick={handleLoginClick} variant="outline" size="sm" className="flex items-center gap-1">
-            <User size={16} />
-            Login
-          </Button>
+          {!user && (
+            <Button onClick={handleLoginClick} variant="outline" size="sm" className="flex items-center gap-1">
+              <User size={16} />
+              Login
+            </Button>
+          )}
         </div>
         
         <div className="bg-white/70 rounded-lg p-3 mb-4 h-[400px] overflow-y-auto shadow-inner">
