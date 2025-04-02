@@ -238,14 +238,6 @@ const SignUp: React.FC = () => {
         </div>
       </div>
       
-      <div className="absolute bottom-0 w-full flex justify-center overflow-hidden z-10">
-        <img 
-          src="/lovable-uploads/2c843ab2-9850-4717-a313-54e42d55ac53.png" 
-          alt="Floral decoration" 
-          className="w-full object-contain max-h-36 md:max-h-48"
-        />
-      </div>
-      
       <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
     </div>
   );
