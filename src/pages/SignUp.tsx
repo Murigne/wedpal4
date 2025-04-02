@@ -1,13 +1,12 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { Check, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
+import { Database } from '@/integrations/supabase/types';
 import HeartAnimation from '@/components/HeartAnimation';
 
 const SignUp: React.FC = () => {
@@ -18,16 +17,8 @@ const SignUp: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
   const formData = location.state?.formData;
   
-  useEffect(() => {
-    // Redirect to dashboard if user is already logged in
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -57,7 +48,6 @@ const SignUp: React.FC = () => {
         variant: "default",
       });
       
-      // Explicitly navigate to dashboard after successful signup
       navigate('/dashboard');
     } catch (error: any) {
       toast({
@@ -86,6 +76,7 @@ const SignUp: React.FC = () => {
           theme: formData.theme,
           guest_count: formData.guestCount,
           honeymoon_destination: formData.honeymoonDestination,
+          need_new_home: formData.needNewHome,
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
         
