@@ -95,10 +95,10 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row animated-gradient">
+    <div className="min-h-screen flex flex-col md:flex-row animated-gradient relative overflow-hidden">
       <HeartAnimation avoidTextAreas={true} />
       
-      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
+      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white relative z-10">
         <div className="mb-8">
           <WedPalLogo className="text-4xl md:text-5xl mb-2" />
           <h2 className="text-2xl md:text-3xl font-medium mb-6">Where Love Brews</h2>
@@ -136,8 +136,8 @@ const SignUp: React.FC = () => {
         </div>
       </div>
       
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
-        <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 relative z-10">
+        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md p-8">
           <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
           
           <form onSubmit={handleSignUp} className="space-y-6">
@@ -237,6 +237,16 @@ const SignUp: React.FC = () => {
           </form>
         </div>
       </div>
+      
+      <div className="absolute bottom-0 w-full flex justify-center overflow-hidden z-10">
+        <img 
+          src="/lovable-uploads/2c843ab2-9850-4717-a313-54e42d55ac53.png" 
+          alt="Floral decoration" 
+          className="w-full object-contain max-h-36 md:max-h-48"
+        />
+      </div>
+      
+      <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
     </div>
   );
 };
