@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,16 +20,39 @@ const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      navigate('/'); // Redirect to home page instead of dashboard
+      // Simulated login for now - we'll reintegrate Supabase later
+      if (email && password) {
+        // Simple validation for demo
+        if (!email.includes('@')) {
+          throw new Error('Please enter a valid email');
+        }
+        if (password.length < 6) {
+          throw new Error('Password must be at least 6 characters');
+        }
+        
+        // Simulate successful login
+        setTimeout(() => {
+          // In a real app, you'd check auth status and get user info from backend
+          navigate('/dashboard', { 
+            state: { 
+              formData: {
+                partner1Name: 'Alex',
+                partner2Name: 'Jamie',
+                weddingDate: '2025-06-15',
+                budget: '$15,000 - $25,000'
+              }
+            }
+          });
+        }, 1000);
+      } else {
+        throw new Error('Please fill in all fields');
+      }
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
