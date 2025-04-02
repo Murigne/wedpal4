@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,6 +18,14 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Redirect to dashboard if user is already logged in
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +33,15 @@ const Login: React.FC = () => {
 
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
       if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "You've successfully logged in!",
+      });
+      
+      // Explicitly navigate to dashboard after successful login
       navigate('/dashboard');
     } catch (error: any) {
       toast({

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +14,8 @@ import {
   Clock,
   Users,
   DollarSign,
-  Map
+  Map,
+  Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,19 +41,20 @@ type WeddingDetails = {
 const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [formData, setFormData] = useState<any>(null);
   const [weddingDetails, setWeddingDetails] = useState<WeddingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [weddingColors, setWeddingColors] = useState<string[]>(['#FAD2E1', '#F8BBD0', '#fff1e6']);
   const [remainingDays, setRemainingDays] = useState<number | null>(null);
+  const [noDetailsFound, setNoDetailsFound] = useState(false);
 
   // Tasks for the checklist
   const [tasks, setTasks] = useState([
     { id: '1', title: 'Create wedding account', completed: true },
-    { id: '2', title: 'Set wedding date and budget', completed: true },
-    { id: '3', title: 'Choose wedding colors & theme', completed: true },
+    { id: '2', title: 'Set wedding date and budget', completed: false },
+    { id: '3', title: 'Choose wedding colors & theme', completed: false },
     { id: '4', title: 'Select venue', completed: false, dueDate: '6 months before' },
     { id: '5', title: 'Book photographer', completed: false, dueDate: '6 months before' },
     { id: '6', title: 'Choose catering', completed: false, dueDate: '4 months before' },
@@ -129,6 +130,11 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     if (location.state?.formData) {
       setFormData(location.state.formData);
       toast({
@@ -136,17 +142,10 @@ const Dashboard = () => {
         description: `We've created personalized wedding plans for ${location.state.formData.partner1Name} & ${location.state.formData.partner2Name}.`,
       });
       
-      if (user) {
-        saveWeddingDetails(location.state.formData);
-      }
-      
+      saveWeddingDetails(location.state.formData);
       setLoading(false);
     } else {
-      if (user) {
-        fetchWeddingDetails();
-      } else {
-        navigate('/');
-      }
+      fetchWeddingDetails();
     }
   }, [location, navigate, user]);
 
@@ -174,27 +173,33 @@ const Dashboard = () => {
     try {
       setLoading(true);
       
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('wedding_details')
         .select('*')
-        .eq('user_id', user?.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
       
       if (error) {
         console.error("Error fetching wedding details:", error);
-        navigate('/');
+        setNoDetailsFound(true);
+        setLoading(false);
         return;
       }
       
       if (data) {
         setWeddingDetails(data);
         setFormData({
-          partner1Name: data.partner1_name,
-          partner2Name: data.partner2_name,
-          weddingDate: data.wedding_date,
-          budget: data.budget,
-          guestCount: data.guest_count,
-          honeymoonDestination: data.honeymoon_destination,
+          partner1Name: data.partner1_name || 'Partner 1',
+          partner2Name: data.partner2_name || 'Partner 2',
+          weddingDate: data.wedding_date || '',
+          budget: data.budget || '',
+          guestCount: data.guest_count || '',
+          honeymoonDestination: data.honeymoon_destination || '',
           theme: data.theme ? JSON.parse(data.theme) : [],
         });
 
@@ -204,34 +209,57 @@ const Dashboard = () => {
           setWeddingColors(themeData);
         }
       } else {
-        navigate('/');
+        setNoDetailsFound(true);
+        setFormData({
+          partner1Name: 'Partner 1',
+          partner2Name: 'Partner 2',
+          weddingDate: '',
+          budget: '',
+          guestCount: '',
+          honeymoonDestination: '',
+          theme: [],
+        });
       }
     } catch (error) {
       console.error("Error in fetchWeddingDetails:", error);
-      navigate('/');
+      setNoDetailsFound(true);
     } finally {
       setLoading(false);
     }
   };
   
   const saveWeddingDetails = async (data: any) => {
+    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from('wedding_details')
         .upsert({
-          user_id: user?.id,
-          partner1_name: data.partner1Name,
-          partner2_name: data.partner2Name,
-          wedding_date: data.weddingDate,
-          budget: data.budget,
-          guest_count: data.guestCount,
-          honeymoon_destination: data.honeymoonDestination,
+          user_id: user.id,
+          partner1_name: data.partner1Name || 'Partner 1',
+          partner2_name: data.partner2Name || 'Partner 2',
+          wedding_date: data.weddingDate || null,
+          budget: data.budget || null,
+          guest_count: data.guestCount || null,
+          honeymoon_destination: data.honeymoonDestination || null,
           theme: data.theme ? JSON.stringify(data.theme) : null,
         })
         .select();
       
       if (error) {
         console.error("Error saving wedding details:", error);
+        toast({
+          title: "Error",
+          description: "Failed to save wedding details. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        setNoDetailsFound(false);
+        toast({
+          title: "Success",
+          description: "Wedding details saved successfully!",
+          variant: "default",
+        });
       }
     } catch (error) {
       console.error("Error in saveWeddingDetails:", error);
@@ -303,6 +331,10 @@ const Dashboard = () => {
     return timeline;
   };
 
+  const handleCreateWedding = () => {
+    navigate('/', { state: { showOnboarding: true }});
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" 
@@ -311,6 +343,32 @@ const Dashboard = () => {
           <Heart className="w-12 h-12 text-wedding-pink animate-bounce" />
           <p className="mt-4 text-lg">Loading your wedding plans...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (noDetailsFound) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" 
+           style={{background: `linear-gradient(135deg, ${weddingColors[0]}40, ${weddingColors[1]}30)`}}>
+        <Card className="max-w-md w-full p-8 text-center">
+          <div className="flex flex-col items-center">
+            <div className="bg-wedding-pink/20 p-4 rounded-full mb-4">
+              <Heart className="w-10 h-10 text-wedding-pink" />
+            </div>
+            <h1 className="text-2xl font-bold mb-2">Welcome to WedPal</h1>
+            <p className="text-muted-foreground mb-6">
+              It looks like you haven't created your wedding details yet. Let's get you started on your wedding journey!
+            </p>
+            <Button 
+              onClick={handleCreateWedding}
+              className="w-full py-6"
+              style={{backgroundColor: weddingColors[0]}}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Create Your Wedding
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -342,10 +400,12 @@ const Dashboard = () => {
               </h1>
               
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 mt-2 text-muted-foreground">
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>{formData?.weddingDate || 'Wedding Date'}</span>
-                </div>
+                {formData?.weddingDate && (
+                  <div className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    <span>{formData.weddingDate}</span>
+                  </div>
+                )}
               </div>
             </div>
             
