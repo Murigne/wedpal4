@@ -3,9 +3,10 @@ import React, { useEffect, useRef } from 'react';
 
 interface HeartAnimationProps {
   avoidTextAreas?: boolean;
+  count?: number;  // Add the count property to the interface
 }
 
-const HeartAnimation: React.FC<HeartAnimationProps> = ({ avoidTextAreas = false }) => {
+const HeartAnimation: React.FC<HeartAnimationProps> = ({ avoidTextAreas = false, count = 10 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -110,18 +111,20 @@ const HeartAnimation: React.FC<HeartAnimationProps> = ({ avoidTextAreas = false 
       }, 4000);
     };
     
-    // Create hearts periodically
+    // Create hearts periodically - use count to determine frequency
+    const numberOfHearts = count || 10;
     const interval = setInterval(createHeart, 800);
     
-    // Create some initial hearts
-    for (let i = 0; i < 5; i++) {
+    // Create some initial hearts based on count
+    const initialHearts = Math.min(5, numberOfHearts);
+    for (let i = 0; i < initialHearts; i++) {
       setTimeout(createHeart, i * 400);
     }
     
     return () => {
       clearInterval(interval);
     };
-  }, [avoidTextAreas]);
+  }, [avoidTextAreas, count]); // Add count to dependency array
   
   return (
     <div ref={containerRef} className="fixed inset-0 pointer-events-none z-0 overflow-hidden" />
