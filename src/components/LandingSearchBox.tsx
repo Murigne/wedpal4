@@ -321,7 +321,11 @@ const LandingSearchBox = () => {
                         selected={selectedDate}
                         onSelect={handleDateSelect}
                         initialFocus
-                        className={cn("p-3 pointer-events-auto")}
+                        className="p-3 pointer-events-auto"
+                        styles={{ 
+                          position: 'fixed',
+                          transform: 'none'
+                        }}
                       />
                     </PopoverContent>
                   </Popover>
