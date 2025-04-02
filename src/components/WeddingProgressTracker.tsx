@@ -27,31 +27,31 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
     : 0;
 
   return (
-    <Card className={cn("border-wedding-pink/20", className)}>
+    <Card className={cn("border-wedding-pink/20 w-full", className)}>
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
           <div>
             <CardTitle>Your Wedding Planning Progress</CardTitle>
             <CardDescription>Track your planning milestones</CardDescription>
           </div>
-          <div className="text-right">
+          <div className="text-right mt-2 sm:mt-0">
             <span className="text-2xl font-bold text-wedding-pink">{progressPercentage}%</span>
             <CardDescription>{completedTasks} of {tasks.length} tasks completed</CardDescription>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full">
         <Progress 
           value={progressPercentage} 
-          className="h-3 mb-6 bg-wedding-pink/20"
+          className="h-3 mb-6 bg-wedding-pink/20 w-full"
         />
         
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           {tasks.map(task => (
             <div 
               key={task.id}
               className={cn(
-                "flex items-center justify-between p-3 rounded-lg transition-colors",
+                "flex items-center justify-between p-3 rounded-lg transition-colors w-full",
                 task.completed 
                   ? "bg-wedding-pink/10" 
                   : "bg-white/50 hover:bg-wedding-pink/5"
@@ -59,18 +59,19 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
             >
               <div className="flex items-center gap-3">
                 {task.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-wedding-pink" />
+                  <CheckCircle2 className="h-5 w-5 text-wedding-pink flex-shrink-0" />
                 ) : (
-                  <Circle className="h-5 w-5 text-muted-foreground" />
+                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 )}
                 <span className={cn(
+                  "line-clamp-2",
                   task.completed && "line-through text-muted-foreground"
                 )}>
                   {task.title}
                 </span>
               </div>
               {task.dueDate && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground ml-2 flex-shrink-0">
                   {task.dueDate}
                 </span>
               )}

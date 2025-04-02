@@ -28,7 +28,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
   return (
     <div
       className={cn(
-        "wedding-card flex flex-col h-full",
+        "wedding-card flex flex-col h-full w-full",
         highlight ? "border-wedding-gold border-2 shadow-lg" : "",
         className
       )}
@@ -40,9 +40,9 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
       )}
       
       <h3 className="text-xl font-semibold mb-2 text-center">{title}</h3>
-      <p className="text-muted-foreground text-sm mb-4 text-center">{description}</p>
+      <p className="text-muted-foreground text-sm mb-4 text-center px-2">{description}</p>
       
-      <div className="bg-white/50 rounded-lg p-3 mb-4">
+      <div className="bg-white/50 rounded-lg p-4 mb-4 w-full">
         <div className="flex items-center justify-between mb-2">
           <span className="flex items-center gap-1">
             <DollarSign className="h-4 w-4 text-wedding-pink-dark" />
@@ -68,19 +68,19 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         </div>
       </div>
       
-      <div className="text-left mb-4 flex-grow">
+      <div className="text-left mb-4 flex-grow px-4 w-full">
         <h4 className="text-sm font-medium mb-2">What's included:</h4>
         <ul className="space-y-1">
           {features.map((feature, index) => (
             <li key={index} className="text-sm flex items-start">
-              <span className="text-wedding-pink mr-2">•</span>
-              {feature}
+              <span className="text-wedding-pink mr-2 flex-shrink-0">•</span>
+              <span>{feature}</span>
             </li>
           ))}
         </ul>
       </div>
       
-      <div className="mt-auto">
+      <div className="mt-auto px-4 pb-4 w-full">
         <Button className={highlight ? "wedding-button-accent w-full" : "wedding-button w-full"}>
           Select Plan
         </Button>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -165,8 +166,8 @@ const Dashboard = () => {
         </div>
       </header>
       
-      <main className="container mx-auto px-4 md:px-6 py-8">
-        <div className="mb-8 text-white">
+      <main className="w-full px-4 md:px-6 py-8">
+        <div className="mb-8 text-white max-w-[2000px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
           </h1>
@@ -176,8 +177,8 @@ const Dashboard = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-3 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-[2000px] mx-auto">
+          <div className="lg:col-span-4 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center">
@@ -189,7 +190,7 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {weddingPlans.map((plan, index) => (
                     <WeddingPlanCard
                       key={index}
