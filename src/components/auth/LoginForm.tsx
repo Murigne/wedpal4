@@ -23,7 +23,7 @@ const LoginForm: React.FC = () => {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate('/dashboard');
+      navigate('/'); // Redirect to home page instead of dashboard
     } catch (error: any) {
       toast({
         title: "Error",
