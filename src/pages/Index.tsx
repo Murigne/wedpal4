@@ -36,12 +36,12 @@ const Index = () => {
       <HeartAnimation avoidTextAreas={true} />
       <LandingSearchBox />
       
-      {/* Floral image at bottom */}
+      {/* Floral image at bottom - updated to stretch full width and reduced size */}
       <div className="absolute bottom-0 w-full flex justify-center overflow-hidden z-10">
         <img 
           src="/lovable-uploads/2c843ab2-9850-4717-a313-54e42d55ac53.png" 
           alt="Floral decoration" 
-          className="w-full object-contain max-h-36 md:max-h-48"
+          className="w-full object-cover max-h-24 md:max-h-32"
         />
       </div>
       
