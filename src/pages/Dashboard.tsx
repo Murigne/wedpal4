@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -120,21 +119,6 @@ const Dashboard = () => {
         'Video & photography package',
         'Custom decor & lighting'
       ]
-    },
-    {
-      title: 'Destination Wedding',
-      description: 'A memorable getaway celebration in a picturesque location',
-      price: '$25,000 - $35,000',
-      timeline: '12-15 months',
-      guests: '50-80 people',
-      features: [
-        'Exotic location venue',
-        'Travel arrangements',
-        'Local cuisine experience',
-        'Multi-day celebration',
-        'Photography & videography',
-        'Accommodation coordination'
-      ]
     }
   ];
 
@@ -150,7 +134,7 @@ const Dashboard = () => {
       <HeartAnimation avoidTextAreas={true} count={10} />
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto max-w-[1600px] flex items-center justify-between">
           <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
           
           <div className="flex items-center gap-4">
@@ -166,8 +150,8 @@ const Dashboard = () => {
         </div>
       </header>
       
-      <main className="w-full px-4 md:px-6 py-8">
-        <div className="mb-8 text-white max-w-[2000px] mx-auto">
+      <main className="w-full px-6 md:px-8 py-8">
+        <div className="mb-8 text-white max-w-[1600px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
           </h1>
@@ -177,8 +161,8 @@ const Dashboard = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-[2000px] mx-auto">
-          <div className="lg:col-span-4 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
+          <div className="lg:col-span-3 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center">
@@ -190,7 +174,7 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {weddingPlans.map((plan, index) => (
                     <WeddingPlanCard
                       key={index}

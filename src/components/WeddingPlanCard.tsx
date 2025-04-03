@@ -40,9 +40,9 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
       )}
       
       <h3 className="text-xl font-semibold mb-2 text-center">{title}</h3>
-      <p className="text-muted-foreground text-sm mb-4 text-center px-2">{description}</p>
+      <p className="text-muted-foreground text-sm mb-4 text-center px-4">{description}</p>
       
-      <div className="bg-white/50 rounded-lg p-4 mb-4 w-full">
+      <div className="bg-white/50 rounded-lg p-4 mb-4 mx-4">
         <div className="flex items-center justify-between mb-2">
           <span className="flex items-center gap-1">
             <DollarSign className="h-4 w-4 text-wedding-pink-dark" />
@@ -68,9 +68,9 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         </div>
       </div>
       
-      <div className="text-left mb-4 flex-grow px-4 w-full">
+      <div className="text-left mb-4 flex-grow px-6">
         <h4 className="text-sm font-medium mb-2">What's included:</h4>
-        <ul className="space-y-1">
+        <ul className="space-y-2">
           {features.map((feature, index) => (
             <li key={index} className="text-sm flex items-start">
               <span className="text-wedding-pink mr-2 flex-shrink-0">•</span>
@@ -80,7 +80,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         </ul>
       </div>
       
-      <div className="mt-auto px-4 pb-4 w-full">
+      <div className="mt-auto px-6 pb-6">
         <Button className={highlight ? "wedding-button-accent w-full" : "wedding-button w-full"}>
           Select Plan
         </Button>
