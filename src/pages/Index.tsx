@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="container mx-auto max-w-[1400px] relative">
+      <div className="container mx-auto max-w-[1500px] relative">
         <div className="absolute top-8 left-8 z-10">
           <WedPalLogo className="text-4xl md:text-5xl text-white drop-shadow-lg" />
         </div>
