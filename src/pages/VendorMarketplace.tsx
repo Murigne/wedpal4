@@ -78,7 +78,7 @@ const VendorMarketplace = () => {
     <div className="min-h-screen pb-20">
       {/* Header */}
       <div className="bg-wedding-pink/30 backdrop-blur-sm py-6 px-4 mb-8">
-        <div className="container max-w-6xl mx-auto">
+        <div className="container max-w-[1400px] mx-auto">
           <Button 
             variant="ghost" 
             className="mb-4" 
@@ -93,7 +93,7 @@ const VendorMarketplace = () => {
       </div>
       
       {/* Main content */}
-      <div className="container max-w-6xl mx-auto px-4">
+      <div className="container max-w-[1400px] mx-auto px-4">
         {/* Search and filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-grow">

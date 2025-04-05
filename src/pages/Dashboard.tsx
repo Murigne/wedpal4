@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -156,7 +157,7 @@ const Dashboard = () => {
       <HeartAnimation avoidTextAreas={true} count={10} />
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
-        <div className="container mx-auto max-w-[1200px] flex items-center justify-between">
+        <div className="container mx-auto max-w-[1400px] flex items-center justify-between">
           <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
           
           <div className="flex items-center gap-4">
@@ -177,7 +178,7 @@ const Dashboard = () => {
       </header>
       
       <main className="w-full px-6 md:px-6 py-8">
-        <div className="mb-8 text-white max-w-[1200px] mx-auto">
+        <div className="mb-8 text-white max-w-[1400px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
           </h1>
@@ -187,7 +188,7 @@ const Dashboard = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
           <div className="lg:col-span-3 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
