@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -172,7 +173,7 @@ const Dashboard = () => {
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
         <div className="container mx-auto max-w-[1600px] flex items-center justify-between">
-          <WedPalLogo className="text-white text-2xl drop-shadow-lg ml-6" />
+          <WedPalLogo className="text-white text-2xl drop-shadow-lg ml-2" />
           
           <div className="flex items-center gap-4">
             <Button 

@@ -35,12 +35,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="container mx-auto max-w-[1600px] relative">
-        <div className="absolute top-8 left-8 z-10">
+      <div className="absolute top-0 left-0 right-0 p-6 z-10">
+        <div className="container mx-auto max-w-[1600px] flex justify-between items-center">
           <WedPalLogo className="text-4xl md:text-5xl text-white drop-shadow-lg" />
-        </div>
-        
-        <div className="absolute top-8 right-8 z-10">
+          
           <Button 
             onClick={handleVendorSignupClick}
             className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm"
