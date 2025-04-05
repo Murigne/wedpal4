@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Search, Star, Filter } from 'lucide-react';
+import { ArrowLeft, Search, Star, Filter, Heart } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 const VendorMarketplace = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [favoriteVendors, setFavoriteVendors] = useState<number[]>([]);
 
   const vendorCategories = [
     "Venues", "Photography", "Catering", "Flowers", "Attire", "Beauty", "Music", "Decor", "Cake"
@@ -72,13 +76,71 @@ const VendorMarketplace = () => {
       price: "$$$",
       description: "Designer wedding dresses and suits with custom alterations"
     },
+    {
+      id: 7,
+      name: "Enchanted Decor",
+      category: "Decor",
+      rating: 4.5,
+      reviewCount: 91,
+      image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?q=80&w=2070&auto=format&fit=crop",
+      price: "$$",
+      description: "Transform your venue with magical decorations and lighting"
+    },
+    {
+      id: 8,
+      name: "Sweet Celebrations Cake",
+      category: "Cake",
+      rating: 4.7,
+      reviewCount: 118,
+      image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2089&auto=format&fit=crop",
+      price: "$$",
+      description: "Custom wedding cakes and dessert tables to match your theme"
+    },
   ];
+
+  const handleToggleFavorite = (vendorId: number) => {
+    if (favoriteVendors.includes(vendorId)) {
+      setFavoriteVendors(favoriteVendors.filter(id => id !== vendorId));
+      toast({
+        title: "Removed from favorites",
+        description: "Vendor has been removed from your favorites",
+      });
+    } else {
+      setFavoriteVendors([...favoriteVendors, vendorId]);
+      toast({
+        title: "Added to favorites",
+        description: "Vendor has been added to your favorites",
+      });
+    }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleViewDetails = (vendorId: number) => {
+    toast({
+      title: "Vendor details",
+      description: "Viewing details for this vendor. This would navigate to a detailed page in a real app.",
+    });
+  };
+
+  const filteredVendors = mockVendors.filter(vendor => {
+    const matchesCategory = selectedCategory === 'All Categories' || vendor.category === selectedCategory;
+    const matchesSearch = vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          vendor.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
       <div className="bg-wedding-pink/30 backdrop-blur-sm py-6 px-4 mb-8">
-        <div className="container max-w-[1500px] mx-auto">
+        <div className="container max-w-[1600px] mx-auto">
           <Button 
             variant="ghost" 
             className="mb-4" 
@@ -93,7 +155,7 @@ const VendorMarketplace = () => {
       </div>
       
       {/* Main content */}
-      <div className="container max-w-[1500px] mx-auto px-4">
+      <div className="container max-w-[1600px] mx-auto px-4">
         {/* Search and filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-grow">
@@ -101,23 +163,34 @@ const VendorMarketplace = () => {
             <input 
               type="text" 
               placeholder="Search vendors..." 
-              className="wedding-input w-full pl-10"
+              className="wedding-input w-full pl-12"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </div>
           
-          <Button className="wedding-button-secondary">
+          <Button 
+            className="wedding-button-secondary"
+            onClick={() => toast({ title: "Filters", description: "Filter options would open here" })}
+          >
             <Filter className="w-4 h-4 mr-2" /> Filters
           </Button>
         </div>
         
         {/* Categories */}
         <div className="flex overflow-x-auto gap-2 pb-4 mb-6 no-scrollbar">
-          <Button className="wedding-button whitespace-nowrap">All Categories</Button>
+          <Button 
+            className={`wedding-button whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-wedding-pink' : ''}`}
+            onClick={() => handleCategoryClick('All Categories')}
+          >
+            All Categories
+          </Button>
           {vendorCategories.map(category => (
             <Button 
               key={category} 
               variant="outline" 
-              className="bg-white/70 border-wedding-pink/30 hover:bg-wedding-pink/20 whitespace-nowrap"
+              className={`bg-white/70 border-wedding-pink/30 hover:bg-wedding-pink/20 whitespace-nowrap ${selectedCategory === category ? 'bg-wedding-pink/40' : ''}`}
+              onClick={() => handleCategoryClick(category)}
             >
               {category}
             </Button>
@@ -125,14 +198,27 @@ const VendorMarketplace = () => {
         </div>
         
         {/* Vendors grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockVendors.map(vendor => (
-            <div key={vendor.id} className="wedding-card overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredVendors.map(vendor => (
+            <div key={vendor.id} className="wedding-card overflow-hidden group relative">
+              <div className="absolute top-2 right-2 z-10">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-sm"
+                  onClick={() => handleToggleFavorite(vendor.id)}
+                >
+                  <Heart 
+                    className={`h-4 w-4 ${favoriteVendors.includes(vendor.id) ? 'fill-wedding-pink text-wedding-pink' : 'text-muted-foreground'}`} 
+                  />
+                </Button>
+              </div>
+              
               <div className="h-48 overflow-hidden rounded-md mb-4">
                 <img 
                   src={vendor.image} 
                   alt={vendor.name}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               
@@ -154,7 +240,10 @@ const VendorMarketplace = () => {
                   <span className="text-xs text-muted-foreground ml-1">({vendor.reviewCount} reviews)</span>
                 </div>
                 
-                <Button className="text-sm px-3 py-1 h-auto wedding-button">
+                <Button 
+                  className="text-sm px-3 py-1 h-auto wedding-button"
+                  onClick={() => handleViewDetails(vendor.id)}
+                >
                   View Details
                 </Button>
               </div>
@@ -164,7 +253,11 @@ const VendorMarketplace = () => {
         
         {/* Load more */}
         <div className="flex justify-center mt-10">
-          <Button variant="outline" className="wedding-button-secondary px-8">
+          <Button 
+            variant="outline" 
+            className="wedding-button-secondary px-8"
+            onClick={() => toast({ title: "Load More", description: "Loading more vendors..." })}
+          >
             Load More Vendors
           </Button>
         </div>

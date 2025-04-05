@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import AuthProvider from "./components/AuthProvider";
 import VendorSignup from "./pages/VendorSignup";
 import VendorLogin from "./pages/VendorLogin";
+import VendorDashboard from "./pages/VendorDashboard";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/vendor-signup" element={<VendorSignup />} />
             <Route path="/vendor-login" element={<VendorLogin />} />
+            <Route path="/vendor-dashboard" element={<VendorDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

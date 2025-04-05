@@ -137,6 +137,21 @@ const Dashboard = () => {
         'Video & photography package',
         'Custom decor & lighting'
       ]
+    },
+    {
+      title: 'Destination Wedding',
+      description: 'A magical experience in a breathtaking location',
+      price: '$20,000 - $35,000',
+      timeline: '10-14 months',
+      guests: '50-80 people',
+      features: [
+        'Exotic location venue',
+        'Travel arrangements',
+        'Welcome reception',
+        'Multiple day events',
+        'Group activities',
+        'Local cultural elements'
+      ]
     }
   ];
 
@@ -156,8 +171,8 @@ const Dashboard = () => {
       <HeartAnimation avoidTextAreas={true} count={10} />
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
-        <div className="container mx-auto max-w-[1500px] flex items-center justify-between">
-          <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
+        <div className="container mx-auto max-w-[1600px] flex items-center justify-between">
+          <WedPalLogo className="text-white text-2xl drop-shadow-lg ml-6" />
           
           <div className="flex items-center gap-4">
             <Button 
@@ -177,17 +192,17 @@ const Dashboard = () => {
       </header>
       
       <main className="w-full px-6 md:px-6 py-8">
-        <div className="mb-8 text-white max-w-[1500px] mx-auto">
-          <h1 className="text-3xl md:text-4xl font-semibold mb-2">
+        <div className="mb-8 text-white max-w-[1600px] mx-auto">
+          <h1 className="text-3xl md:text-4xl font-semibold mb-2 ml-6">
             Welcome back, {userName} & {partnerName}!
           </h1>
-          <p className="text-white/80">
+          <p className="text-white/80 ml-6">
             Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
             {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1500px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
           <div className="lg:col-span-3 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
@@ -200,7 +215,7 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   {weddingPlans.map((plan, index) => (
                     <WeddingPlanCard
                       key={index}

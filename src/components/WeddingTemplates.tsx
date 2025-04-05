@@ -123,7 +123,7 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
         )}
         
         <Tabs defaultValue={templates[0]?.id}>
-          <TabsList className="grid grid-cols-4 mb-4">
+          <TabsList className="grid grid-cols-6 mb-4">
             {templates.map((theme) => (
               <TabsTrigger 
                 key={theme.id} 
@@ -320,6 +320,44 @@ const generateTemplates = (
         "Live band with dance floor"
       ],
       bestFor: "Hopeless romantics seeking a fairy-tale experience"
+    },
+    {
+      id: "bohemian",
+      name: "Bohemian",
+      description: "Free-spirited with eclectic touches",
+      priceRange: isLowBudget ? "Budget-Friendly" : "Moderate",
+      primaryColor: "#E3B587",
+      secondaryColor: "#D6875F",
+      accentColor: "#FFFFFF",
+      fontFamily: "'Amatic SC', cursive",
+      features: [
+        "Outdoor ceremony",
+        "Macramé decorations",
+        "Pampas grass arrangements",
+        "Moroccan-inspired lounge",
+        "Food trucks or grazing tables",
+        "Polaroid guest book"
+      ],
+      bestFor: "Free-spirited couples who love personal touches"
+    },
+    {
+      id: "destination",
+      name: "Destination",
+      description: "Exotic location with vacation vibes",
+      priceRange: isHighBudget ? "Premium" : "High",
+      primaryColor: "#77C3EC",
+      secondaryColor: "#2E86AB",
+      accentColor: "#FFFFFF",
+      fontFamily: "'Lato', sans-serif",
+      features: [
+        "Beachfront or exotic venue",
+        "Multi-day celebration",
+        "Local cultural elements",
+        "Curated guest experiences",
+        "Travel coordination",
+        "Welcome bags/gifts"
+      ],
+      bestFor: "Adventure-seeking couples who love travel"
     }
   ];
 };

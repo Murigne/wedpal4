@@ -3,6 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar, DollarSign, Users, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
 
 interface WeddingPlanProps {
   title: string;
@@ -25,6 +26,13 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
   highlight = false,
   className,
 }) => {
+  const handleSelectPlan = () => {
+    toast({
+      title: "Plan Selected",
+      description: `You've selected the ${title} plan.`,
+    });
+  };
+
   return (
     <div
       className={cn(
@@ -70,20 +78,23 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         </div>
       </div>
       
-      <div className="text-left mb-4 flex-grow px-4">
-        <h4 className="text-sm font-medium mb-2">What's included:</h4>
+      <div className="text-center mb-4 flex-grow px-4">
+        <h4 className="text-sm font-medium mb-2 text-center">What's included:</h4>
         <ul className="space-y-2">
           {features.map((feature, index) => (
-            <li key={index} className="text-sm flex items-start">
+            <li key={index} className="text-sm flex items-start justify-center">
               <span className="text-wedding-pink mr-2 flex-shrink-0">•</span>
-              <span>{feature}</span>
+              <span className="text-center">{feature}</span>
             </li>
           ))}
         </ul>
       </div>
       
       <div className="mt-auto px-4 pb-4">
-        <Button className={highlight ? "wedding-button-accent w-full" : "wedding-button w-full"}>
+        <Button 
+          className={highlight ? "wedding-button-accent w-full" : "wedding-button w-full"}
+          onClick={handleSelectPlan}
+        >
           Select Plan
         </Button>
       </div>
