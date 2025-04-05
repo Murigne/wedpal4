@@ -57,7 +57,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
                   : "bg-white/50 hover:bg-wedding-pink/5"
               )}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 max-w-[75%]">
                 {task.completed ? (
                   <CheckCircle2 className="h-5 w-5 text-wedding-pink flex-shrink-0" />
                 ) : (
