@@ -1,10 +1,14 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import LandingSearchBox from '@/components/LandingSearchBox';
 import HeartAnimation from '@/components/HeartAnimation';
 import WedPalLogo from '@/components/WedPalLogo';
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   // Add CSS for dynamic gradient
   React.useEffect(() => {
     const style = document.createElement('style');
@@ -26,11 +30,25 @@ const Index = () => {
     };
   }, []);
 
+  const handleVendorSignupClick = () => {
+    navigate('/vendor-signup');
+  };
+
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* WedPal Logo repositioned further from the corner with larger size */}
       <div className="absolute top-8 left-8 z-10">
         <WedPalLogo className="text-4xl md:text-5xl text-white drop-shadow-lg" />
+      </div>
+      
+      {/* Vendor Sign Up Button */}
+      <div className="absolute top-8 right-8 z-10">
+        <Button 
+          onClick={handleVendorSignupClick}
+          className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm"
+        >
+          Sign Up as a Vendor
+        </Button>
       </div>
       
       <HeartAnimation avoidTextAreas={true} />

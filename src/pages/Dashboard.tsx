@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import WeddingProgressTracker from '@/components/WeddingProgressTracker';
 import WeddingTemplates from '@/components/WeddingTemplates';
 import WedPalLogo from '@/components/WedPalLogo';
 import HeartAnimation from '@/components/HeartAnimation';
+import { format } from 'date-fns';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [userName, setUserName] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
+  const [formattedWeddingDate, setFormattedWeddingDate] = useState('');
   const [weddingColors, setWeddingColors] = useState<string[]>(['#FFC0CB', '#FFAFBD', '#E7F0FD']);
   const [preferredBudget, setPreferredBudget] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
@@ -35,6 +36,16 @@ const Dashboard = () => {
       setUserName(formData.partner1Name || 'User');
       setPartnerName(formData.partner2Name || 'Partner');
       setWeddingDate(formData.weddingDate ? new Date(formData.weddingDate).toLocaleDateString() : '');
+      
+      if (formData.weddingDate) {
+        try {
+          const date = new Date(formData.weddingDate);
+          setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+        } catch (e) {
+          setFormattedWeddingDate('');
+        }
+      }
+      
       setPreferredBudget(formData.budget || '$15,000 - $25,000');
       
       if (location.state.userColors && location.state.userColors.length) {
@@ -44,6 +55,12 @@ const Dashboard = () => {
       setUserName('Alex');
       setPartnerName('Jamie');
       setWeddingDate('June 15, 2025');
+      try {
+        const date = new Date('June 15, 2025');
+        setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+      } catch (e) {
+        setFormattedWeddingDate('15-Jun-25');
+      }
       setPreferredBudget('$15,000 - $25,000');
     }
   }, [location]);
@@ -139,7 +156,7 @@ const Dashboard = () => {
       <HeartAnimation avoidTextAreas={true} count={10} />
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
-        <div className="container mx-auto max-w-[1400px] flex items-center justify-between">
+        <div className="container mx-auto max-w-[1200px] flex items-center justify-between">
           <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
           
           <div className="flex items-center gap-4">
@@ -159,18 +176,18 @@ const Dashboard = () => {
         </div>
       </header>
       
-      <main className="w-full px-6 md:px-10 py-8">
-        <div className="mb-8 text-white max-w-[1400px] mx-auto">
+      <main className="w-full px-6 md:px-6 py-8">
+        <div className="mb-8 text-white max-w-[1200px] mx-auto">
           <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
           </h1>
           <p className="text-white/80">
-            Your wedding date: <span className="font-medium">{weddingDate}</span>
+            Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
             {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
           <div className="lg:col-span-3 space-y-6">
             <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
               <CardHeader className="pb-3">
