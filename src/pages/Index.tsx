@@ -36,7 +36,7 @@ const Index = () => {
   return (
     <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <header className="absolute top-0 left-0 right-0 pt-8 z-10 w-full">
-        <div className="w-full flex justify-between items-center px-4 md:px-6">
+        <div className="w-full flex justify-between items-center px-8 md:px-12">
           <WedPalLogo className="text-4xl md:text-5xl text-white drop-shadow-lg" />
           
           <Button 
