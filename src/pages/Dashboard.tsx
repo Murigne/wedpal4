@@ -47,7 +47,11 @@ const Dashboard = () => {
         }
       }
       
-      setPreferredBudget(formData.budget || '$15,000 - $25,000');
+      // Update the budget format to use GHS instead of $
+      const formattedBudget = formData.budget 
+        ? formData.budget.replace('$', 'GHS ')
+        : 'GHS 15k - 25k';
+      setPreferredBudget(formattedBudget);
       
       if (location.state.userColors && location.state.userColors.length) {
         setWeddingColors(location.state.userColors);
@@ -62,7 +66,7 @@ const Dashboard = () => {
       } catch (e) {
         setFormattedWeddingDate('15-Jun-25');
       }
-      setPreferredBudget('$15,000 - $25,000');
+      setPreferredBudget('GHS 15k - 25k');
     }
   }, [location]);
 
@@ -98,7 +102,7 @@ const Dashboard = () => {
     {
       title: 'Intimate Celebration',
       description: 'Perfect for a cozy celebration with your closest loved ones',
-      price: '$5,000 - $10,000',
+      price: 'GHS 5k - 10k',
       timeline: '3-6 months',
       guests: '30-50 people',
       features: [
@@ -112,7 +116,7 @@ const Dashboard = () => {
     {
       title: 'Classic Romance',
       description: 'The traditional wedding experience with all the essentials',
-      price: '$15,000 - $25,000',
+      price: 'GHS 15k - 25k',
       timeline: '9-12 months',
       guests: '80-120 people',
       features: [
@@ -127,7 +131,7 @@ const Dashboard = () => {
     {
       title: 'Luxury Experience',
       description: 'An extraordinary celebration with premium amenities',
-      price: '$30,000+',
+      price: 'GHS 30k+',
       timeline: '12-18 months',
       guests: '150-200+ people',
       features: [
@@ -142,7 +146,7 @@ const Dashboard = () => {
     {
       title: 'Destination Wedding',
       description: 'A magical experience in a breathtaking location',
-      price: '$20,000 - $35,000',
+      price: 'GHS 20k - 35k',
       timeline: '10-14 months',
       guests: '50-80 people',
       features: [
@@ -173,7 +177,7 @@ const Dashboard = () => {
       
       <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
         <div className="container mx-auto max-w-[1600px] flex items-center justify-between">
-          <WedPalLogo className="text-white text-2xl drop-shadow-lg ml-6" />
+          <WedPalLogo className="text-white text-2xl drop-shadow-lg ml-2" />
           
           <div className="flex items-center gap-4">
             <Button 

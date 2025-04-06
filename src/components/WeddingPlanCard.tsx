@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar, DollarSign, Users, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,16 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
   highlight = false,
   className,
 }) => {
+  const [buttonHover, setButtonHover] = useState(false);
+  
+  // Format price to replace $ with GHS and use k for thousands
+  const formattedPrice = price
+    .replace('$', 'GHS ')
+    .replace(/,000/g, 'k')
+    .replace(/\d{1,3},\d{3}/g, (match) => {
+      return match.replace(',', 'k');
+    });
+
   const handleSelectPlan = () => {
     toast({
       title: "Plan Selected",
@@ -53,7 +63,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         className
       )}
     >
-      {highlight && (
+      {highlight && title !== "Classic Romance" && (
         <div className="bg-wedding-gold text-foreground text-xs font-medium py-1.5 px-4 rounded-full mx-auto -mt-3 mb-1 shadow-sm">
           Recommended
         </div>
@@ -64,39 +74,39 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         <p className="text-muted-foreground text-sm mt-1 mb-4 max-w-[90%] mx-auto">{description}</p>
       </div>
       
-      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-4 p-4 mb-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <span className="flex items-center gap-1.5 text-sm font-medium">
+      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-4 p-4 mb-4 shadow-sm w-full">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
             <DollarSign className="h-4 w-4 text-pink-600" />
-            Budget
-          </span>
-          <span className="font-medium text-sm">{price}</span>
+            <span>Budget</span>
+          </div>
+          <span className="font-medium text-sm">{formattedPrice}</span>
         </div>
         
-        <div className="flex items-center justify-between mb-3">
-          <span className="flex items-center gap-1.5 text-sm font-medium">
+        <div className="flex items-center justify-between gap-2 my-3">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
             <Clock className="h-4 w-4 text-pink-600" />
-            Timeline
-          </span>
+            <span>Timeline</span>
+          </div>
           <span className="font-medium text-sm">{timeline}</span>
         </div>
         
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-sm font-medium">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
             <Users className="h-4 w-4 text-pink-600" />
-            Guests
-          </span>
+            <span>Guests</span>
+          </div>
           <span className="font-medium text-sm">{guests}</span>
         </div>
       </div>
       
-      <div className="text-center px-4 mb-4 flex-grow">
+      <div className="text-left px-4 mb-4 flex-grow">
         <h4 className="text-sm font-medium mb-3">What's included:</h4>
-        <ul className="space-y-2 flex flex-col items-center">
+        <ul className="space-y-2">
           {features.map((feature, index) => (
-            <li key={index} className="text-sm flex items-start justify-center max-w-[90%]">
+            <li key={index} className="text-sm flex items-start">
               <span className="text-pink-600 mr-2 flex-shrink-0">•</span>
-              <span className="text-center">{feature}</span>
+              <span>{feature}</span>
             </li>
           ))}
         </ul>
@@ -106,7 +116,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         <Button 
           className={cn(
             "w-full rounded-full transition-all",
-            highlight 
+            title === "Classic Romance" 
               ? "bg-wedding-gold hover:bg-wedding-gold/90 text-black font-medium" 
               : title === "Intimate Celebration" 
                 ? "bg-pink-400 hover:bg-pink-500 text-white"
@@ -117,8 +127,13 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
                     : "bg-pink-500 hover:bg-pink-600 text-white"
           )}
           onClick={handleSelectPlan}
+          onMouseEnter={() => setButtonHover(true)}
+          onMouseLeave={() => setButtonHover(false)}
         >
-          Select Plan
+          {title === "Classic Romance" ? 
+            (buttonHover ? "Select Plan" : "Recommended") : 
+            "Select Plan"
+          }
         </Button>
       </div>
     </div>
