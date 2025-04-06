@@ -74,7 +74,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         <p className="text-muted-foreground text-sm mt-1 mb-4 max-w-[90%] mx-auto">{description}</p>
       </div>
       
-      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-auto px-4 py-4 mb-4 shadow-sm w-[85%]">
+      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-4 px-4 py-4 mb-4 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 text-sm font-medium">
             <DollarSign className="h-4 w-4 text-pink-600" />
