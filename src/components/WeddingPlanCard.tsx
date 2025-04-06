@@ -74,29 +74,29 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
         <p className="text-muted-foreground text-sm mt-1 mb-4 max-w-[90%] mx-auto">{description}</p>
       </div>
       
-      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-4 p-4 mb-4 shadow-sm w-full">
+      <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-auto px-4 p-4 mb-4 shadow-sm w-[90%]">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-sm font-medium">
+          <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
             <DollarSign className="h-4 w-4 text-pink-600" />
             <span>Budget</span>
           </div>
-          <span className="font-medium text-sm">{formattedPrice}</span>
+          <span className="font-medium text-xs">{formattedPrice}</span>
         </div>
         
         <div className="flex items-center justify-between gap-2 my-3">
-          <div className="flex items-center gap-1.5 text-sm font-medium">
+          <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
             <Clock className="h-4 w-4 text-pink-600" />
             <span>Timeline</span>
           </div>
-          <span className="font-medium text-sm">{timeline}</span>
+          <span className="font-medium text-xs">{timeline}</span>
         </div>
         
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-sm font-medium">
+          <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
             <Users className="h-4 w-4 text-pink-600" />
             <span>Guests</span>
           </div>
-          <span className="font-medium text-sm">{guests}</span>
+          <span className="font-medium text-xs">{guests}</span>
         </div>
       </div>
       
