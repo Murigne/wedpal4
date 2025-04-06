@@ -11,8 +11,21 @@ import {
   Palette, 
   Clock, 
   Users,
-  HeartHandshake
+  HeartHandshake,
+  LogOut,
+  Settings,
+  User
 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/components/AuthProvider';
 import WeddingPlanCard from '@/components/WeddingPlanCard';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
 import WeddingTemplates from '@/components/WeddingTemplates';
@@ -23,6 +36,7 @@ import { format } from 'date-fns';
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { signOut } = useAuth();
   const [userName, setUserName] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
@@ -171,6 +185,30 @@ const Dashboard = () => {
     navigate('/vendors');
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully",
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleEditProfile = () => {
+    navigate('/');
+  };
+
+  const handleAccountSettings = () => {
+    toast({
+      title: "Account Settings",
+      description: "This feature is coming soon!",
+    });
+  };
+
   return (
     <div className="min-h-screen w-full animated-gradient dynamic-gradient relative">
       <HeartAnimation avoidTextAreas={true} count={10} />
@@ -189,9 +227,30 @@ const Dashboard = () => {
               Vendor Marketplace
             </Button>
             
-            <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
-              <span className="font-medium text-sm">{userName.charAt(0)}</span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center cursor-pointer hover:bg-white">
+                  <span className="font-medium text-sm">{userName.charAt(0)}</span>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleEditProfile}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Edit Wedding Details</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleAccountSettings}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Account Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

@@ -58,7 +58,8 @@ const LoginForm: React.FC = () => {
   };
 
   const handleSignUpClick = () => {
-    navigate('/signup');
+    // Update to navigate to the index page instead of signup
+    navigate('/');
   };
 
   const togglePasswordVisibility = () => {
