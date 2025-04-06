@@ -70,7 +70,7 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
       )}
       
       <div className="text-center px-4 pt-4 pb-2">
-        <h3 className="text-xl font-semibold">{title}</h3>
+        <h3 className="text-xl font-semibold whitespace-nowrap overflow-hidden text-ellipsis">{title}</h3>
         <p className="text-muted-foreground text-sm mt-1 mb-4 max-w-[90%] mx-auto">{description}</p>
       </div>
       
