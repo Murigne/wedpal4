@@ -45,10 +45,10 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
 
   // Determine card background and accent colors based on the plan type
   const cardColors = {
-    "Intimate Celebration": "from-pink-50 to-rose-100",
+    "Intimate & Cozy": "from-pink-50 to-rose-100",
     "Classic Romance": "from-amber-50 to-yellow-100",
-    "Luxury Experience": "from-purple-50 to-violet-100",
-    "Destination Wedding": "from-blue-50 to-sky-100"
+    "Royal Delight": "from-purple-50 to-violet-100",
+    "Fairytale": "from-blue-50 to-sky-100"
   };
   
   // Get background gradient based on title or use a default
@@ -118,11 +118,11 @@ const WeddingPlanCard: React.FC<WeddingPlanProps> = ({
             "w-full rounded-full transition-all",
             title === "Classic Romance" 
               ? "bg-wedding-gold hover:bg-wedding-gold/90 text-black font-medium" 
-              : title === "Intimate Celebration" 
+              : title === "Intimate & Cozy" 
                 ? "bg-pink-400 hover:bg-pink-500 text-white"
-                : title === "Luxury Experience"
+                : title === "Royal Delight"
                   ? "bg-purple-400 hover:bg-purple-500 text-white"
-                  : title === "Destination Wedding"
+                  : title === "Fairytale"
                     ? "bg-sky-400 hover:bg-sky-500 text-white"
                     : "bg-pink-500 hover:bg-pink-600 text-white"
           )}

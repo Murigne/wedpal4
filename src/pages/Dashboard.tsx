@@ -100,7 +100,7 @@ const Dashboard = () => {
 
   const weddingPlans = [
     {
-      title: 'Intimate Celebration',
+      title: 'Intimate & Cozy',
       description: 'Perfect for a cozy celebration with your closest loved ones',
       price: 'GHS 5k - 10k',
       timeline: '3-6 months',
@@ -129,7 +129,7 @@ const Dashboard = () => {
       highlight: true
     },
     {
-      title: 'Luxury Experience',
+      title: 'Royal Delight',
       description: 'An extraordinary celebration with premium amenities',
       price: 'GHS 30k+',
       timeline: '12-18 months',
@@ -144,7 +144,7 @@ const Dashboard = () => {
       ]
     },
     {
-      title: 'Destination Wedding',
+      title: 'Fairytale',
       description: 'A magical experience in a breathtaking location',
       price: 'GHS 20k - 35k',
       timeline: '10-14 months',
