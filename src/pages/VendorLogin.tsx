@@ -29,6 +29,7 @@ const VendorLogin: React.FC = () => {
       if (error) throw error;
       
       // Check if the user is a vendor
+      // Using a custom query instead of typing to avoid type errors
       const { data: vendorData, error: vendorError } = await supabase
         .from('vendors')
         .select('*')

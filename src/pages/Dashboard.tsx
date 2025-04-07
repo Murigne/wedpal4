@@ -53,6 +53,8 @@ const Dashboard = () => {
           setUserName(data.partner1_name || 'User');
           setPartnerName(data.partner2_name || 'Partner');
           setWeddingDate(data.wedding_date || '');
+          
+          // Handle the hashtag field - it might be null in existing records
           setWeddingHashtag(data.hashtag || '');
           
           if (data.wedding_date) {
@@ -71,9 +73,17 @@ const Dashboard = () => {
           setPreferredBudget(formattedBudget);
           
           // Set wedding colors if they exist in the database
-          if (data.colors && Array.isArray(JSON.parse(data.colors))) {
-            setWeddingColors(JSON.parse(data.colors));
-            applyWeddingColors(JSON.parse(data.colors));
+          // Handle both old and new records that might or might not have colors
+          if (data.colors) {
+            try {
+              const parsedColors = JSON.parse(data.colors);
+              if (Array.isArray(parsedColors)) {
+                setWeddingColors(parsedColors);
+                applyWeddingColors(parsedColors);
+              }
+            } catch (e) {
+              console.error('Error parsing colors:', e);
+            }
           }
         } else if (location.state?.formData) {
           // Use data from location state if available

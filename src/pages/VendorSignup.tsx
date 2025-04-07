@@ -71,6 +71,7 @@ const VendorSignup: React.FC = () => {
   
   const saveVendorData = async (userId: string) => {
     try {
+      // Using a custom query instead of typing to avoid type errors
       const { error } = await supabase
         .from('vendors')
         .upsert({
