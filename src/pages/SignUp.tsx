@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { Check, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
-import { Database } from '@/integrations/supabase/types';
 import HeartAnimation from '@/components/HeartAnimation';
 
 const SignUp: React.FC = () => {
@@ -40,8 +39,36 @@ const SignUp: React.FC = () => {
       
       if (error) throw error;
       
-      if (formData) {
-        await saveUserData(user?.id);
+      if (user && formData) {
+        try {
+          const { error: detailsError } = await supabase
+            .from('wedding_details')
+            .upsert({
+              user_id: user.id,
+              partner1_name: formData.name || '',
+              partner2_name: formData.partnerName || '',
+              wedding_date: formData.date || '',
+              hashtag: formData.hashtag || '',
+              budget: formData.budget?.toString() || '',
+              theme: formData.theme || '',
+              guest_count: formData.guests?.toString() || '',
+              honeymoon_destination: formData.honeymoon || '',
+              need_new_home: formData.needNewHome || 'No',
+              colors: userColors ? JSON.stringify(userColors) : null,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+          
+          if (detailsError) {
+            console.error('Error saving wedding details:', detailsError);
+            toast({
+              title: "Warning",
+              description: "Account created but failed to save wedding details. Please update your profile later.",
+              variant: "default",
+            });
+          }
+        } catch (detailsError) {
+          console.error('Exception saving wedding details:', detailsError);
+        }
       }
       
       toast({
@@ -50,12 +77,20 @@ const SignUp: React.FC = () => {
         variant: "default",
       });
       
-      navigate('/dashboard', { 
-        state: { 
-          formData: formData,
-          userColors: userColors
-        } 
-      });
+      // Force a session refresh
+      const { data } = await supabase.auth.getSession();
+      
+      if (data.session) {
+        navigate('/dashboard', { 
+          state: { 
+            formData: formData,
+            userColors: userColors
+          } 
+        });
+      } else {
+        // If no session (email confirmation required), go to login
+        navigate('/login');
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -64,33 +99,6 @@ const SignUp: React.FC = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-  
-  const saveUserData = async (userId?: string) => {
-    if (!userId || !formData) return;
-    
-    try {
-      const { error } = await supabase
-        .from('wedding_details')
-        .upsert({
-          user_id: userId,
-          partner1_name: formData.name,
-          partner2_name: formData.partnerName,
-          wedding_date: formData.date,
-          hashtag: formData.hashtag,
-          budget: formData.budget?.toString(),
-          theme: formData.theme,
-          guest_count: formData.guests?.toString(),
-          honeymoon_destination: formData.honeymoon,
-          need_new_home: formData.needNewHome,
-          colors: userColors ? JSON.stringify(userColors) : null,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' });
-        
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Error saving wedding details:', error);
     }
   };
 
@@ -106,6 +114,7 @@ const SignUp: React.FC = () => {
     <div className="min-h-screen flex flex-col md:flex-row animated-gradient relative overflow-hidden">
       <HeartAnimation avoidTextAreas={true} />
       
+      {/* Left side - Branding and features */}
       <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white relative z-10">
         <div className="mb-8">
           <WedPalLogo className="text-4xl md:text-5xl mb-2" />
@@ -144,6 +153,7 @@ const SignUp: React.FC = () => {
         </div>
       </div>
       
+      {/* Right side - Sign up form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 relative z-10">
         <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md p-8">
           <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
@@ -232,7 +242,7 @@ const SignUp: React.FC = () => {
               Already have an account?{" "}
               <button 
                 type="button"
-                onClick={handleLoginClick} 
+                onClick={() => navigate('/login')} 
                 className="text-pink-500 hover:text-pink-700 font-medium"
               >
                 Log in

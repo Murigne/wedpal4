@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -16,7 +17,7 @@ import { toast } from '@/hooks/use-toast';
 const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [userName, setUserName] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
@@ -30,9 +31,12 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) {
+        console.log("No user found, redirecting to login");
         navigate('/login');
         return;
       }
+      
+      console.log("Fetching user data for:", user.id);
       
       try {
         const { data, error } = await supabase
@@ -43,12 +47,15 @@ const Dashboard = () => {
           
         if (error) {
           if (error.code !== 'PGRST116') { // PGRST116 is "row not found" error
+            console.error("Database error:", error);
             throw error;
           }
+          console.log("No wedding details found for user");
           // If no data exists, we'll use the location state or defaults
         }
         
         if (data) {
+          console.log("Wedding details found:", data);
           setUserName(data.partner1_name || 'User');
           setPartnerName(data.partner2_name || 'Partner');
           setWeddingDate(data.wedding_date || '');
@@ -61,6 +68,7 @@ const Dashboard = () => {
               const date = new Date(data.wedding_date);
               setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
             } catch (e) {
+              console.error("Date formatting error:", e);
               setFormattedWeddingDate('');
             }
           }
@@ -85,6 +93,7 @@ const Dashboard = () => {
           }
         } else if (location.state?.formData) {
           // Use data from location state if available
+          console.log("Using location state data");
           const formData = location.state.formData;
           setUserName(formData.name || 'User');
           setPartnerName(formData.partnerName || 'Partner');
@@ -96,6 +105,7 @@ const Dashboard = () => {
               const date = new Date(formData.date);
               setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
             } catch (e) {
+              console.error("Date formatting error:", e);
               setFormattedWeddingDate('');
             }
           }
@@ -115,6 +125,7 @@ const Dashboard = () => {
           }
         } else {
           // Default values
+          console.log("Using default values");
           setUserName('Alex');
           setPartnerName('Jamie');
           setWeddingDate('June 15, 2025');
@@ -122,6 +133,7 @@ const Dashboard = () => {
             const date = new Date('June 15, 2025');
             setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
           } catch (e) {
+            console.error("Date formatting error:", e);
             setFormattedWeddingDate('15-Jun-25');
           }
           setPreferredBudget('GHS 15k - 25k');
@@ -143,9 +155,13 @@ const Dashboard = () => {
   }, [user, location, navigate]);
 
   const saveUserData = async (formData: any, colors: string[]) => {
-    if (!user) return;
+    if (!user) {
+      console.log("Cannot save user data - no user logged in");
+      return;
+    }
     
     try {
+      console.log("Saving wedding details for user:", user.id);
       const { error } = await supabase
         .from('wedding_details')
         .upsert({
@@ -163,7 +179,12 @@ const Dashboard = () => {
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
         
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving wedding details:', error);
+        throw error;
+      }
+      
+      console.log("Wedding details saved successfully");
     } catch (error) {
       console.error('Error saving wedding details:', error);
     }
