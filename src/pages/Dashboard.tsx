@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -54,7 +53,7 @@ const Dashboard = () => {
           setPartnerName(data.partner2_name || 'Partner');
           setWeddingDate(data.wedding_date || '');
           
-          // Handle the hashtag field - it might be null in existing records
+          // Handle the hashtag field
           setWeddingHashtag(data.hashtag || '');
           
           if (data.wedding_date) {
@@ -73,7 +72,6 @@ const Dashboard = () => {
           setPreferredBudget(formattedBudget);
           
           // Set wedding colors if they exist in the database
-          // Handle both old and new records that might or might not have colors
           if (data.colors) {
             try {
               const parsedColors = JSON.parse(data.colors);
