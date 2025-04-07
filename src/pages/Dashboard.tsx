@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -126,8 +125,8 @@ const Dashboard = () => {
         } else {
           // Default values
           console.log("Using default values");
-          setUserName('Alex');
-          setPartnerName('Jamie');
+          setUserName('User');
+          setPartnerName('Partner');
           setWeddingDate('June 15, 2025');
           try {
             const date = new Date('June 15, 2025');
@@ -206,7 +205,14 @@ const Dashboard = () => {
       
       const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
       document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
-      document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
+      
+      // Apply the dynamic gradient class
+      setTimeout(() => {
+        const gradientElements = document.querySelectorAll('.animated-gradient');
+        gradientElements.forEach(el => {
+          el.classList.add('dynamic-gradient');
+        });
+      }, 100);
     }
   };
   

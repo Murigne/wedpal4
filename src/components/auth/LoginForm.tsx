@@ -1,12 +1,11 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,13 +14,26 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn } = useAuth();
+
+  useEffect(() => {
+    if (location.state?.message) {
+      toast({
+        title: "Info",
+        description: location.state.message,
+        variant: "default",
+      });
+      
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Validate inputs
       if (!email.includes('@')) {
         throw new Error('Please enter a valid email');
       }
@@ -29,13 +41,7 @@ const LoginForm: React.FC = () => {
         throw new Error('Password must be at least 6 characters');
       }
       
-      // Actual Supabase login
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
+      await signIn(email, password);
       
       toast({
         title: "Success",
@@ -43,14 +49,17 @@ const LoginForm: React.FC = () => {
         variant: "default",
       });
       
-      // Navigate to dashboard
-      navigate('/dashboard');
+      if (email.toLowerCase().includes('vendor') || location.pathname.includes('vendor')) {
+        navigate('/vendor-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
       
     } catch (error: any) {
       console.error('Login error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Login failed. Please check your credentials.",
         variant: "destructive",
       });
     } finally {
@@ -59,7 +68,11 @@ const LoginForm: React.FC = () => {
   };
 
   const handleSignUpClick = () => {
-    navigate('/');
+    if (location.pathname.includes('vendor')) {
+      navigate('/vendor-signup');
+    } else {
+      navigate('/');
+    }
   };
 
   const togglePasswordVisibility = () => {

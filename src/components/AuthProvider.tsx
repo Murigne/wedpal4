@@ -31,9 +31,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
         console.log("Auth state changed:", event);
+        
+        // Update session and user state
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setIsLoading(false);
+        
+        // Log successful sign-in for debugging
+        if (event === 'SIGNED_IN') {
+          console.log("User signed in successfully:", newSession?.user?.id);
+        }
       }
     );
 
@@ -45,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     });
 
+    // Clean up subscription
     return () => {
       subscription.unsubscribe();
     };
@@ -72,11 +80,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    setIsLoading(true);
     try {
       await supabase.auth.signOut();
       console.log("User signed out");
     } catch (error) {
       console.error('Sign out error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

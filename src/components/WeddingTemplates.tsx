@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,6 +28,30 @@ interface WeddingTemplatesProps {
   userColors: string[];
   className?: string;
 }
+
+// Define all 18 wedding colors
+const predefinedColors = [
+  // Original 12 colors
+  "#FFC0CB", // Pink
+  "#FFAFBD", // Light Pink
+  "#E7F0FD", // Light Blue
+  "#D8BFD8", // Thistle
+  "#F0E68C", // Khaki
+  "#98FB98", // Pale Green
+  "#FFB6C1", // Light Pink
+  "#87CEFA", // Light Sky Blue
+  "#E6E6FA", // Lavender
+  "#B0E0E6", // Powder Blue
+  "#F5DEB3", // Wheat
+  "#FFDAB9", // Peach Puff
+  // 6 New colors
+  "#FF0000", // Red
+  "#4169E1", // Royal Blue
+  "#800080", // Purple
+  "#FF7F50", // Coral
+  "#40E0D0", // Turquoise
+  "#F5F5DC"  // Beige
+];
 
 const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
   userBudget,
@@ -91,7 +115,7 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
               {customColors.map((color, index) => (
                 <div 
                   key={index}
-                  className="w-10 h-10 rounded-full cursor-pointer border border-gray-200 shadow-sm"
+                  className="w-8 h-8 rounded-full cursor-pointer border border-gray-200 shadow-sm"
                   style={{ backgroundColor: color }}
                   onClick={() => {
                     const updatedColors = [...customColors];
@@ -107,7 +131,7 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
                     type="color"
                     value={newCustomColor}
                     onChange={(e) => setNewCustomColor(e.target.value)}
-                    className="w-10 h-10 p-1 rounded-l-full cursor-pointer border border-gray-200"
+                    className="w-8 h-8 p-1 rounded-l-full cursor-pointer border border-gray-200"
                   />
                   <button 
                     className="bg-wedding-pink hover:bg-wedding-pink-dark text-white rounded-r-lg px-2 text-sm"
@@ -119,6 +143,33 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
               )}
             </div>
             <p className="text-xs text-muted-foreground">Click a color to remove it. Add up to 6 colors.</p>
+            
+            {/* Predefined color palette */}
+            <div className="mt-4">
+              <h3 className="text-sm font-medium mb-2">Predefined Colors</h3>
+              <div className="flex flex-wrap gap-1">
+                {predefinedColors.map((color, index) => (
+                  <div 
+                    key={`predefined-${index}`}
+                    className="w-6 h-6 rounded-full cursor-pointer border border-gray-200 shadow-sm hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    onClick={() => {
+                      if (customColors.length < 6) {
+                        setCustomColors([...customColors, color]);
+                      } else {
+                        toast({
+                          title: "Color Limit Reached",
+                          description: "Remove a color first before adding a new one.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                    title="Click to add to your palette"
+                  />
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Click a color to add it to your palette.</p>
+            </div>
           </div>
         )}
         
@@ -178,11 +229,11 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
                     <Palette className="h-5 w-5" />
                     Customize Theme Colors
                   </h3>
-                  <div className="flex gap-3">
-                    {userColors.map((color, index) => (
+                  <div className="flex flex-wrap gap-2">
+                    {predefinedColors.map((color, index) => (
                       <div 
-                        key={index}
-                        className="w-8 h-8 rounded-full cursor-pointer border-2 border-transparent hover:border-black"
+                        key={`theme-color-${index}`}
+                        className="w-6 h-6 rounded-full cursor-pointer border-2 border-transparent hover:border-black"
                         style={{ backgroundColor: color }}
                         onClick={() => {
                           // Logic for customizing theme colors would go here

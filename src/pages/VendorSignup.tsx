@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,7 +35,8 @@ const VendorSignup: React.FC = () => {
     setLoading(true);
 
     try {
-      const { data: { user }, error } = await supabase.auth.signUp({ 
+      // Step 1: Create the auth user
+      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
         email, 
         password,
         options: {
@@ -44,49 +46,56 @@ const VendorSignup: React.FC = () => {
         }
       });
       
-      if (error) throw error;
+      if (signUpError) throw signUpError;
       
       if (user) {
-        await saveVendorData(user.id);
+        // Step 2: Create vendor record
+        const { error: vendorError } = await supabase
+          .from('vendors')
+          .insert({
+            user_id: user.id,
+            business_name: businessName,
+            location: location,
+            phone_number: phoneNumber,
+            vendor_type: vendorType,
+            approved: false
+          });
+          
+        if (vendorError) {
+          console.error('Error saving vendor details:', vendorError);
+          toast({
+            title: "Warning",
+            description: "Account created but vendor profile could not be saved. Please update your profile later.",
+            variant: "default",
+          });
+        }
       }
       
       toast({
         title: "Success",
-        description: "Vendor registration successful! Please check your email for verification.",
+        description: "Registration successful! Please check your email for verification.",
         variant: "default",
       });
       
-      navigate('/vendor-dashboard');
+      // Check if we have a session already
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        navigate('/vendor-dashboard');
+      } else {
+        navigate('/login', { 
+          state: { message: "Please check your email to verify your account before logging in." } 
+        });
+      }
     } catch (error: any) {
+      console.error('Signup error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to create account. Please try again.",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
-    }
-  };
-  
-  const saveVendorData = async (userId: string) => {
-    try {
-      const { error } = await supabase
-        .from('vendors')
-        .upsert({
-          user_id: userId,
-          business_name: businessName,
-          location: location,
-          phone_number: phoneNumber,
-          vendor_type: vendorType,
-          approved: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' });
-        
-      if (error) throw error;
-    } catch (error: any) {
-      console.error('Error saving vendor details:', error);
-      throw error;
     }
   };
 
