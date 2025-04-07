@@ -9,11 +9,49 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      vendors: {
+        Row: {
+          approved: boolean | null
+          business_name: string
+          created_at: string | null
+          id: string
+          location: string | null
+          phone_number: string | null
+          updated_at: string | null
+          user_id: string
+          vendor_type: string
+        }
+        Insert: {
+          approved?: boolean | null
+          business_name: string
+          created_at?: string | null
+          id?: string
+          location?: string | null
+          phone_number?: string | null
+          updated_at?: string | null
+          user_id: string
+          vendor_type: string
+        }
+        Update: {
+          approved?: boolean | null
+          business_name?: string
+          created_at?: string | null
+          id?: string
+          location?: string | null
+          phone_number?: string | null
+          updated_at?: string | null
+          user_id?: string
+          vendor_type?: string
+        }
+        Relationships: []
+      }
       wedding_details: {
         Row: {
           budget: string | null
+          colors: string | null
           created_at: string | null
           guest_count: string | null
+          hashtag: string | null
           honeymoon_destination: string | null
           id: string
           need_new_home: string | null
@@ -26,8 +64,10 @@ export type Database = {
         }
         Insert: {
           budget?: string | null
+          colors?: string | null
           created_at?: string | null
           guest_count?: string | null
+          hashtag?: string | null
           honeymoon_destination?: string | null
           id?: string
           need_new_home?: string | null
@@ -40,8 +80,10 @@ export type Database = {
         }
         Update: {
           budget?: string | null
+          colors?: string | null
           created_at?: string | null
           guest_count?: string | null
+          hashtag?: string | null
           honeymoon_destination?: string | null
           id?: string
           need_new_home?: string | null

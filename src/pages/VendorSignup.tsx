@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -71,7 +70,6 @@ const VendorSignup: React.FC = () => {
   
   const saveVendorData = async (userId: string) => {
     try {
-      // Using a custom query instead of typing to avoid type errors
       const { error } = await supabase
         .from('vendors')
         .upsert({
