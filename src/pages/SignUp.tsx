@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +19,7 @@ const SignUp: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state?.formData;
+  const userColors = location.state?.userColors;
   
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +36,12 @@ const SignUp: React.FC = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data: { user }, error } = await supabase.auth.signUp({ email, password });
       
       if (error) throw error;
       
       if (formData) {
-        await saveUserData();
+        await saveUserData(user?.id);
       }
       
       toast({
@@ -48,7 +50,12 @@ const SignUp: React.FC = () => {
         variant: "default",
       });
       
-      navigate('/dashboard');
+      navigate('/dashboard', { 
+        state: { 
+          formData: formData,
+          userColors: userColors
+        } 
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -60,23 +67,24 @@ const SignUp: React.FC = () => {
     }
   };
   
-  const saveUserData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !formData) return;
+  const saveUserData = async (userId?: string) => {
+    if (!userId || !formData) return;
     
     try {
       const { error } = await supabase
         .from('wedding_details')
         .upsert({
-          user_id: session.user.id,
-          partner1_name: formData.partner1Name,
-          partner2_name: formData.partner2Name,
-          wedding_date: formData.weddingDate,
-          budget: formData.budget,
+          user_id: userId,
+          partner1_name: formData.name,
+          partner2_name: formData.partnerName,
+          wedding_date: formData.date,
+          hashtag: formData.hashtag,
+          budget: formData.budget?.toString(),
           theme: formData.theme,
-          guest_count: formData.guestCount,
-          honeymoon_destination: formData.honeymoonDestination,
+          guest_count: formData.guests?.toString(),
+          honeymoon_destination: formData.honeymoon,
           need_new_home: formData.needNewHome,
+          colors: userColors ? JSON.stringify(userColors) : null,
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
         

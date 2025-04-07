@@ -1,60 +1,27 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, Eye, EyeOff, Building, Phone } from 'lucide-react';
+import { Check, Mail, Lock, Eye, EyeOff, Store, MapPin, Phone } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
-import HeartAnimation from '@/components/HeartAnimation';
-
-const vendorCategories = [
-  'Venue',
-  'Catering',
-  'Photography',
-  'Videography',
-  'Wedding Planner',
-  'Florist',
-  'Music & Entertainment',
-  'Cake & Desserts',
-  'Wedding Attire',
-  'Jewelry',
-  'Hair & Makeup',
-  'Transportation',
-  'Invitations & Stationery',
-  'Decor & Lighting',
-  'Rentals',
-  'Favors & Gifts',
-  'Other'
-];
 
 const VendorSignup: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [location, setLocation] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [vendorType, setVendorType] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!termsAccepted) {
-      toast({
-        title: "Error",
-        description: "You must accept the terms and conditions to continue",
-        variant: "destructive",
-      });
-      return;
-    }
     
     if (password !== confirmPassword) {
       toast({
@@ -68,20 +35,29 @@ const VendorSignup: React.FC = () => {
     setLoading(true);
 
     try {
-      // Placeholder for Supabase integration
-      // const { error } = await supabase.auth.signUp({ email, password });
+      const { data: { user }, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          data: {
+            user_type: 'vendor'
+          }
+        }
+      });
       
-      // if (error) throw error;
+      if (error) throw error;
+      
+      if (user) {
+        await saveVendorData(user.id);
+      }
       
       toast({
         title: "Success",
-        description: "Sign up successful! Please check your email for verification.",
+        description: "Vendor registration successful! Please check your email for verification.",
         variant: "default",
       });
       
-      setTimeout(() => {
-        navigate('/vendor-login');
-      }, 2000);
+      navigate('/vendor-dashboard');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -90,6 +66,28 @@ const VendorSignup: React.FC = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const saveVendorData = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('vendors')
+        .upsert({
+          user_id: userId,
+          business_name: businessName,
+          location: location,
+          phone_number: phoneNumber,
+          vendor_type: vendorType,
+          approved: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+        
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Error saving vendor details:', error);
+      throw error;
     }
   };
 
@@ -102,57 +100,57 @@ const VendorSignup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row animated-gradient relative overflow-hidden">
-      <HeartAnimation avoidTextAreas={true} />
-      
-      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex flex-col md:flex-row">
+      <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center text-white">
         <div className="mb-8">
-          <WedPalLogo className="text-4xl md:text-5xl mb-2" linkToHome={true} />
-          <h2 className="text-2xl md:text-3xl font-medium mb-6">Vendor Partner Program</h2>
+          <WedPalLogo className="text-4xl md:text-5xl mb-2" />
+          <h2 className="text-2xl md:text-3xl font-medium mb-6">Partner With Us</h2>
           
           <p className="text-base md:text-lg mb-8 opacity-90 leading-relaxed">
-            ✨ Join our network of premium wedding vendors and reach thousands of engaged couples!
+            ✨ Join our platform to showcase your services to couples planning their weddings
             <br /><br />
-            ✨ Create a beautiful vendor profile to showcase your services and pricing
+            ✨ Get more bookings and expand your business with minimal effort
             <br /><br />
-            ✨ Receive leads directly from couples planning their weddings
+            ✨ Connect with couples who are specifically looking for your services
             <br /><br />
-            ✨ Manage bookings, communications, and reviews all in one place
+            ✨ Easy-to-use dashboard to manage your offerings and bookings
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Increased Visibility</h3>
-              <p className="text-sm">Get discovered by couples actively planning their weddings</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Booking Management</h3>
-              <p className="text-sm">Streamline your booking process with our platform</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Verified Reviews</h3>
-              <p className="text-sm">Build your reputation with reviews from real couples</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Analytics Dashboard</h3>
-              <p className="text-sm">Track performance and optimize your business</p>
-            </div>
-          </div>
+          <ul className="space-y-4">
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">Increased Visibility</span>
+            </li>
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">More Bookings</span>
+            </li>
+            <li className="flex items-center">
+              <div className="rounded-full bg-white/20 p-2 mr-3">
+                <Check className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg">Easy Management</span>
+            </li>
+          </ul>
         </div>
       </div>
       
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 relative z-10">
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg w-full max-w-md p-8">
-          <h1 className="text-2xl font-bold mb-6 text-center">Vendor Sign Up</h1>
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+        <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
+          <h1 className="text-2xl font-bold mb-6 text-center">Vendor Registration</h1>
           
           <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
+            <div>
+              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">
                 Business Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Building className="h-5 w-5 text-gray-400" />
+                  <Store className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
                   id="businessName"
@@ -166,9 +164,77 @@ const VendorSignup: React.FC = () => {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Business Email
+            <div>
+              <label htmlFor="vendorType" className="block text-sm font-medium text-gray-700 mb-1">
+                Vendor Type
+              </label>
+              <select
+                id="vendorType"
+                value={vendorType}
+                onChange={(e) => setVendorType(e.target.value)}
+                className="w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="">Select Vendor Type</option>
+                <option value="venue">Venue</option>
+                <option value="catering">Catering</option>
+                <option value="photography">Photography</option>
+                <option value="videography">Videography</option>
+                <option value="decor">Decoration</option>
+                <option value="music">Music & Entertainment</option>
+                <option value="florist">Florist</option>
+                <option value="cake">Cake & Desserts</option>
+                <option value="transportation">Transportation</option>
+                <option value="attire">Wedding Attire</option>
+                <option value="makeup">Hair & Makeup</option>
+                <option value="planning">Wedding Planning</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <MapPin className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="location"
+                  type="text"
+                  placeholder="City, Region"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="+233 XX XXX XXXX"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,46 +252,8 @@ const VendorSignup: React.FC = () => {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Business Phone
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                </div>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="(123) 456-7890"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="pl-10"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                Business Category
-              </label>
-              <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger id="category">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vendorCategories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -255,8 +283,8 @@ const VendorSignup: React.FC = () => {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                 Confirm Password
               </label>
               <div className="relative">
@@ -275,26 +303,12 @@ const VendorSignup: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-start space-x-2 pt-2">
-              <Checkbox 
-                id="terms" 
-                checked={termsAccepted}
-                onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-              />
-              <Label 
-                htmlFor="terms" 
-                className="text-sm text-gray-600 font-normal leading-tight"
-              >
-                I agree to the Terms of Service and Privacy Policy
-              </Label>
-            </div>
-            
             <Button 
               type="submit" 
-              className="wedding-button w-full py-6"
+              className="w-full py-6 bg-blue-600 hover:bg-blue-700"
               disabled={loading}
             >
-              {loading ? "Creating Account..." : "Create Vendor Account"}
+              {loading ? "Creating Account..." : "Register as Vendor"}
             </Button>
             
             <p className="text-center text-sm text-gray-500">
@@ -302,7 +316,7 @@ const VendorSignup: React.FC = () => {
               <button 
                 type="button"
                 onClick={handleLoginClick} 
-                className="text-pink-500 hover:text-pink-700 font-medium"
+                className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 Log in
               </button>
@@ -310,8 +324,6 @@ const VendorSignup: React.FC = () => {
           </form>
         </div>
       </div>
-      
-      <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
     </div>
   );
 };

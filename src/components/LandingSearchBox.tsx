@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -18,6 +19,7 @@ import HeartAnimation from '@/components/HeartAnimation';
 const questions = [
   { id: 'name', question: "What's your name?", type: 'text' },
   { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
+  { id: 'hashtag', question: "Pick a hashtag for your wedding or create your own:", type: 'hashtag' },
   { id: 'date', question: "When are you planning to get married?", type: 'date' },
   { id: 'colors', question: "What are your wedding colours? (Select up to 3)", type: 'color' },
   { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number', prefix: 'GHS' },
@@ -30,16 +32,16 @@ const questions = [
 const colorOptions = [
   { name: 'Blush Pink', value: '#FFC0CB', class: 'bg-pink-300' },
   { name: 'Burgundy', value: '#800020', class: 'bg-red-900' },
+  { name: 'Red', value: '#ea384c', class: 'bg-red-600' },
+  { name: 'Royal Blue', value: '#1EAEDB', class: 'bg-blue-500' },
+  { name: 'Purple', value: '#9b87f5', class: 'bg-purple-500' },
   { name: 'Dusty Blue', value: '#6699CC', class: 'bg-blue-400' },
+  { name: 'Coral', value: '#FEC6A1', class: 'bg-orange-300' },
+  { name: 'Turquoise Blue', value: '#33C3F0', class: 'bg-cyan-400' },
+  { name: 'Beige', value: '#F1F0FB', class: 'bg-gray-100' },
   { name: 'Emerald Green', value: '#50C878', class: 'bg-green-500' },
   { name: 'Gold', value: '#FFD700', class: 'bg-yellow-400' },
   { name: 'Ivory', value: '#FFFFF0', class: 'bg-yellow-50' },
-  { name: 'Lavender', value: '#E6E6FA', class: 'bg-purple-200' },
-  { name: 'Navy Blue', value: '#000080', class: 'bg-blue-900' },
-  { name: 'Peach', value: '#FFE5B4', class: 'bg-orange-200' },
-  { name: 'Sage Green', value: '#9CAF88', class: 'bg-green-300' },
-  { name: 'Silver', value: '#C0C0C0', class: 'bg-gray-300' },
-  { name: 'Teal', value: '#008080', class: 'bg-teal-600' },
 ];
 
 const LandingSearchBox = () => {
@@ -51,6 +53,9 @@ const LandingSearchBox = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [customColor, setCustomColor] = useState('');
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
+  const [customHashtag, setCustomHashtag] = useState('');
+  const [selectedHashtag, setSelectedHashtag] = useState('');
   const form = useForm();
   const navigate = useNavigate();
 
@@ -119,33 +124,66 @@ const LandingSearchBox = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const generateHashtags = (name1: string, name2: string) => {
+    if (!name1 || !name2) return [];
+    
+    // Extract first few letters from each name
+    const n1 = name1.slice(0, 3).toLowerCase();
+    const n2 = name2.slice(0, 3).toLowerCase();
+    
+    // Generate hashtag variations
+    return [
+      `#${name1}And${name2}`,
+      `#${name1}Weds${name2}`,
+      `#${n1}${n2}Forever`,
+      `#Team${name1}${name2}`,
+      `#${name1}${name2}Love`,
+      `#${name1}Loves${name2}`
+    ];
+  };
+
+  const handleHashtagSelection = (hashtag: string) => {
+    setSelectedHashtag(hashtag);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (isTransitioning) return;
     
     const currentQuestion = questions[currentQuestionIndex];
-    let answerValue: any = inputValue;
+    let userResponse: any = inputValue;
     
     if (currentQuestion.type === 'date') {
       if (!selectedDate) return;
-      answerValue = selectedDate;
+      userResponse = selectedDate;
     } else if (currentQuestion.type === 'color') {
       if (selectedColors.length === 0) return;
-      answerValue = selectedColors;
+      userResponse = selectedColors;
     } else if (currentQuestion.type === 'number') {
       if (!inputValue.trim() || isNaN(Number(inputValue.replace(/,/g, '')))) return;
-      answerValue = Number(inputValue.replace(/,/g, ''));
+      userResponse = Number(inputValue.replace(/,/g, ''));
     } else if (currentQuestion.type === 'text' || currentQuestion.type === 'radio') {
       if (!inputValue.trim()) return;
+    } else if (currentQuestion.type === 'hashtag') {
+      if (!selectedHashtag && !customHashtag) return;
+      userResponse = customHashtag ? customHashtag : selectedHashtag;
     }
     
     setAnswers(prev => ({
       ...prev,
-      [currentQuestion.id]: answerValue
+      [currentQuestion.id]: userResponse
     }));
     
     setIsTransitioning(true);
+    
+    // Generate hashtags after getting both names
+    if (currentQuestion.id === 'partnerName') {
+      const name1 = answers.name || '';
+      const name2 = userResponse || '';
+      const hashtags = generateHashtags(name1, name2);
+      setSuggestedHashtags(hashtags);
+    }
     
     if (currentQuestion.id === 'colors') {
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
@@ -171,7 +209,12 @@ const LandingSearchBox = () => {
       setSelectedDate(undefined);
       
       if (currentQuestionIndex === questions.length - 1) {
-        navigate('/signup');
+        navigate('/signup', { 
+          state: { 
+            formData: {...answers, [currentQuestion.id]: userResponse},
+            userColors: selectedColors 
+          } 
+        });
         return;
       }
       
@@ -200,6 +243,8 @@ const LandingSearchBox = () => {
       } else if (currentQuestion.type === 'number') {
         const value = answers[currentQuestion.id] || '';
         setInputValue(value ? formatNumberWithCommas(String(value)) : '');
+      } else if (currentQuestion.type === 'hashtag') {
+        setSelectedHashtag(answers[currentQuestion.id] || '');
       } else {
         setInputValue(String(answers[currentQuestion.id] || ''));
       }
@@ -207,6 +252,7 @@ const LandingSearchBox = () => {
       setInputValue('');
       setSelectedDate(undefined);
       setSelectedColors([]);
+      setSelectedHashtag('');
     }
   }, [currentQuestionIndex, answers]);
 
@@ -337,6 +383,52 @@ const LandingSearchBox = () => {
                   >
                     <SendHorizonal className="h-4 w-4" />
                   </Button>
+                </div>
+              )}
+
+              {currentQuestion.type === 'hashtag' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {suggestedHashtags.map((hashtag) => (
+                      <div 
+                        key={hashtag} 
+                        className={cn(
+                          "p-3 rounded-lg border border-gray-200 cursor-pointer transition-all text-center",
+                          selectedHashtag === hashtag ? "bg-pink-100 border-pink-300 font-medium" : "hover:bg-gray-50"
+                        )}
+                        onClick={() => handleHashtagSelection(hashtag)}
+                      >
+                        {hashtag}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Input
+                        type="text"
+                        value={customHashtag}
+                        onChange={(e) => setCustomHashtag(e.target.value)}
+                        placeholder="Or create your own..."
+                        className="w-full pl-4 pr-4 py-3 text-base rounded-full border border-gray-200"
+                      />
+                      {!customHashtag.startsWith('#') && customHashtag && (
+                        <div className="text-xs mt-1 text-gray-500 ml-4">
+                          Don't forget to add # at the start
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <Button 
+                      type="submit"
+                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
+                      disabled={(!selectedHashtag && !customHashtag) || isTransitioning}
+                    >
+                      Next <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               )}
 

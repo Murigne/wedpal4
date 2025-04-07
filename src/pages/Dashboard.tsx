@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import HeartAnimation from '@/components/HeartAnimation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
@@ -10,9 +10,14 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import UpcomingTasks from '@/components/dashboard/UpcomingTasks';
 import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
 import { calculateDaysUntil } from '@/utils/dateUtils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
+import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [userName, setUserName] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [weddingDate, setWeddingDate] = useState('');
@@ -20,64 +25,169 @@ const Dashboard = () => {
   const [weddingColors, setWeddingColors] = useState<string[]>(['#FFC0CB', '#FFAFBD', '#E7F0FD']);
   const [preferredBudget, setPreferredBudget] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [weddingHashtag, setWeddingHashtag] = useState('');
   
   useEffect(() => {
-    if (location.state?.formData) {
-      const formData = location.state.formData;
-      setUserName(formData.partner1Name || 'User');
-      setPartnerName(formData.partner2Name || 'Partner');
-      setWeddingDate(formData.weddingDate ? new Date(formData.weddingDate).toLocaleDateString() : '');
-      
-      if (formData.weddingDate) {
-        try {
-          const date = new Date(formData.weddingDate);
-          setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
-        } catch (e) {
-          setFormattedWeddingDate('');
-        }
+    const fetchUserData = async () => {
+      if (!user) {
+        navigate('/login');
+        return;
       }
       
-      // Update the budget format to use GHS instead of $
-      const formattedBudget = formData.budget 
-        ? formData.budget.replace('$', 'GHS ')
-        : 'GHS 15k - 25k';
-      setPreferredBudget(formattedBudget);
-      
-      if (location.state.userColors && location.state.userColors.length) {
-        setWeddingColors(location.state.userColors);
-      }
-    } else {
-      setUserName('Alex');
-      setPartnerName('Jamie');
-      setWeddingDate('June 15, 2025');
       try {
-        const date = new Date('June 15, 2025');
-        setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
-      } catch (e) {
-        setFormattedWeddingDate('15-Jun-25');
+        const { data, error } = await supabase
+          .from('wedding_details')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (error) {
+          if (error.code !== 'PGRST116') { // PGRST116 is "row not found" error
+            throw error;
+          }
+          // If no data exists, we'll use the location state or defaults
+        }
+        
+        if (data) {
+          setUserName(data.partner1_name || 'User');
+          setPartnerName(data.partner2_name || 'Partner');
+          setWeddingDate(data.wedding_date || '');
+          setWeddingHashtag(data.hashtag || '');
+          
+          if (data.wedding_date) {
+            try {
+              const date = new Date(data.wedding_date);
+              setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+            } catch (e) {
+              setFormattedWeddingDate('');
+            }
+          }
+          
+          // Update the budget format to use GHS instead of $
+          const formattedBudget = data.budget 
+            ? data.budget.replace('$', 'GHS ')
+            : 'GHS 15k - 25k';
+          setPreferredBudget(formattedBudget);
+          
+          // Set wedding colors if they exist in the database
+          if (data.colors && Array.isArray(JSON.parse(data.colors))) {
+            setWeddingColors(JSON.parse(data.colors));
+            applyWeddingColors(JSON.parse(data.colors));
+          }
+        } else if (location.state?.formData) {
+          // Use data from location state if available
+          const formData = location.state.formData;
+          setUserName(formData.name || 'User');
+          setPartnerName(formData.partnerName || 'Partner');
+          setWeddingDate(formData.date ? new Date(formData.date).toLocaleDateString() : '');
+          setWeddingHashtag(formData.hashtag || '');
+          
+          if (formData.date) {
+            try {
+              const date = new Date(formData.date);
+              setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+            } catch (e) {
+              setFormattedWeddingDate('');
+            }
+          }
+          
+          // Update the budget format to use GHS instead of $
+          const formattedBudget = formData.budget 
+            ? formData.budget.toString().replace('$', 'GHS ')
+            : 'GHS 15k - 25k';
+          setPreferredBudget(formattedBudget);
+          
+          if (location.state.userColors && location.state.userColors.length) {
+            setWeddingColors(location.state.userColors);
+            applyWeddingColors(location.state.userColors);
+            
+            // Save the user data to the database
+            saveUserData(formData, location.state.userColors);
+          }
+        } else {
+          // Default values
+          setUserName('Alex');
+          setPartnerName('Jamie');
+          setWeddingDate('June 15, 2025');
+          try {
+            const date = new Date('June 15, 2025');
+            setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+          } catch (e) {
+            setFormattedWeddingDate('15-Jun-25');
+          }
+          setPreferredBudget('GHS 15k - 25k');
+          applyWeddingColors(weddingColors);
+        }
+      } catch (error) {
+        console.error('Error fetching wedding details:', error);
+        toast({
+          title: "Error",
+          description: "Could not load your wedding details",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
-      setPreferredBudget('GHS 15k - 25k');
-    }
-  }, [location]);
+    };
+    
+    fetchUserData();
+  }, [user, location, navigate]);
 
-  useEffect(() => {
-    if (weddingColors.length > 0) {
-      document.documentElement.style.setProperty('--wedding-color-primary', weddingColors[0]);
-      if (weddingColors.length > 1) {
-        document.documentElement.style.setProperty('--wedding-color-secondary', weddingColors[1]);
+  const saveUserData = async (formData: any, colors: string[]) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('wedding_details')
+        .upsert({
+          user_id: user.id,
+          partner1_name: formData.name,
+          partner2_name: formData.partnerName,
+          wedding_date: formData.date,
+          hashtag: formData.hashtag,
+          budget: formData.budget?.toString(),
+          theme: formData.theme,
+          guest_count: formData.guests?.toString(),
+          honeymoon_destination: formData.honeymoon,
+          need_new_home: formData.needNewHome,
+          colors: JSON.stringify(colors),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' });
+        
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving wedding details:', error);
+    }
+  };
+  
+  const applyWeddingColors = (colors: string[]) => {
+    if (colors.length > 0) {
+      document.documentElement.style.setProperty('--wedding-color-primary', colors[0]);
+      if (colors.length > 1) {
+        document.documentElement.style.setProperty('--wedding-color-secondary', colors[1]);
       }
-      if (weddingColors.length > 2) {
-        document.documentElement.style.setProperty('--wedding-color-tertiary', weddingColors[2]);
+      if (colors.length > 2) {
+        document.documentElement.style.setProperty('--wedding-color-tertiary', colors[2]);
       }
       
-      const gradientColors = weddingColors.length >= 2 
-        ? weddingColors 
-        : [...weddingColors, ...(['#FFC0CB', '#E7F0FD'].filter(c => !weddingColors.includes(c)))];
+      const gradientColors = colors.length >= 2 
+        ? colors 
+        : [...colors, ...(colors.length === 1 ? [adjustColor(colors[0], -30)] : ['#e73c7e', '#23a6d5'])];
       
       const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
       document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
+      document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
     }
-  }, [weddingColors]);
+  };
+  
+  const adjustColor = (hex: string, amount: number) => {
+    return '#' + hex.replace(/^#/, '').replace(/../g, color => {
+      const colorNum = parseInt(color, 16);
+      const newColorNum = Math.max(Math.min(colorNum + amount, 255), 0);
+      return newColorNum.toString(16).padStart(2, '0');
+    });
+  };
 
   const tasks = [
     { id: '1', title: 'Set your wedding date', completed: true, dueDate: 'Completed' },
@@ -157,6 +267,16 @@ const Dashboard = () => {
     seasonal: 'Summer',
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center animated-gradient dynamic-gradient">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-lg">
+          <p className="text-lg">Loading your wedding dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full animated-gradient dynamic-gradient relative">
       <HeartAnimation avoidTextAreas={true} count={10} />
@@ -168,10 +288,19 @@ const Dashboard = () => {
           <h1 className="text-3xl md:text-4xl font-semibold mb-2 ml-6">
             Welcome back, {userName} & {partnerName}!
           </h1>
-          <p className="text-white/80 ml-6">
-            Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
-            {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center ml-6 text-white/80">
+            <p>
+              Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
+              {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
+            </p>
+            {weddingHashtag && (
+              <p className="sm:ml-4 mt-1 sm:mt-0">
+                <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-medium">
+                  {weddingHashtag}
+                </span>
+              </p>
+            )}
+          </div>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
