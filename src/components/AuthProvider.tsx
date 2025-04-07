@@ -1,16 +1,7 @@
 
-import { createContext, useContext, useState } from 'react';
-
-type User = {
-  id: string;
-  email: string;
-  name?: string;
-};
-
-type Session = {
-  user: User;
-  access_token: string;
-};
+import { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
 
 type AuthContextType = {
   user: User | null;
@@ -33,37 +24,40 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Mock sign in function - we'll replace this with Supabase later
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     
     try {
-      // Simple validation
-      if (!email || !password) {
-        throw new Error("Email and password are required");
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      // Demo user
-      const mockUser = {
-        id: '1234',
-        email: email,
-        name: email.split('@')[0],
-      };
-      
-      const mockSession = {
-        user: mockUser,
-        access_token: 'mock-token-' + Date.now(),
-      };
-      
-      // Store user in localStorage for persistence
-      localStorage.setItem('wedpal_user', JSON.stringify(mockUser));
-      localStorage.setItem('wedpal_session', JSON.stringify(mockSession));
-      
-      // Update state
-      setUser(mockUser);
-      setSession(mockSession);
+      if (error) throw error;
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -72,13 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Mock sign out function - we'll replace this with Supabase later
   const signOut = async () => {
     try {
-      localStorage.removeItem('wedpal_user');
-      localStorage.removeItem('wedpal_session');
-      setUser(null);
-      setSession(null);
+      await supabase.auth.signOut();
     } catch (error) {
       console.error('Sign out error:', error);
     }
