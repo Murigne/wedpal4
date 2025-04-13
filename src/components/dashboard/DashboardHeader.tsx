@@ -22,9 +22,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName
     <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 px-4 md:px-6 py-4">
       <div className="container mx-auto max-w-[1600px]">
         <div className="flex items-center justify-between">
-          <WedPalLogo className="text-white text-2xl drop-shadow-lg" />
+          <div className="flex justify-start">
+            <WedPalLogo className="text-white text-2xl drop-shadow-lg mr-2" />
+          </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <Button 
               variant="outline" 
               className="bg-white/30 hover:bg-white/40 text-white border-white/30"

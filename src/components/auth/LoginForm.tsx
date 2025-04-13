@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -51,51 +50,30 @@ const LoginForm: React.FC = () => {
         variant: "default",
       });
       
-      // Check if this is a vendor account
-      const isVendorPath = location.pathname.includes('vendor');
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (isVendorPath) {
-        // User is logging in from vendor login page, check if they're actually a vendor
-        const { data: vendorData, error: vendorError } = await supabase
-          .from('vendors')
-          .select('*')
-          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-          .single();
-          
-        if (vendorError && vendorError.code !== 'PGRST116') {
-          console.error('Error checking vendor status:', vendorError);
-        }
+      if (!user) {
+        throw new Error("Unable to retrieve user information");
+      }
+      
+      // Check if this is a vendor account
+      const { data: vendorData, error: vendorError } = await supabase
+        .from('vendors')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
         
-        if (vendorData) {
-          navigate('/vendor-dashboard');
-        } else {
-          // Logged in from vendor page but not a vendor
-          toast({
-            title: "Not a vendor",
-            description: "This account is not registered as a vendor. Redirecting to couple's dashboard.",
-            variant: "default",
-          });
-          navigate('/dashboard');
-        }
+      if (vendorError && vendorError.code !== 'PGRST116') {
+        console.error('Error checking vendor status:', vendorError);
+      }
+      
+      if (vendorData) {
+        // User is a vendor - redirect to vendor dashboard
+        navigate('/vendor-dashboard');
       } else {
-        // Check if user is a vendor when logging in from regular login
-        const { data: vendorData, error: vendorError } = await supabase
-          .from('vendors')
-          .select('*')
-          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-          .single();
-          
-        if (vendorError && vendorError.code !== 'PGRST116') {
-          console.error('Error checking vendor status:', vendorError);
-        }
-        
-        if (vendorData) {
-          // User is a vendor
-          navigate('/vendor-dashboard');
-        } else {
-          // Regular user
-          navigate('/dashboard');
-        }
+        // Regular user - redirect to couple's dashboard
+        navigate('/dashboard');
       }
       
     } catch (error: any) {

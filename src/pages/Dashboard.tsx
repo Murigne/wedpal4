@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -91,7 +92,7 @@ const Dashboard = () => {
           const formData = location.state.formData;
           setUserName(formData.name || 'User');
           setPartnerName(formData.partnerName || 'Partner');
-          setWeddingDate(formData.date ? new Date(formData.date).toLocaleDateString() : '');
+          setWeddingDate(formData.date ? new Date(formData.date).toISOString() : '');
           setWeddingHashtag(formData.hashtag || '');
           
           if (formData.date) {
@@ -198,10 +199,11 @@ const Dashboard = () => {
       const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
       document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
       
+      // Apply gradient to elements with animated-gradient class
       setTimeout(() => {
         const gradientElements = document.querySelectorAll('.animated-gradient');
         gradientElements.forEach(el => {
-          el.classList.add('dynamic-gradient');
+          (el as HTMLElement).classList.add('dynamic-gradient');
         });
       }, 100);
     }
