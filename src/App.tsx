@@ -10,6 +10,7 @@ import VendorMarketplace from "./pages/VendorMarketplace";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import EditWeddingDetails from "./pages/EditWeddingDetails";
 import NotFound from "./pages/NotFound";
 import AuthProvider from "./components/AuthProvider";
 import VendorSignup from "./pages/VendorSignup";
@@ -92,6 +93,11 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={
         <ProtectedRoute vendorOnly={false}>
           <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/edit-wedding-details" element={
+        <ProtectedRoute vendorOnly={false}>
+          <EditWeddingDetails />
         </ProtectedRoute>
       } />
       <Route path="/vendor-signup" element={<VendorSignup />} />

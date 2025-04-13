@@ -36,7 +36,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName }) => {
   };
 
   const handleEditProfile = () => {
-    navigate('/');
+    navigate('/edit-wedding-details');
   };
 
   const handleAccountSettings = () => {
