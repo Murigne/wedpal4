@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import ColorPalette from './wedding/ColorPalette';
 import ThemeDisplay from './wedding/ThemeDisplay';
 import ThemeComparison from './wedding/ThemeComparison';
+import ThemePreview from './wedding/ThemePreview';
 import { generateTemplates, WeddingTheme } from './wedding/ThemeGenerator';
 
 interface WeddingTemplatesProps {
@@ -32,7 +32,6 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
   const [favoriteThemes, setFavoriteThemes] = useState<string[]>([]);
   const [comparisonOpen, setComparisonOpen] = useState(false);
   
-  // Use localStorage to persist favorite themes
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favoriteThemes');
     if (savedFavorites) {
@@ -44,12 +43,10 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
     }
   }, []);
 
-  // Save favorites to localStorage when they change
   useEffect(() => {
     localStorage.setItem('favoriteThemes', JSON.stringify(favoriteThemes));
   }, [favoriteThemes]);
   
-  // Generate templates based on user preferences and budget
   const templates = generateTemplates(userBudget, userPreferences, customColors);
   
   const handleApplyTheme = (themeId: string) => {
@@ -63,14 +60,12 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
   const handleToggleFavorite = (themeId: string) => {
     setFavoriteThemes(prev => {
       if (prev.includes(themeId)) {
-        // Remove from favorites
         toast({
           title: "Removed from Favorites",
           description: `Theme has been removed from your favorites.`,
         });
         return prev.filter(id => id !== themeId);
       } else {
-        // Add to favorites
         if (prev.length >= 5) {
           toast({
             title: "Favorites Limit Reached",
@@ -88,8 +83,12 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
     });
   };
 
-  // Get the actual theme objects for favorites
   const favoritedThemes = templates.filter(theme => favoriteThemes.includes(theme.id));
+
+  const activeTheme = templates.find(theme => {
+    if (selectedTheme) return theme.id === selectedTheme;
+    return true;
+  }) || templates[0];
 
   return (
     <Card className={cn("border-wedding-pink/20", className)}>
@@ -154,7 +153,6 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
           ))}
         </Tabs>
         
-        {/* Theme Comparison Dialog */}
         <ThemeComparison
           open={comparisonOpen}
           onOpenChange={setComparisonOpen}
@@ -171,11 +169,11 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
             <DialogHeader>
               <DialogTitle>Theme Preview</DialogTitle>
               <DialogDescription>
-                See how your wedding website would look with this theme
+                See how your wedding would look with the {activeTheme.name} theme
               </DialogDescription>
             </DialogHeader>
-            <div className="h-[400px] bg-muted rounded-lg flex items-center justify-center">
-              <p>Theme preview would display here</p>
+            <div className="max-h-[70vh] overflow-y-auto p-4">
+              <ThemePreview theme={activeTheme} />
             </div>
           </DialogContent>
         </Dialog>
