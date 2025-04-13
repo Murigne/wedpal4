@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -56,12 +57,15 @@ const Dashboard = () => {
         console.log("Setting gradient style:", gradientStyle);
         document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
         
-        document.body.offsetHeight;
+        // Force a reflow to ensure styles are applied
+        // Fix: Using void with HTMLElement cast to access offsetHeight
+        void (document.body as HTMLElement).offsetHeight;
         
         const gradientElements = document.querySelectorAll('.animated-gradient');
         gradientElements.forEach(el => {
           el.classList.remove('dynamic-gradient');
-          void el.offsetWidth;
+          // Fix: Using void with HTMLElement cast to access offsetWidth
+          void (el as HTMLElement).offsetWidth;
           el.classList.add('dynamic-gradient');
         });
         
