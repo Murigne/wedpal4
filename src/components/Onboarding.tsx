@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
@@ -180,7 +181,7 @@ const Onboarding: React.FC = () => {
       navigate('/signup', { 
         state: { 
           formData,
-          isSignUp: true 
+          userColors: [] // Ensure we're passing userColors even if it's empty
         } 
       });
       return;

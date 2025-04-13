@@ -90,14 +90,14 @@ const Dashboard = () => {
         } else if (location.state?.formData) {
           console.log("Using location state data");
           const formData = location.state.formData;
-          setUserName(formData.name || 'User');
-          setPartnerName(formData.partnerName || 'Partner');
-          setWeddingDate(formData.date ? new Date(formData.date).toISOString() : '');
+          setUserName(formData.partner1Name || 'User');
+          setPartnerName(formData.partner2Name || 'Partner');
+          setWeddingDate(formData.weddingDate ? new Date(formData.weddingDate).toISOString() : '');
           setWeddingHashtag(formData.hashtag || '');
           
-          if (formData.date) {
+          if (formData.weddingDate) {
             try {
-              const date = new Date(formData.date);
+              const date = new Date(formData.weddingDate);
               setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
             } catch (e) {
               console.error("Date formatting error:", e);
@@ -158,14 +158,14 @@ const Dashboard = () => {
         .from('wedding_details')
         .upsert({
           user_id: user.id,
-          partner1_name: formData.name,
-          partner2_name: formData.partnerName,
-          wedding_date: formData.date,
+          partner1_name: formData.partner1Name,
+          partner2_name: formData.partner2Name,
+          wedding_date: formData.weddingDate,
           hashtag: formData.hashtag,
           budget: formData.budget?.toString(),
           theme: formData.theme,
-          guest_count: formData.guests?.toString(),
-          honeymoon_destination: formData.honeymoon,
+          guest_count: formData.guestCount?.toString(),
+          honeymoon_destination: formData.honeymoonDestination,
           need_new_home: formData.needNewHome,
           colors: JSON.stringify(colors),
           updated_at: new Date().toISOString()

@@ -45,14 +45,14 @@ const SignUp: React.FC = () => {
             .from('wedding_details')
             .upsert({
               user_id: user.id,
-              partner1_name: formData.name || '',
-              partner2_name: formData.partnerName || '',
-              wedding_date: formData.date || '',
+              partner1_name: formData.partner1Name || '',
+              partner2_name: formData.partner2Name || '',
+              wedding_date: formData.weddingDate || '',
               hashtag: formData.hashtag || '',
               budget: formData.budget?.toString() || '',
               theme: formData.theme || '',
-              guest_count: formData.guests?.toString() || '',
-              honeymoon_destination: formData.honeymoon || '',
+              guest_count: formData.guestCount?.toString() || '',
+              honeymoon_destination: formData.honeymoonDestination || '',
               need_new_home: formData.needNewHome || 'No',
               colors: userColors ? JSON.stringify(userColors) : null,
               updated_at: new Date().toISOString()
