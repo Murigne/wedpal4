@@ -15,11 +15,9 @@ import {
 
 interface ProfileMenuProps {
   userName: string;
-  partnerName?: string;
-  children?: React.ReactNode;
 }
 
-const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName, children }) => {
+const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName }) => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
 
@@ -50,11 +48,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName, childr
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {children || (
-          <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center cursor-pointer hover:bg-white">
-            <span className="font-medium text-sm">{userName.charAt(0)}</span>
-          </div>
-        )}
+        <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center cursor-pointer hover:bg-white">
+          <span className="font-medium text-sm">{userName.charAt(0)}</span>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>

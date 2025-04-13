@@ -5,25 +5,16 @@ import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WedPalLogo from '@/components/WedPalLogo';
 import ProfileMenu from './ProfileMenu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface DashboardHeaderProps {
   userName: string;
-  partnerName?: string;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName }) => {
   const navigate = useNavigate();
 
   const handleVendorMarketplaceClick = () => {
     navigate('/vendors');
-  };
-
-  // Get initials for avatar
-  const getInitials = () => {
-    const firstInitial = userName ? userName.charAt(0).toUpperCase() : '';
-    const secondInitial = partnerName ? partnerName.charAt(0).toUpperCase() : '';
-    return `${firstInitial}${secondInitial}`;
   };
 
   return (
@@ -41,13 +32,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName
             Vendor Marketplace
           </Button>
           
-          <ProfileMenu userName={userName} partnerName={partnerName}>
-            <Avatar className="h-8 w-8 bg-white/90 hover:bg-white">
-              <AvatarFallback className="text-sm font-medium">
-                {getInitials()}
-              </AvatarFallback>
-            </Avatar>
-          </ProfileMenu>
+          <ProfileMenu userName={userName} />
         </div>
       </div>
     </header>
