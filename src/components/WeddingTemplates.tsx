@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,7 +33,7 @@ const predefinedColors = [
   // Original 12 colors
   "#FFC1CC", // Blush Pink
   "#800020", // Burgundy
-  "#78A2CC" // Dusty Blue
+  "#78A2CC", // Dusty Blue
   "#50C878", // Emerald Green
   "#FFD700", // Gold
   "#FFFFF0", // Ivory
@@ -44,6 +43,7 @@ const predefinedColors = [
   "#A9B89E", // Sage Green
   "#C0C0C0", // Silver
   "#008080", // Teal
+  // Additional 6 colors
   "#FF0000", // Red
   "#4169E1", // Royal Blue
   "#800080", // Purple
@@ -150,7 +150,7 @@ const WeddingTemplates: React.FC<WeddingTemplatesProps> = ({
                 {predefinedColors.map((color, index) => (
                   <div 
                     key={`predefined-${index}`}
-                    className="w-6 h-6 rounded-full cursor-pointer border border-gray-200 shadow-sm hover:scale-110 transition-transform"
+                    className="w-5 h-5 rounded-full cursor-pointer border border-gray-200 shadow-sm hover:scale-110 transition-transform"
                     style={{ backgroundColor: color }}
                     onClick={() => {
                       if (customColors.length < 6) {
