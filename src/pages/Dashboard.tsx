@@ -45,12 +45,11 @@ const Dashboard = () => {
           .single();
           
         if (error) {
-          if (error.code !== 'PGRST116') { // PGRST116 is "row not found" error
+          if (error.code !== 'PGRST116') {
             console.error("Database error:", error);
             throw error;
           }
           console.log("No wedding details found for user");
-          // If no data exists, we'll use the location state or defaults
         }
         
         if (data) {
@@ -59,7 +58,6 @@ const Dashboard = () => {
           setPartnerName(data.partner2_name || 'Partner');
           setWeddingDate(data.wedding_date || '');
           
-          // Handle the hashtag field
           setWeddingHashtag(data.hashtag || '');
           
           if (data.wedding_date) {
@@ -72,13 +70,11 @@ const Dashboard = () => {
             }
           }
           
-          // Update the budget format to use GHS instead of $
           const formattedBudget = data.budget 
             ? data.budget.replace('$', 'GHS ')
             : 'GHS 15k - 25k';
           setPreferredBudget(formattedBudget);
           
-          // Set wedding colors if they exist in the database
           if (data.colors) {
             try {
               const parsedColors = JSON.parse(data.colors);
@@ -91,7 +87,6 @@ const Dashboard = () => {
             }
           }
         } else if (location.state?.formData) {
-          // Use data from location state if available
           console.log("Using location state data");
           const formData = location.state.formData;
           setUserName(formData.name || 'User');
@@ -109,7 +104,6 @@ const Dashboard = () => {
             }
           }
           
-          // Update the budget format to use GHS instead of $
           const formattedBudget = formData.budget 
             ? formData.budget.toString().replace('$', 'GHS ')
             : 'GHS 15k - 25k';
@@ -119,11 +113,9 @@ const Dashboard = () => {
             setWeddingColors(location.state.userColors);
             applyWeddingColors(location.state.userColors);
             
-            // Save the user data to the database
             saveUserData(formData, location.state.userColors);
           }
         } else {
-          // Default values
           console.log("Using default values");
           setUserName('User');
           setPartnerName('Partner');
@@ -206,7 +198,6 @@ const Dashboard = () => {
       const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
       document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
       
-      // Apply the dynamic gradient class
       setTimeout(() => {
         const gradientElements = document.querySelectorAll('.animated-gradient');
         gradientElements.forEach(el => {
@@ -316,7 +307,7 @@ const Dashboard = () => {
     <div className="min-h-screen w-full animated-gradient dynamic-gradient relative">
       <HeartAnimation avoidTextAreas={true} count={10} />
       
-      <DashboardHeader userName={userName} />
+      <DashboardHeader userName={userName} partnerName={partnerName} />
       
       <main className="w-full px-6 md:px-6 py-8">
         <div className="mb-8 text-white max-w-[1600px] mx-auto">

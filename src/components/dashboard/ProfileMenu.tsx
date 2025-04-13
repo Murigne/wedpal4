@@ -15,9 +15,10 @@ import {
 
 interface ProfileMenuProps {
   userName: string;
+  partnerName?: string;
 }
 
-const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName }) => {
+const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName }) => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
 
@@ -45,11 +46,18 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName }) => {
     });
   };
 
+  // Get initials for both partners
+  const getUserInitials = () => {
+    const firstInitial = userName ? userName.charAt(0).toUpperCase() : '';
+    const secondInitial = partnerName ? partnerName.charAt(0).toUpperCase() : '';
+    return firstInitial + (secondInitial || '');
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center cursor-pointer hover:bg-white">
-          <span className="font-medium text-sm">{userName.charAt(0)}</span>
+          <span className="font-medium text-sm">{getUserInitials()}</span>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
