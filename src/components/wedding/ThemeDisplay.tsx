@@ -1,41 +1,52 @@
 
 import React from 'react';
-import { Heart, Palette } from 'lucide-react';
+import { Heart, Palette, Star } from 'lucide-react';
 import ThemeFeatures from './ThemeFeatures';
 import { toast } from '@/components/ui/use-toast';
 import { predefinedColors } from './ColorPalette';
+import { Button } from '@/components/ui/button';
+import { WeddingTheme } from './ThemeGenerator';
 
 interface ThemeDisplayProps {
   theme: WeddingTheme;
   editMode: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: (themeId: string) => void;
 }
 
-interface WeddingTheme {
-  id: string;
-  name: string;
-  description: string;
-  priceRange: string;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  fontFamily: string;
-  features: string[];
-  sampleImage?: string;
-  bestFor: string;
-}
-
-const ThemeDisplay: React.FC<ThemeDisplayProps> = ({ theme, editMode }) => {
+const ThemeDisplay: React.FC<ThemeDisplayProps> = ({ 
+  theme, 
+  editMode, 
+  isFavorite = false,
+  onToggleFavorite 
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <div 
-          className="h-48 rounded-lg mb-3 flex items-center justify-center"
-          style={{
-            background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.secondaryColor})`,
-            color: theme.accentColor,
-          }}
-        >
-          <Heart className="h-12 w-12" />
+        <div className="relative">
+          <div 
+            className="h-48 rounded-lg mb-3 flex items-center justify-center"
+            style={{
+              background: `linear-gradient(135deg, ${theme.primaryColor}, ${theme.secondaryColor})`,
+              color: theme.accentColor,
+            }}
+          >
+            <Heart className="h-12 w-12" />
+          </div>
+          
+          {onToggleFavorite && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 bg-white/40 hover:bg-white/60 backdrop-blur-sm rounded-full"
+              onClick={() => onToggleFavorite(theme.id)}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Star 
+                className={`h-5 w-5 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`} 
+              />
+            </Button>
+          )}
         </div>
         
         <div className="flex gap-2 mb-3">
