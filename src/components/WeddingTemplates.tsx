@@ -32,19 +32,18 @@ interface WeddingTemplatesProps {
 // Define all 18 wedding colors
 const predefinedColors = [
   // Original 12 colors
-  "#FFC0CB", // Pink
-  "#FFAFBD", // Light Pink
-  "#E7F0FD", // Light Blue
-  "#D8BFD8", // Thistle
-  "#F0E68C", // Khaki
-  "#98FB98", // Pale Green
-  "#FFB6C1", // Light Pink
-  "#87CEFA", // Light Sky Blue
+  "#FFC1CC", // Blush Pink
+  "#800020", // Burgundy
+  "#78A2CC" // Dusty Blue
+  "#50C878", // Emerald Green
+  "#FFD700", // Gold
+  "#FFFFF0", // Ivory
   "#E6E6FA", // Lavender
-  "#B0E0E6", // Powder Blue
-  "#F5DEB3", // Wheat
-  "#FFDAB9", // Peach Puff
-  // 6 New colors
+  "#000080", // Navy Blue
+  "#FFE5B4", // Peach
+  "#A9B89E", // Sage Green
+  "#C0C0C0", // Silver
+  "#008080", // Teal
   "#FF0000", // Red
   "#4169E1", // Royal Blue
   "#800080", // Purple
