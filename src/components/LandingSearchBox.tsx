@@ -30,18 +30,24 @@ const questions = [
 ];
 
 const colorOptions = [
-  { name: 'Blush Pink', value: '#FFC0CB', class: 'bg-pink-300' },
+  { name: 'Blush Pink', value: '#FFC1CC', class: 'bg-pink-200' },
   { name: 'Burgundy', value: '#800020', class: 'bg-red-900' },
-  { name: 'Red', value: '#ea384c', class: 'bg-red-600' },
-  { name: 'Royal Blue', value: '#1EAEDB', class: 'bg-blue-500' },
-  { name: 'Purple', value: '#9b87f5', class: 'bg-purple-500' },
-  { name: 'Dusty Blue', value: '#6699CC', class: 'bg-blue-400' },
-  { name: 'Coral', value: '#FEC6A1', class: 'bg-orange-300' },
-  { name: 'Turquoise Blue', value: '#33C3F0', class: 'bg-cyan-400' },
-  { name: 'Beige', value: '#F1F0FB', class: 'bg-gray-100' },
+  { name: 'Dusty Blue', value: '#78A2CC', class: 'bg-blue-300' },
   { name: 'Emerald Green', value: '#50C878', class: 'bg-green-500' },
   { name: 'Gold', value: '#FFD700', class: 'bg-yellow-400' },
   { name: 'Ivory', value: '#FFFFF0', class: 'bg-yellow-50' },
+  { name: 'Lavender', value: '#E6E6FA', class: 'bg-purple-100' },
+  { name: 'Navy Blue', value: '#000080', class: 'bg-blue-900' },
+  { name: 'Peach', value: '#FFE5B4', class: 'bg-orange-100' },
+  { name: 'Sage Green', value: '#A9B89E', class: 'bg-green-200' },
+  { name: 'Silver', value: '#C0C0C0', class: 'bg-gray-300' },
+  { name: 'Teal', value: '#008080', class: 'bg-teal-600' },
+  { name: 'Red', value: '#FF0000', class: 'bg-red-600' },
+  { name: 'Royal Blue', value: '#4169E1', class: 'bg-blue-600' },
+  { name: 'Purple', value: '#800080', class: 'bg-purple-800' },
+  { name: 'Coral', value: '#FF7F50', class: 'bg-orange-400' },
+  { name: 'Turquoise', value: '#40E0D0', class: 'bg-cyan-300' },
+  { name: 'Beige', value: '#F5F5DC', class: 'bg-yellow-100' },
 ];
 
 const LandingSearchBox = () => {
