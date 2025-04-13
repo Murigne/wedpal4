@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -114,7 +113,9 @@ const Dashboard = () => {
             setWeddingColors(location.state.userColors);
             applyWeddingColors(location.state.userColors);
             
-            saveUserData(formData, location.state.userColors);
+            if (user) {
+              saveUserData(formData, location.state.userColors);
+            }
           }
         } else {
           console.log("Using default values");

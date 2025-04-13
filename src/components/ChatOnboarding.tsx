@@ -145,10 +145,12 @@ const ChatOnboarding: React.FC = () => {
     try {
       setIsCreatingAccount(true);
       
+      console.log("Passing formData to signup:", formData);
+      
       navigate('/signup', { 
         state: { 
           formData,
-          isSignUp: true 
+          userColors: [] // Ensure we're passing userColors even if it's empty
         } 
       });
     } catch (err: any) {

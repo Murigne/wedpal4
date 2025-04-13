@@ -35,12 +35,17 @@ const SignUp: React.FC = () => {
     setLoading(true);
 
     try {
+      console.log("Attempting to sign up with email:", email);
       const { data: { user }, error } = await supabase.auth.signUp({ email, password });
       
       if (error) throw error;
       
+      console.log("User created successfully:", user?.id);
+      console.log("Form data to save:", formData);
+      
       if (user && formData) {
         try {
+          console.log("Saving wedding details for user:", user.id);
           const { error: detailsError } = await supabase
             .from('wedding_details')
             .upsert({
@@ -65,10 +70,14 @@ const SignUp: React.FC = () => {
               description: "Account created but failed to save wedding details. Please update your profile later.",
               variant: "default",
             });
+          } else {
+            console.log("Wedding details saved successfully");
           }
         } catch (detailsError) {
           console.error('Exception saving wedding details:', detailsError);
         }
+      } else {
+        console.log("No user or form data available to save details");
       }
       
       toast({
@@ -92,6 +101,7 @@ const SignUp: React.FC = () => {
         navigate('/login');
       }
     } catch (error: any) {
+      console.error("Sign up error:", error);
       toast({
         title: "Error",
         description: error.message,
