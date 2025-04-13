@@ -26,6 +26,64 @@ const Dashboard = () => {
   const [selectedTheme, setSelectedTheme] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [weddingHashtag, setWeddingHashtag] = useState('');
+  const [colorsApplied, setColorsApplied] = useState(false);
+  
+  const applyWeddingColors = (colors: string[]) => {
+    if (!colors || colors.length === 0) {
+      console.log("No colors to apply");
+      return;
+    }
+    
+    console.log("Applying wedding colors:", colors);
+    
+    try {
+      if (colors.length > 0) {
+        document.documentElement.style.setProperty('--wedding-color-primary', colors[0]);
+        
+        if (colors.length > 1) {
+          document.documentElement.style.setProperty('--wedding-color-secondary', colors[1]);
+        }
+        
+        if (colors.length > 2) {
+          document.documentElement.style.setProperty('--wedding-color-tertiary', colors[2]);
+        }
+        
+        const gradientColors = colors.length >= 2 
+          ? colors 
+          : [...colors, ...(colors.length === 1 ? [adjustColor(colors[0], -30)] : ['#e73c7e', '#23a6d5'])];
+        
+        const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
+        console.log("Setting gradient style:", gradientStyle);
+        document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
+        
+        document.body.offsetHeight;
+        
+        const gradientElements = document.querySelectorAll('.animated-gradient');
+        gradientElements.forEach(el => {
+          el.classList.remove('dynamic-gradient');
+          void el.offsetWidth;
+          el.classList.add('dynamic-gradient');
+        });
+        
+        setColorsApplied(true);
+        console.log("Colors applied successfully");
+      }
+    } catch (error) {
+      console.error("Error applying wedding colors:", error);
+    }
+  };
+  
+  useEffect(() => {
+    if (!isLoading && weddingColors.length > 0 && !colorsApplied) {
+      console.log("Forcibly reapplying colors after dashboard load");
+      
+      const timer = setTimeout(() => {
+        applyWeddingColors(weddingColors);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, weddingColors, colorsApplied]);
   
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,12 +103,11 @@ const Dashboard = () => {
           .single();
           
         if (error) {
-          if (error.code !== 'PGRST116') { // PGRST116 is "row not found" error
+          if (error.code !== 'PGRST116') {
             console.error("Database error:", error);
             throw error;
           }
           console.log("No wedding details found for user");
-          // If no data exists, we'll use the location state or defaults
         }
         
         if (data) {
@@ -59,7 +116,6 @@ const Dashboard = () => {
           setPartnerName(data.partner2_name || 'Partner');
           setWeddingDate(data.wedding_date || '');
           
-          // Handle the hashtag field
           setWeddingHashtag(data.hashtag || '');
           
           if (data.wedding_date) {
@@ -72,26 +128,31 @@ const Dashboard = () => {
             }
           }
           
-          // Update the budget format to use GHS instead of $
           const formattedBudget = data.budget 
             ? data.budget.replace('$', 'GHS ')
             : 'GHS 15k - 25k';
           setPreferredBudget(formattedBudget);
           
-          // Set wedding colors if they exist in the database
           if (data.colors) {
             try {
               const parsedColors = JSON.parse(data.colors);
-              if (Array.isArray(parsedColors)) {
+              if (Array.isArray(parsedColors) && parsedColors.length > 0) {
+                console.log("Found colors in database:", parsedColors);
                 setWeddingColors(parsedColors);
                 applyWeddingColors(parsedColors);
+              } else {
+                console.log("Invalid colors format in database, using defaults");
+                applyWeddingColors(weddingColors);
               }
             } catch (e) {
               console.error('Error parsing colors:', e);
+              applyWeddingColors(weddingColors);
             }
+          } else {
+            console.log("No colors found in database, using defaults");
+            applyWeddingColors(weddingColors);
           }
         } else if (location.state?.formData) {
-          // Use data from location state if available
           console.log("Using location state data");
           const formData = location.state.formData;
           setUserName(formData.name || 'User');
@@ -109,21 +170,22 @@ const Dashboard = () => {
             }
           }
           
-          // Update the budget format to use GHS instead of $
           const formattedBudget = formData.budget 
             ? formData.budget.toString().replace('$', 'GHS ')
             : 'GHS 15k - 25k';
           setPreferredBudget(formattedBudget);
           
           if (location.state.userColors && location.state.userColors.length) {
+            console.log("Using colors from location state:", location.state.userColors);
             setWeddingColors(location.state.userColors);
             applyWeddingColors(location.state.userColors);
             
-            // Save the user data to the database
             saveUserData(formData, location.state.userColors);
+          } else {
+            console.log("No colors in location state, using defaults");
+            applyWeddingColors(weddingColors);
           }
         } else {
-          // Default values
           console.log("Using default values");
           setUserName('User');
           setPartnerName('Partner');
@@ -136,6 +198,7 @@ const Dashboard = () => {
             setFormattedWeddingDate('15-Jun-25');
           }
           setPreferredBudget('GHS 15k - 25k');
+          console.log("Applying default wedding colors");
           applyWeddingColors(weddingColors);
         }
       } catch (error) {
@@ -151,7 +214,21 @@ const Dashboard = () => {
     };
     
     fetchUserData();
+    
+    document.documentElement.classList.add('using-dynamic-colors');
+    
+    return () => {
+      document.documentElement.classList.remove('using-dynamic-colors');
+    };
   }, [user, location, navigate]);
+
+  const adjustColor = (hex: string, amount: number) => {
+    return '#' + hex.replace(/^#/, '').replace(/../g, color => {
+      const colorNum = parseInt(color, 16);
+      const newColorNum = Math.max(Math.min(colorNum + amount, 255), 0);
+      return newColorNum.toString(16).padStart(2, '0');
+    });
+  };
 
   const saveUserData = async (formData: any, colors: string[]) => {
     if (!user) {
@@ -187,41 +264,6 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error saving wedding details:', error);
     }
-  };
-  
-  const applyWeddingColors = (colors: string[]) => {
-    if (colors.length > 0) {
-      document.documentElement.style.setProperty('--wedding-color-primary', colors[0]);
-      if (colors.length > 1) {
-        document.documentElement.style.setProperty('--wedding-color-secondary', colors[1]);
-      }
-      if (colors.length > 2) {
-        document.documentElement.style.setProperty('--wedding-color-tertiary', colors[2]);
-      }
-      
-      const gradientColors = colors.length >= 2 
-        ? colors 
-        : [...colors, ...(colors.length === 1 ? [adjustColor(colors[0], -30)] : ['#e73c7e', '#23a6d5'])];
-      
-      const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
-      document.documentElement.style.setProperty('--dynamic-gradient', gradientStyle);
-      
-      // Apply the dynamic gradient class
-      setTimeout(() => {
-        const gradientElements = document.querySelectorAll('.animated-gradient');
-        gradientElements.forEach(el => {
-          el.classList.add('dynamic-gradient');
-        });
-      }, 100);
-    }
-  };
-  
-  const adjustColor = (hex: string, amount: number) => {
-    return '#' + hex.replace(/^#/, '').replace(/../g, color => {
-      const colorNum = parseInt(color, 16);
-      const newColorNum = Math.max(Math.min(colorNum + amount, 255), 0);
-      return newColorNum.toString(16).padStart(2, '0');
-    });
   };
 
   const tasks = [
@@ -304,7 +346,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center animated-gradient dynamic-gradient">
+      <div className="min-h-screen flex items-center justify-center animated-gradient">
         <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-lg">
           <p className="text-lg">Loading your wedding dashboard...</p>
         </div>
@@ -316,7 +358,7 @@ const Dashboard = () => {
     <div className="min-h-screen w-full animated-gradient dynamic-gradient relative">
       <HeartAnimation avoidTextAreas={true} count={10} />
       
-      <DashboardHeader userName={userName} />
+      <DashboardHeader userName={userName} partnerName={partnerName} />
       
       <main className="w-full px-6 md:px-6 py-8">
         <div className="mb-8 text-white max-w-[1600px] mx-auto">
