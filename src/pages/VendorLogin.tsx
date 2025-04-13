@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Eye, EyeOff, Store } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
+import { useAuth } from '@/components/AuthProvider';
 
 const VendorLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +13,7 @@ const VendorLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,29 +21,7 @@ const VendorLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      // Check if the user is a vendor
-      const { data: vendorData, error: vendorError } = await supabase
-        .from('vendors')
-        .select('*')
-        .eq('user_id', data.user?.id)
-        .single();
-        
-      if (vendorError && vendorError.code !== 'PGRST116') {
-        throw vendorError;
-      }
-      
-      if (!vendorData) {
-        // Not a vendor, sign them out
-        await supabase.auth.signOut();
-        throw new Error("This account is not registered as a vendor. Please use the vendor registration page.");
-      }
+      await signIn(email, password);
       
       toast({
         title: "Success",

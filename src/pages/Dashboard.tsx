@@ -320,10 +320,10 @@ const Dashboard = () => {
       
       <main className="w-full px-6 md:px-6 py-8">
         <div className="mb-8 text-white max-w-[1600px] mx-auto">
-          <h1 className="text-3xl md:text-4xl font-semibold mb-2 ml-6">
+          <h1 className="text-3xl md:text-4xl font-semibold mb-2">
             Welcome back, {userName} & {partnerName}!
           </h1>
-          <div className="flex flex-col sm:flex-row sm:items-center ml-6 text-white/80">
+          <div className="flex flex-col sm:flex-row sm:items-center text-white/80">
             <p>
               Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
               {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
