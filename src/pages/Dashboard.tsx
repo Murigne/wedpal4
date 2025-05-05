@@ -405,7 +405,7 @@ const Dashboard = () => {
         
         <main className={cn(
           "w-full px-4 md:px-6 py-8 transition-all duration-300",
-          sidebarExpanded ? "ml-[140px]" : "ml-[50px]"
+          sidebarExpanded ? "ml-[120px]" : "ml-[60px]"
         )}>
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">

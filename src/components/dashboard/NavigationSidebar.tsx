@@ -58,19 +58,19 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
 
   return (
     <div className={cn(
-      "fixed left-2 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+      "fixed left-4 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
       isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-2 rounded-xl" 
-        : "gap-3 py-4 px-1 bg-white/10 backdrop-blur-lg rounded-full",
+        ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl" 
+        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
       "shadow-lg"
     )}>
       {isExpanded && (
-        <div className="mb-2 px-2">
+        <div className="mb-3 px-2">
           <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
         </div>
       )}
       
-      <div className={cn("flex", isExpanded ? "flex-col gap-2" : "flex-col gap-3")}>
+      <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
         {navigationItems.map((item, index) => {
           const isActive = location.pathname === item.path;
           
@@ -81,7 +81,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
               className={cn(
                 "transition-all duration-300 flex items-center gap-2 group",
                 "hover:shadow-lg hover:scale-105",
-                isExpanded ? "px-2 py-1.5 rounded-lg w-full justify-start" : "w-9 h-9 rounded-full justify-center",
+                isExpanded ? "px-2 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
                 isActive 
                   ? "bg-pink-500 text-white" 
                   : "bg-white text-gray-600 hover:bg-white/90"
@@ -102,7 +102,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
       <button
         onClick={toggleSidebar}
         className={cn(
-          "mt-4 w-9 h-9 flex items-center justify-center rounded-full",
+          "mt-4 w-10 h-10 flex items-center justify-center rounded-full",
           "bg-white text-gray-600 hover:bg-white/90 hover:shadow-lg transition-all duration-300",
           "hover:scale-105"
         )}
