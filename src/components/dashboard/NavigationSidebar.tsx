@@ -44,9 +44,8 @@ const NavigationSidebar: React.FC = () => {
   return (
     <div className={cn(
       "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
-      isExpanded ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl border border-transparent" : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
-      "shadow-lg before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-r before:from-pink-500/30 before:to-blue-500/30 before:p-[1px] before:content-[''] before:-z-10",
-      isExpanded && "before:rounded-xl"
+      isExpanded ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl" : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
+      "shadow-lg"
     )}>
       {isExpanded && (
         <div className="mb-3 px-2">
