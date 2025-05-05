@@ -8,6 +8,7 @@ import WeddingTemplates from '@/components/WeddingTemplates';
 import QuickActions from '@/components/dashboard/QuickActions';
 import UpcomingTasks from '@/components/dashboard/UpcomingTasks';
 import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import NavigationSidebar from '@/components/dashboard/NavigationSidebar';
 import { calculateDaysUntil } from '@/utils/dateUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
@@ -387,6 +388,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
+      <NavigationSidebar />
+      
       <div className="w-full animated-gradient dynamic-gradient relative">
         <HeartAnimation avoidTextAreas={true} count={10} />
         

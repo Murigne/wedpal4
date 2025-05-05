@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,6 +98,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Navigation sidebar micro-interactions */
+@keyframes navButtonHover {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1.05); }
 }
 
 /* Wedding Theme Styles */

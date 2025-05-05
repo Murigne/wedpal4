@@ -103,7 +103,7 @@ const AppRoutes = () => {
           <VendorDashboard />
         </ProtectedRoute>
       } />
-      {/* Future Routes */}
+      {/* Navigation Routes */}
       <Route path="/budget" element={
         <ProtectedRoute vendorOnly={false}>
           <NotFound />
