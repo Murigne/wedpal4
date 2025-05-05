@@ -43,7 +43,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         
         <main className={cn(
           "w-full px-4 md:px-6 py-8 transition-all duration-300",
-          sidebarExpanded ? "ml-[110px]" : "ml-[60px]"
+          sidebarExpanded ? "ml-[180px]" : "ml-[60px]"
         )}>
           {children}
         </main>

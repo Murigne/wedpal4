@@ -32,16 +32,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName
           </div>
           
           <div className="flex items-center gap-6">
-            {!user && (
-              <Button 
-                variant="outline" 
-                className="bg-white/30 hover:bg-white/40 text-white border-white/30"
-                onClick={handleInvitePartner}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Invite your partner
-              </Button>
-            )}
+            <Button 
+              variant="outline" 
+              className="bg-white/30 hover:bg-white/40 text-white border-white/30"
+              onClick={handleInvitePartner}
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Invite your partner
+            </Button>
             
             <ProfileMenu userName={userName} partnerName={partnerName} />
           </div>

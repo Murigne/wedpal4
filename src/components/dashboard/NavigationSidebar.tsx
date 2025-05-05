@@ -54,7 +54,7 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
       <div className={cn(
         "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
         isExpanded 
-          ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl w-[100px]" 
+          ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl w-[170px]" 
           : "gap-3 py-4 px-3 bg-white/10 backdrop-blur-lg rounded-full",
         "shadow-lg"
       )}>
@@ -83,16 +83,26 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
         />
       </div>
       
-      {/* Sign Up button positioned beneath the sidebar with some spacing when user is not logged in */}
-      {isExpanded && !user && (
-        <div className="fixed left-6 bottom-10 z-50 transition-all duration-300">
+      {/* Sign Up button positioned beneath the sidebar */}
+      {!user && (
+        <div className="fixed left-6 bottom-10 z-50">
           <Button 
             onClick={handleSignUpClick}
-            className="w-[100px] bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-1 justify-center"
+            className={cn(
+              "bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-1 justify-center",
+              isExpanded ? "w-[170px]" : "w-[60px]"
+            )}
             size="sm"
           >
             <UserRound size={16} />
-            <span className="text-xs">Sign up</span>
+            <span className={cn(
+              "text-xs",
+              isExpanded ? "block" : "hidden"
+            )}>Sign up</span>
+            <span className={cn(
+              "text-xs",
+              !isExpanded ? "hidden" : "hidden"
+            )}>to save progress</span>
           </Button>
         </div>
       )}
