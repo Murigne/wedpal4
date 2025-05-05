@@ -50,7 +50,7 @@ const NavigationSidebar: React.FC = () => {
       "shadow-lg"
     )}>
       {isExpanded && (
-        <div className="mb-3 px-2 opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+        <div className="mb-3 px-2">
           <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
         </div>
       )}
@@ -58,7 +58,6 @@ const NavigationSidebar: React.FC = () => {
       <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
         {navigationItems.map((item, index) => {
           const isActive = location.pathname === item.path;
-          const animationDelay = isExpanded ? `${150 + index * 50}ms` : '0ms';
           
           return (
             <button
@@ -70,13 +69,8 @@ const NavigationSidebar: React.FC = () => {
                 isExpanded ? "px-3 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
                 isActive 
                   ? "bg-pink-500 text-white" 
-                  : "bg-white text-gray-600 hover:bg-white/90",
-                isExpanded ? "opacity-0 animate-fade-in" : ""
+                  : "bg-white text-gray-600 hover:bg-white/90"
               )}
-              style={{ 
-                animationDelay: animationDelay,
-                animationFillMode: 'forwards'
-              }}
               aria-label={item.name}
               title={item.name}
             >
