@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User } from 'lucide-react';
+import { Heart, Calendar, Coins, Palette, Users } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import FloatingHearts from './FloatingHearts';
 import { Button } from '@/components/ui/button';
@@ -19,8 +18,6 @@ interface FormData {
   budget: string;
   theme: string;
   guestCount: string;
-  honeymoonDestination: string;
-  needNewHome: string;
 }
 
 const QUESTIONS = [
@@ -58,20 +55,6 @@ const QUESTIONS = [
     field: 'guestCount',
     icon: <Users className="w-5 h-5 text-wedding-pink-dark" />,
     placeholder: "e.g., 50, 100, 150+"
-  },
-  {
-    id: 'honeymoon',
-    message: "Do you have a dream honeymoon destination in mind?",
-    field: 'honeymoonDestination',
-    icon: <Plane className="w-5 h-5 text-wedding-pink-dark" />,
-    placeholder: "e.g., Bali, Italy, Maldives"
-  },
-  {
-    id: 'home',
-    message: "Final question! Are you planning to move into a new home after the wedding?",
-    field: 'needNewHome',
-    icon: <Home className="w-5 h-5 text-wedding-pink-dark" />,
-    placeholder: "Yes / No / Already have one"
   }
 ];
 
@@ -84,8 +67,6 @@ const Onboarding: React.FC = () => {
     budget: '',
     theme: '',
     guestCount: '',
-    honeymoonDestination: '',
-    needNewHome: '',
   });
   const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -130,8 +111,6 @@ const Onboarding: React.FC = () => {
             budget: data.budget || '',
             theme: data.theme || '',
             guestCount: data.guest_count || '',
-            honeymoonDestination: data.honeymoon_destination || '',
-            needNewHome: data.need_new_home || '',
           });
           
           navigate('/dashboard', { state: { formData: {
@@ -141,8 +120,6 @@ const Onboarding: React.FC = () => {
             budget: data.budget || '',
             theme: data.theme || '',
             guestCount: data.guest_count || '',
-            honeymoonDestination: data.honeymoon_destination || '',
-            needNewHome: data.need_new_home || '',
           } } });
         }
       } catch (error: any) {
@@ -198,8 +175,6 @@ const Onboarding: React.FC = () => {
           budget: formData.budget,
           theme: formData.theme,
           guest_count: formData.guestCount,
-          honeymoon_destination: formData.honeymoonDestination,
-          need_new_home: formData.needNewHome,
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
 

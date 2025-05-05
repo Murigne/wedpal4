@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Coins, Palette, Users, Plane, Home, ArrowRight, User, Mail, Lock } from 'lucide-react';
+import { Calendar, Coins, Palette, Users, ArrowRight, User, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatMessage from './ChatMessage';
 import { useAuth } from './AuthProvider';
@@ -15,8 +15,6 @@ interface FormData {
   budget: string;
   theme: string;
   guestCount: string;
-  honeymoonDestination: string;
-  needNewHome: string;
   email: string;
   password: string;
 }
@@ -66,20 +64,6 @@ const QUESTIONS: QuestionType[] = [
     placeholder: "e.g., 50, 100, 150+"
   },
   {
-    id: 'honeymoon',
-    message: "Do you have a dream honeymoon destination in mind?",
-    field: 'honeymoonDestination',
-    icon: <Plane className="w-5 h-5 text-wedding-pink-dark" />,
-    placeholder: "e.g., Bali, Italy, Maldives"
-  },
-  {
-    id: 'home',
-    message: "Final question! Are you planning to move into a new home after the wedding?",
-    field: 'needNewHome',
-    icon: <Home className="w-5 h-5 text-wedding-pink-dark" />,
-    placeholder: "Yes / No / Already have one"
-  },
-  {
     id: 'email',
     message: "Finally, what's your email address?",
     field: 'email',
@@ -104,8 +88,6 @@ const ChatOnboarding: React.FC = () => {
     budget: '',
     theme: '',
     guestCount: '',
-    honeymoonDestination: '',
-    needNewHome: '',
     email: '',
     password: '',
   });
