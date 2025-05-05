@@ -394,7 +394,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <NavigationSidebar onExpandChange={handleSidebarExpandChange} />
       
       <div className="w-full animated-gradient dynamic-gradient relative">
@@ -496,7 +496,10 @@ const Dashboard = () => {
             </DialogContent>
           </Dialog>
           
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
+          <div className={cn(
+            "grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto transition-all duration-300",
+            sidebarExpanded ? "pr-3" : ""
+          )}>
             <div className="lg:col-span-3 space-y-6">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
