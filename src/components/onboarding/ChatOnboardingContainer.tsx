@@ -69,9 +69,9 @@ const ChatOnboardingContainer: React.FC = () => {
     try {
       setIsCreatingAccount(true);
       
-      console.log("Passing formData directly to dashboard:", formData);
+      console.log("Navigating to dashboard with formData:", formData);
       
-      // Navigate directly to dashboard instead of signup
+      // Navigate directly to dashboard
       navigate('/dashboard', { 
         state: { 
           formData,
@@ -151,9 +151,10 @@ const ChatOnboardingContainer: React.FC = () => {
         moveToNextQuestion();
       }, 8000);
     } else if (currentStep === QUESTIONS.length - 1) {
+      // Final question answered - go straight to dashboard
       setTimeout(() => {
         setMessages(prev => [...prev, { 
-          content: "Thanks for all your information! Creating your account now...", 
+          content: "Thanks for all your information! Creating your personalized dashboard...", 
           sender: 'ai' 
         }]);
         createAccount();

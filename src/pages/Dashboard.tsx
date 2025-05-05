@@ -39,119 +39,132 @@ const Dashboard = () => {
   
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!user) {
-        console.log("No user found, redirecting to login");
-        navigate('/login');
-        return;
-      }
-      
-      console.log("Fetching user data for:", user.id);
-      
-      try {
-        const { data, error } = await supabase
-          .from('wedding_details')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (error) {
-          if (error.code !== 'PGRST116') {
-            console.error("Database error:", error);
-            throw error;
-          }
-          console.log("No wedding details found for user");
-        }
+      // Check if we have data passed from onboarding
+      if (location.state?.formData) {
+        console.log("Using location state data from onboarding:", location.state.formData);
+        const formData = location.state.formData;
+        setUserName(formData.partner1Name || 'User');
+        setPartnerName(formData.partner2Name || 'Partner');
         
-        if (data) {
-          console.log("Wedding details found:", data);
-          setUserName(data.partner1_name || 'User');
-          setPartnerName(data.partner2_name || 'Partner');
-          setWeddingDate(data.wedding_date || '');
+        // Handle wedding date
+        if (formData.weddingDate) {
+          setWeddingDate(typeof formData.weddingDate === 'string' ? formData.weddingDate : new Date(formData.weddingDate).toISOString());
           
-          setWeddingHashtag(data.hashtag || '');
-          
-          if (data.wedding_date) {
-            try {
-              const date = new Date(data.wedding_date);
-              setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
-            } catch (e) {
-              console.error("Date formatting error:", e);
-              setFormattedWeddingDate('');
-            }
-          }
-          
-          const formattedBudget = data.budget 
-            ? data.budget.replace('$', 'GHS ')
-            : 'GHS 15k - 25k';
-          setPreferredBudget(formattedBudget);
-          
-          if (data.colors) {
-            try {
-              const parsedColors = JSON.parse(data.colors);
-              if (Array.isArray(parsedColors)) {
-                setWeddingColors(parsedColors);
-                applyWeddingColors(parsedColors);
-              }
-            } catch (e) {
-              console.error('Error parsing colors:', e);
-            }
-          }
-        } else if (location.state?.formData) {
-          console.log("Using location state data");
-          const formData = location.state.formData;
-          setUserName(formData.partner1Name || 'User');
-          setPartnerName(formData.partner2Name || 'Partner');
-          setWeddingDate(formData.weddingDate ? new Date(formData.weddingDate).toISOString() : '');
-          setWeddingHashtag(formData.hashtag || '');
-          
-          if (formData.weddingDate) {
-            try {
-              const date = new Date(formData.weddingDate);
-              setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
-            } catch (e) {
-              console.error("Date formatting error:", e);
-              setFormattedWeddingDate('');
-            }
-          }
-          
-          const formattedBudget = formData.budget 
-            ? formData.budget.toString().replace('$', 'GHS ')
-            : 'GHS 15k - 25k';
-          setPreferredBudget(formattedBudget);
-          
-          if (location.state.userColors && location.state.userColors.length) {
-            setWeddingColors(location.state.userColors);
-            applyWeddingColors(location.state.userColors);
-            
-            if (user) {
-              saveUserData(formData, location.state.userColors);
-            }
-          }
-        } else {
-          console.log("Using default values");
-          setUserName('User');
-          setPartnerName('Partner');
-          setWeddingDate('June 15, 2025');
           try {
-            const date = new Date('June 15, 2025');
+            const date = new Date(formData.weddingDate);
             setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
           } catch (e) {
             console.error("Date formatting error:", e);
-            setFormattedWeddingDate('15-Jun-25');
+            setFormattedWeddingDate('');
           }
-          setPreferredBudget('GHS 15k - 25k');
-          applyWeddingColors(weddingColors);
         }
-      } catch (error) {
-        console.error('Error fetching wedding details:', error);
-        toast({
-          title: "Error",
-          description: "Could not load your wedding details",
-          variant: "destructive",
-        });
-      } finally {
+        
+        // Handle budget
+        const formattedBudget = formData.budget 
+          ? (typeof formData.budget === 'string' && formData.budget.includes('GHS')) 
+             ? formData.budget 
+             : `GHS ${formData.budget}`.replace('$', '')
+          : 'GHS 15k - 25k';
+        setPreferredBudget(formattedBudget);
+        
+        // Handle colors
+        if (location.state.userColors && location.state.userColors.length) {
+          setWeddingColors(location.state.userColors);
+          applyWeddingColors(location.state.userColors);
+          
+          // Save to database if user is authenticated
+          if (user) {
+            saveUserData(formData, location.state.userColors);
+          }
+        }
+        
+        // We've handled the data, so set loading to false
         setIsLoading(false);
+        return;
       }
+      
+      // If no location state, we need to fetch from database if user is authenticated
+      if (user) {
+        console.log("Fetching user data for:", user.id);
+        
+        try {
+          const { data, error } = await supabase
+            .from('wedding_details')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (error) {
+            if (error.code !== 'PGRST116') {
+              console.error("Database error:", error);
+              throw error;
+            }
+            console.log("No wedding details found for user");
+          }
+          
+          if (data) {
+            console.log("Wedding details found:", data);
+            setUserName(data.partner1_name || 'User');
+            setPartnerName(data.partner2_name || 'Partner');
+            setWeddingDate(data.wedding_date || '');
+            
+            setWeddingHashtag(data.hashtag || '');
+            
+            if (data.wedding_date) {
+              try {
+                const date = new Date(data.wedding_date);
+                setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+              } catch (e) {
+                console.error("Date formatting error:", e);
+                setFormattedWeddingDate('');
+              }
+            }
+            
+            const formattedBudget = data.budget 
+              ? data.budget.replace('$', 'GHS ')
+              : 'GHS 15k - 25k';
+            setPreferredBudget(formattedBudget);
+            
+            if (data.colors) {
+              try {
+                const parsedColors = JSON.parse(data.colors);
+                if (Array.isArray(parsedColors)) {
+                  setWeddingColors(parsedColors);
+                  applyWeddingColors(parsedColors);
+                }
+              } catch (e) {
+                console.error('Error parsing colors:', e);
+              }
+            }
+          } else {
+            console.log("No wedding details found for user");
+          }
+        } catch (error) {
+          console.error('Error fetching wedding details:', error);
+          toast({
+            title: "Error",
+            description: "Could not load your wedding details",
+            variant: "destructive",
+          });
+        }
+      } else {
+        // No user and no location state, use defaults
+        console.log("Using default values");
+        setUserName('User');
+        setPartnerName('Partner');
+        setWeddingDate('June 15, 2025');
+        try {
+          const date = new Date('June 15, 2025');
+          setFormattedWeddingDate(format(date, 'dd-MMM-yy'));
+        } catch (e) {
+          console.error("Date formatting error:", e);
+          setFormattedWeddingDate('15-Jun-25');
+        }
+        setPreferredBudget('GHS 15k - 25k');
+        applyWeddingColors(weddingColors);
+      }
+      
+      setIsLoading(false);
     };
     
     fetchUserData();

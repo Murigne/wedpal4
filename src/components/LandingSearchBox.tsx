@@ -159,6 +159,7 @@ const LandingSearchBox = () => {
     setIsTransitioning(true);
     
     if (currentQuestion.id === 'colors') {
+      // Apply colors to the UI
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
       if (selectedColors.length > 1) {
         document.documentElement.style.setProperty('--wedding-color-secondary', selectedColors[1]);
@@ -182,6 +183,8 @@ const LandingSearchBox = () => {
       setSelectedDate(undefined);
       
       if (currentQuestionIndex === questions.length - 1) {
+        // Navigate directly to dashboard after final question
+        console.log("Final question answered, navigating to dashboard");
         navigate('/dashboard', { 
           state: { 
             formData: {...answers, [currentQuestion.id]: userResponse},

@@ -88,6 +88,8 @@ const OnboardingContainer: React.FC = () => {
 
   const saveDataToSupabase = async () => {
     if (!user) {
+      // Navigate directly to dashboard for non-authenticated users
+      console.log("User not authenticated, navigating to dashboard with formData:", formData);
       navigate('/dashboard', { 
         state: { 
           formData,
@@ -192,15 +194,15 @@ const OnboardingContainer: React.FC = () => {
         setMessages(prev => [...prev, { content: QUESTIONS[currentStep + 1].message, sender: 'ai' }]);
       }, 500);
     } else {
-      await saveDataToSupabase();
+      // Final question answered - go to dashboard directly
+      // Add a final message before navigating
+      setMessages(prev => [...prev, { 
+        content: "Thanks for all your information! Creating your personalized dashboard...", 
+        sender: 'ai' 
+      }]);
       
       setTimeout(() => {
-        navigate('/dashboard', { 
-          state: { 
-            formData,
-            isNewUser: true // Flag to indicate this is a new user coming from onboarding
-          } 
-        });
+        await saveDataToSupabase();
       }, 1000);
     }
   };
