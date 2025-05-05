@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -403,8 +404,8 @@ const Dashboard = () => {
         <DashboardHeader userName={userName} partnerName={partnerName} />
         
         <main className={cn(
-          "w-full px-6 md:px-6 py-8 transition-all duration-300",
-          sidebarExpanded ? "ml-[220px]" : "ml-[80px]"
+          "w-full px-4 md:px-6 py-8 transition-all duration-300",
+          sidebarExpanded ? "ml-[170px]" : "ml-[60px]"
         )}>
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">
@@ -497,10 +498,10 @@ const Dashboard = () => {
           </Dialog>
           
           <div className={cn(
-            "grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto transition-all duration-300",
-            sidebarExpanded ? "pr-3" : ""
+            "grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1600px] mx-auto transition-all duration-300",
+            sidebarExpanded ? "pr-2" : ""
           )}>
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-9 space-y-6">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget={preferredBudget}
@@ -513,7 +514,7 @@ const Dashboard = () => {
               />
             </div>
             
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-3 space-y-6">
               <WeddingProgressTracker tasks={tasks} className="w-full" />
               
               <QuickActions />

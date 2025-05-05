@@ -58,9 +58,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
 
   return (
     <div className={cn(
-      "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+      "fixed left-4 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
       isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl" 
+        ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl" 
         : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
       "shadow-lg"
     )}>
@@ -79,9 +79,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
               key={item.name}
               onClick={() => handleNavigate(item.path)}
               className={cn(
-                "transition-all duration-300 flex items-center gap-3 group",
+                "transition-all duration-300 flex items-center gap-2 group",
                 "hover:shadow-lg hover:scale-105",
-                isExpanded ? "px-3 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
+                isExpanded ? "px-2 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
                 isActive 
                   ? "bg-pink-500 text-white" 
                   : "bg-white text-gray-600 hover:bg-white/90"
