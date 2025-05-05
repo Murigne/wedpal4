@@ -121,6 +121,14 @@ const OnboardingContainer: React.FC = () => {
         description: "Your wedding details have been saved!",
         variant: "default",
       });
+      
+      navigate('/dashboard', { 
+        state: { 
+          formData,
+          userColors: [],
+          isNewUser: true
+        } 
+      });
     } catch (error: any) {
       console.error('Error saving wedding details:', error);
       toast({
@@ -202,15 +210,12 @@ const OnboardingContainer: React.FC = () => {
         sender: 'ai' 
       }]);
       
-      setTimeout(async () => {
-        await saveDataToSupabase();
-        navigate('/dashboard', { 
-          state: { 
-            formData,
-            userColors: [],
-            isNewUser: true
-          } 
-        });
+      // Use an async function inside the setTimeout to handle asynchronous operations
+      setTimeout(() => {
+        const navigateToDashboard = async () => {
+          await saveDataToSupabase();
+        };
+        navigateToDashboard();
       }, 1000);
     }
   };
