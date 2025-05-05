@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardWelcomeHeader from '@/components/dashboard/DashboardWelcomeHeader';
@@ -102,6 +102,19 @@ const Dashboard = () => {
   const handleInvitePartner = () => {
     setInvitePartnerDialogOpen(true);
   };
+  
+  // Listen for custom event to open invite dialog
+  useEffect(() => {
+    const handleOpenInviteDialog = () => {
+      setInvitePartnerDialogOpen(true);
+    };
+    
+    document.addEventListener('open-invite-partner-dialog', handleOpenInviteDialog);
+    
+    return () => {
+      document.removeEventListener('open-invite-partner-dialog', handleOpenInviteDialog);
+    };
+  }, []);
 
   return (
     <DashboardLayout 

@@ -50,51 +50,53 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
   }, []);
 
   return (
-    <div className={cn(
-      "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
-      isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl" 
-        : "gap-3 py-4 px-3 bg-white/10 backdrop-blur-lg rounded-full",
-      "shadow-lg"
-    )}>
-      {isExpanded && (
-        <div className="mb-3 px-2">
-          <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
+    <>
+      <div className={cn(
+        "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+        isExpanded 
+          ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl w-[100px]" 
+          : "gap-3 py-4 px-3 bg-white/10 backdrop-blur-lg rounded-full",
+        "shadow-lg"
+      )}>
+        {isExpanded && (
+          <div className="mb-3 px-2">
+            <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
+          </div>
+        )}
+        
+        <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
+          {navigationItems.map((item) => (
+            <NavigationItem
+              key={item.name}
+              name={item.name}
+              icon={item.icon}
+              path={item.path}
+              isExpanded={isExpanded}
+              onClick={handleNavigate}
+            />
+          ))}
         </div>
-      )}
-      
-      <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
-        {navigationItems.map((item) => (
-          <NavigationItem
-            key={item.name}
-            name={item.name}
-            icon={item.icon}
-            path={item.path}
-            isExpanded={isExpanded}
-            onClick={handleNavigate}
-          />
-        ))}
+        
+        <SidebarToggle 
+          isExpanded={isExpanded}
+          onClick={toggleSidebar}
+        />
       </div>
       
-      <SidebarToggle 
-        isExpanded={isExpanded}
-        onClick={toggleSidebar}
-      />
-      
-      {/* Sign Up button displayed only when expanded and user is not logged in */}
+      {/* Sign Up button positioned beneath the sidebar with some spacing when user is not logged in */}
       {isExpanded && !user && (
-        <div className="mt-4 px-2">
+        <div className="fixed left-6 bottom-10 z-50 transition-all duration-300">
           <Button 
             onClick={handleSignUpClick}
-            className="w-full bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-2"
+            className="w-[100px] bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-1 justify-center"
             size="sm"
           >
             <UserRound size={16} />
-            <span className="text-xs">Sign up to save progress</span>
+            <span className="text-xs">Sign up</span>
           </Button>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
