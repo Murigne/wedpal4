@@ -31,7 +31,7 @@ const NavigationSidebar: React.FC = () => {
   };
 
   return (
-    <div className="fixed left-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 py-6 px-2 bg-white/10 backdrop-blur-lg rounded-full shadow-lg z-50 border-2 border-transparent" style={{ backgroundClip: 'padding-box', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', background: 'linear-gradient(white, white) padding-box, linear-gradient(45deg, #23a6d5, #e73c7e) border-box' }}>
+    <div className="fixed left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 py-6 px-2 bg-white/10 backdrop-blur-lg rounded-full shadow-lg z-50">
       {navigationItems.map((item) => {
         const isActive = location.pathname === item.path;
         
@@ -43,7 +43,7 @@ const NavigationSidebar: React.FC = () => {
               "w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300",
               "hover:bg-white/90 hover:shadow-lg hover:scale-110",
               isActive 
-                ? "bg-pink-500 text-white" 
+                ? "bg-black text-white" 
                 : "bg-white text-gray-600"
             )}
             aria-label={item.name}
