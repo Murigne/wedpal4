@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard,
@@ -16,10 +16,22 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const NavigationSidebar: React.FC = () => {
+export interface NavigationSidebarProps {
+  isExpanded?: boolean;
+  setIsExpanded?: (expanded: boolean) => void;
+}
+
+const NavigationSidebar: React.FC<NavigationSidebarProps> = ({
+  isExpanded: externalIsExpanded,
+  setIsExpanded: externalSetIsExpanded
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [internalIsExpanded, setInternalIsExpanded] = useState(false);
+  
+  // Use either external or internal state based on what's provided
+  const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
+  const setIsExpanded = externalSetIsExpanded || setInternalIsExpanded;
   
   const navigationItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -43,10 +55,10 @@ const NavigationSidebar: React.FC = () => {
 
   return (
     <div className={cn(
-      "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+      "flex flex-col transition-all duration-300",
       isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl animate-sidebar-expand" 
-        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full animate-sidebar-collapse",
+        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl w-[220px]" 
+        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full w-[60px]",
       "shadow-lg"
     )}>
       {isExpanded && (

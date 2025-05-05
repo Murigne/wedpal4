@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -32,6 +33,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [weddingHashtag, setWeddingHashtag] = useState('');
   const [isNewUser] = useState(location.state?.isNewUser || false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   
   // New states for the invite partner dialog
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
@@ -387,10 +389,18 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen">
-      <NavigationSidebar />
+    <div className="min-h-screen flex">
+      <div className="fixed top-0 left-0 h-full pt-[160px] pl-6 z-50 transition-all duration-300">
+        <NavigationSidebar 
+          isExpanded={sidebarExpanded}
+          setIsExpanded={setSidebarExpanded}
+        />
+      </div>
       
-      <div className="w-full animated-gradient dynamic-gradient relative">
+      <div className={cn(
+        "w-full animated-gradient dynamic-gradient relative transition-all duration-300",
+        sidebarExpanded ? "ml-[220px]" : "ml-[60px]"
+      )}>
         <HeartAnimation avoidTextAreas={true} count={10} />
         
         <DashboardHeader userName={userName} partnerName={partnerName} />
@@ -491,6 +501,7 @@ const Dashboard = () => {
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget={preferredBudget}
+                sidebarExpanded={sidebarExpanded}
               />
               
               <WeddingTemplates

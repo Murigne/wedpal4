@@ -1,16 +1,27 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import NavigationSidebar from '@/components/dashboard/NavigationSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Store } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Vendors = () => {
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
   return (
-    <div className="min-h-screen">
-      <NavigationSidebar />
+    <div className="min-h-screen flex">
+      <div className="fixed top-0 left-0 h-full pt-[160px] pl-6 z-50 transition-all duration-300">
+        <NavigationSidebar 
+          isExpanded={sidebarExpanded}
+          setIsExpanded={setSidebarExpanded}
+        />
+      </div>
       
-      <div className="w-full animated-gradient dynamic-gradient relative">
+      <div className={cn(
+        "w-full animated-gradient dynamic-gradient relative transition-all duration-300",
+        sidebarExpanded ? "ml-[220px]" : "ml-[60px]"
+      )}>
         <main className="w-full px-6 md:px-6 py-8">
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2">
@@ -22,7 +33,12 @@ const Vendors = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1600px] mx-auto">
+          <div className={cn(
+            "grid gap-6 max-w-[1600px] mx-auto",
+            sidebarExpanded 
+              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          )}>
             <Card>
               <CardHeader>
                 <CardTitle>Photographers</CardTitle>
