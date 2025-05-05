@@ -1,11 +1,10 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WedPalLogo from '@/components/WedPalLogo';
 import ProfileMenu from './ProfileMenu';
-import { useAuth } from '@/components/AuthProvider';
 
 interface DashboardHeaderProps {
   userName: string;
@@ -14,13 +13,9 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  const handleInvitePartner = () => {
-    // This should open the invite partner dialog
-    // We'll need to lift this state up to the Dashboard component
-    const event = new CustomEvent('open-invite-partner-dialog');
-    document.dispatchEvent(event);
+  const handleVendorMarketplaceClick = () => {
+    navigate('/vendors');
   };
 
   return (
@@ -35,10 +30,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName
             <Button 
               variant="outline" 
               className="bg-white/30 hover:bg-white/40 text-white border-white/30"
-              onClick={handleInvitePartner}
+              onClick={handleVendorMarketplaceClick}
             >
-              <Mail className="w-4 h-4 mr-2" />
-              Invite your partner
+              <Store className="w-4 h-4 mr-2" />
+              Vendor Marketplace
             </Button>
             
             <ProfileMenu userName={userName} partnerName={partnerName} />
