@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils'; // Add this import for the cn utility
 import HeartAnimation from '@/components/HeartAnimation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
@@ -34,12 +32,14 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [weddingHashtag, setWeddingHashtag] = useState('');
   const [isNewUser] = useState(location.state?.isNewUser || false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   
   // New states for the invite partner dialog
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
   const [partnerEmail, setPartnerEmail] = useState('');
   const [isSendingInvite, setIsSendingInvite] = useState(false);
+  
+  // New state for sidebar expansion
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   
   useEffect(() => {
     const fetchUserData = async () => {
@@ -391,22 +391,25 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex">
-      <div className="fixed top-0 left-0 h-full pt-[160px] pl-6 z-50 transition-all duration-300">
+      <div className="h-screen sticky top-0">
         <NavigationSidebar 
-          isExpanded={sidebarExpanded}
-          setIsExpanded={setSidebarExpanded}
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded} 
         />
       </div>
       
-      <div className={cn(
-        "w-full animated-gradient dynamic-gradient relative transition-all duration-300",
-        sidebarExpanded ? "ml-[220px]" : "ml-[60px]"
-      )}>
+      <div 
+        className="w-full animated-gradient dynamic-gradient relative transition-all duration-300 ease-out"
+        style={{ 
+          marginLeft: sidebarExpanded ? '0' : '0', 
+          width: `calc(100% - ${sidebarExpanded ? '13rem' : '4rem'})` 
+        }}
+      >
         <HeartAnimation avoidTextAreas={true} count={10} />
         
         <DashboardHeader userName={userName} partnerName={partnerName} />
         
-        <main className="w-full px-6 md:px-6 py-8">
+        <main className="w-full px-6 md:px-6 py-8 transition-all duration-300">
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">
               Welcome back, {userName} & {partnerName}!
@@ -497,12 +500,11 @@ const Dashboard = () => {
             </DialogContent>
           </Dialog>
           
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto transition-all duration-300">
             <div className="lg:col-span-3 space-y-6">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget={preferredBudget}
-                sidebarExpanded={sidebarExpanded}
               />
               
               <WeddingTemplates
