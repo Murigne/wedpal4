@@ -16,6 +16,8 @@ import AuthProvider from "./components/AuthProvider";
 import VendorSignup from "./pages/VendorSignup";
 import VendorLogin from "./pages/VendorLogin";
 import VendorDashboard from "./pages/VendorDashboard";
+import Vendors from "./pages/Vendors";
+import AIAssistant from "./pages/AIAssistant";
 import { useState, useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
 
@@ -87,7 +89,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path="/vendors" element={<VendorMarketplace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/dashboard" element={<Dashboard />} />
@@ -103,6 +104,8 @@ const AppRoutes = () => {
           <VendorDashboard />
         </ProtectedRoute>
       } />
+      <Route path="/vendor-marketplace" element={<VendorMarketplace />} />
+      
       {/* Navigation Routes */}
       <Route path="/budget" element={
         <ProtectedRoute vendorOnly={false}>
@@ -134,6 +137,19 @@ const AppRoutes = () => {
           <NotFound />
         </ProtectedRoute>
       } />
+      
+      {/* New Navigation Routes with actual components */}
+      <Route path="/vendors" element={
+        <ProtectedRoute vendorOnly={false}>
+          <Vendors />
+        </ProtectedRoute>
+      } />
+      <Route path="/ai-assistant" element={
+        <ProtectedRoute vendorOnly={false}>
+          <AIAssistant />
+        </ProtectedRoute>
+      } />
+      
       {/* Catch-all route */}
       <Route path="*" element={<NotFound />} />
     </Routes>

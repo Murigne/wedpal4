@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard,
@@ -8,13 +8,18 @@ import {
   Clock,
   Gift,
   Image,
-  Palette
+  Palette,
+  Store,
+  Bot,
+  Plus,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NavigationSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const navigationItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -24,35 +29,72 @@ const NavigationSidebar: React.FC = () => {
     { name: 'Gifts', icon: Gift, path: '/gifts' },
     { name: 'Mood Board', icon: Image, path: '/mood-board' },
     { name: 'Theme', icon: Palette, path: '/theme' },
+    { name: 'Vendors', icon: Store, path: '/vendors' },
+    { name: 'Naa AI', icon: Bot, path: '/ai-assistant' },
   ];
 
   const handleNavigate = (path: string) => {
     navigate(path);
   };
 
+  const toggleSidebar = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="fixed left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 py-6 px-2 bg-white/10 backdrop-blur-lg rounded-full shadow-lg z-50">
-      {navigationItems.map((item) => {
-        const isActive = location.pathname === item.path;
-        
-        return (
-          <button
-            key={item.name}
-            onClick={() => handleNavigate(item.path)}
-            className={cn(
-              "w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300",
-              "hover:bg-white/90 hover:shadow-lg hover:scale-110",
-              isActive 
-                ? "bg-black text-white" 
-                : "bg-white text-gray-600"
-            )}
-            aria-label={item.name}
-            title={item.name}
-          >
-            <item.icon className="w-5 h-5" />
-          </button>
-        );
-      })}
+    <div className={cn(
+      "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+      isExpanded ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl border border-transparent" : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
+      "shadow-lg before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-r before:from-pink-500/30 before:to-blue-500/30 before:p-[1px] before:content-[''] before:-z-10",
+      isExpanded && "before:rounded-xl"
+    )}>
+      {isExpanded && (
+        <div className="mb-3 px-2">
+          <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
+        </div>
+      )}
+      
+      <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
+        {navigationItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          
+          return (
+            <button
+              key={item.name}
+              onClick={() => handleNavigate(item.path)}
+              className={cn(
+                "transition-all duration-300 flex items-center gap-3 group",
+                "hover:shadow-lg hover:scale-105",
+                isExpanded ? "px-3 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
+                isActive 
+                  ? "bg-pink-500 text-white" 
+                  : "bg-white text-gray-600 hover:bg-white/90"
+              )}
+              aria-label={item.name}
+              title={item.name}
+            >
+              <item.icon className={cn(
+                "w-4 h-4 transition-colors",
+                isActive ? "text-white" : "text-gray-600 group-hover:text-gray-600"
+              )} />
+              {isExpanded && <span className="text-sm">{item.name}</span>}
+            </button>
+          );
+        })}
+      </div>
+      
+      <button
+        onClick={toggleSidebar}
+        className={cn(
+          "mt-4 w-10 h-10 flex items-center justify-center rounded-full",
+          "bg-white text-gray-600 hover:bg-white/90 hover:shadow-lg transition-all duration-300",
+          "hover:scale-105"
+        )}
+        aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
+        title={isExpanded ? "Collapse menu" : "Expand menu"}
+      >
+        {isExpanded ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+      </button>
     </div>
   );
 };
