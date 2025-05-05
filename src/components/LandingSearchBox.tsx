@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -19,14 +18,12 @@ import HeartAnimation from '@/components/HeartAnimation';
 const questions = [
   { id: 'name', question: "What's your name?", type: 'text' },
   { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
-  { id: 'hashtag', question: "Pick a hashtag for your wedding or create your own:", type: 'hashtag' },
   { id: 'date', question: "When are you planning to get married?", type: 'date' },
   { id: 'colors', question: "What are your wedding colours? (Select up to 3)", type: 'color' },
   { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number', prefix: 'GHS' },
   { id: 'venue', question: "Do you prefer an indoor or outdoor wedding?", type: 'radio', options: ['Indoor', 'Outdoor', 'Both'] },
   { id: 'guests', question: "How many guests are you expecting?", type: 'number' },
   { id: 'vendors', question: "Do you need vendor recommendations?", type: 'radio', options: ['Yes', 'No', 'Not sure yet'] },
-  { id: 'honeymoon', question: "What's your dream honeymoon location?", type: 'text' }
 ];
 
 const colorOptions = [
@@ -130,24 +127,6 @@ const LandingSearchBox = () => {
     }
   };
 
-  const generateHashtags = (name1: string, name2: string) => {
-    if (!name1 || !name2) return [];
-    
-    // Extract first few letters from each name
-    const n1 = name1.slice(0, 3).toLowerCase();
-    const n2 = name2.slice(0, 3).toLowerCase();
-    
-    // Generate hashtag variations
-    return [
-      `#${name1}And${name2}`,
-      `#${name1}Weds${name2}`,
-      `#${n1}${n2}Forever`,
-      `#Team${name1}${name2}`,
-      `#${name1}${name2}Love`,
-      `#${name1}Loves${name2}`
-    ];
-  };
-
   const handleHashtagSelection = (hashtag: string) => {
     setSelectedHashtag(hashtag);
   };
@@ -183,13 +162,6 @@ const LandingSearchBox = () => {
     
     setIsTransitioning(true);
     
-    // Generate hashtags after getting both names
-    if (currentQuestion.id === 'partnerName') {
-      const name1 = answers.name || '';
-      const name2 = userResponse || '';
-      const hashtags = generateHashtags(name1, name2);
-      setSuggestedHashtags(hashtags);
-    }
     
     if (currentQuestion.id === 'colors') {
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
@@ -389,52 +361,6 @@ const LandingSearchBox = () => {
                   >
                     <SendHorizonal className="h-4 w-4" />
                   </Button>
-                </div>
-              )}
-
-              {currentQuestion.type === 'hashtag' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {suggestedHashtags.map((hashtag) => (
-                      <div 
-                        key={hashtag} 
-                        className={cn(
-                          "p-3 rounded-lg border border-gray-200 cursor-pointer transition-all text-center",
-                          selectedHashtag === hashtag ? "bg-pink-100 border-pink-300 font-medium" : "hover:bg-gray-50"
-                        )}
-                        onClick={() => handleHashtagSelection(hashtag)}
-                      >
-                        {hashtag}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-1">
-                      <Input
-                        type="text"
-                        value={customHashtag}
-                        onChange={(e) => setCustomHashtag(e.target.value)}
-                        placeholder="Or create your own..."
-                        className="w-full pl-4 pr-4 py-3 text-base rounded-full border border-gray-200"
-                      />
-                      {!customHashtag.startsWith('#') && customHashtag && (
-                        <div className="text-xs mt-1 text-gray-500 ml-4">
-                          Don't forget to add # at the start
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-end">
-                    <Button 
-                      type="submit"
-                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
-                      disabled={(!selectedHashtag && !customHashtag) || isTransitioning}
-                    >
-                      Next <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
                 </div>
               )}
 
