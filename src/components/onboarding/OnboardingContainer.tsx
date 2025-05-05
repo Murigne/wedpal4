@@ -88,10 +88,11 @@ const OnboardingContainer: React.FC = () => {
 
   const saveDataToSupabase = async () => {
     if (!user) {
-      navigate('/signup', { 
+      navigate('/dashboard', { 
         state: { 
           formData,
-          userColors: [] 
+          userColors: [],
+          isNewUser: true // Flag to indicate this is a new user coming from onboarding
         } 
       });
       return;
@@ -194,7 +195,12 @@ const OnboardingContainer: React.FC = () => {
       await saveDataToSupabase();
       
       setTimeout(() => {
-        navigate('/dashboard', { state: { formData } });
+        navigate('/dashboard', { 
+          state: { 
+            formData,
+            isNewUser: true // Flag to indicate this is a new user coming from onboarding
+          } 
+        });
       }, 1000);
     }
   };

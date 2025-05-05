@@ -69,12 +69,14 @@ const ChatOnboardingContainer: React.FC = () => {
     try {
       setIsCreatingAccount(true);
       
-      console.log("Passing formData to signup:", formData);
+      console.log("Passing formData directly to dashboard:", formData);
       
-      navigate('/signup', { 
+      // Navigate directly to dashboard instead of signup
+      navigate('/dashboard', { 
         state: { 
           formData,
-          userColors: [] // Ensure we're passing userColors even if it's empty
+          userColors: [],
+          isNewUser: true // Flag to indicate this is a new user coming from onboarding
         } 
       });
     } catch (err: any) {

@@ -56,9 +56,8 @@ const LandingSearchBox = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [customColor, setCustomColor] = useState('');
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [suggestedHashtags, setSuggestedHashtags] = useState<string[]>([]);
-  const [customHashtag, setCustomHashtag] = useState('');
   const [selectedHashtag, setSelectedHashtag] = useState('');
+  const [customHashtag, setCustomHashtag] = useState('');
   const form = useForm();
   const navigate = useNavigate();
 
@@ -150,9 +149,6 @@ const LandingSearchBox = () => {
       userResponse = Number(inputValue.replace(/,/g, ''));
     } else if (currentQuestion.type === 'text' || currentQuestion.type === 'radio') {
       if (!inputValue.trim()) return;
-    } else if (currentQuestion.type === 'hashtag') {
-      if (!selectedHashtag && !customHashtag) return;
-      userResponse = customHashtag ? customHashtag : selectedHashtag;
     }
     
     setAnswers(prev => ({
@@ -161,7 +157,6 @@ const LandingSearchBox = () => {
     }));
     
     setIsTransitioning(true);
-    
     
     if (currentQuestion.id === 'colors') {
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
@@ -187,10 +182,11 @@ const LandingSearchBox = () => {
       setSelectedDate(undefined);
       
       if (currentQuestionIndex === questions.length - 1) {
-        navigate('/signup', { 
+        navigate('/dashboard', { 
           state: { 
             formData: {...answers, [currentQuestion.id]: userResponse},
-            userColors: selectedColors 
+            userColors: selectedColors,
+            isNewUser: true // Flag to indicate this is a new user coming from onboarding
           } 
         });
         return;
