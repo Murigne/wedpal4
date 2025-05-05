@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRound, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { calculateDaysUntil } from '@/utils/dateUtils';
 
@@ -26,18 +26,6 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleSignUpClick = () => {
-    navigate('/signup', { 
-      state: { 
-        formData: {
-          partner1Name: userName,
-          partner2Name: partnerName,
-          weddingDate: weddingDate
-        }
-      } 
-    });
-  };
-
   return (
     <div className="mb-8 text-white max-w-[1600px] mx-auto">
       <h1 className="text-3xl md:text-4xl font-semibold mb-2">
@@ -49,16 +37,9 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
           {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
         </p>
         
-        {/* Action buttons for non-logged in users */}
+        {/* Action button for non-logged in users - only show invite partner */}
         {!user && (
           <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
-            <Button 
-              onClick={handleSignUpClick}
-              className="bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-2"
-            >
-              <UserRound size={18} />
-              Sign up to save your progress
-            </Button>
             <Button 
               onClick={onInvitePartner}
               variant="outline" 
