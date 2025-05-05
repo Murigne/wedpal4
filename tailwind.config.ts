@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -130,6 +129,40 @@ export default {
 					'0%': { transform: 'translateY(0px)' },
 					'50%': { transform: 'translateY(-2px)' },
 					'100%': { transform: 'translateY(0px)' }
+				},
+				"sidebar-expand": {
+					"0%": { 
+						transform: "translate(-100%, -50%)", 
+						opacity: "0.5",
+						backgroundSize: "100% 100%"
+					},
+					"100%": { 
+						transform: "translate(0, -50%)",
+						opacity: "1",
+						backgroundSize: "100% 100%"
+					}
+				},
+				"sidebar-collapse": {
+					"0%": { 
+						transform: "translate(0, -50%)",
+						opacity: "1"
+					},
+					"100%": { 
+						transform: "translate(-10%, -50%)",
+						opacity: "1"
+					}
+				},
+				"fade-in": {
+					"0%": { opacity: "0" },
+					"100%": { opacity: "1" }
+				},
+				"rotate-180": {
+					"0%": { transform: "rotate(0deg)" },
+					"100%": { transform: "rotate(180deg)" }
+				},
+				"rotate-in": {
+					"0%": { transform: "rotate(180deg)" },
+					"100%": { transform: "rotate(0deg)" }
 				}
 			},
 			animation: {
@@ -142,6 +175,11 @@ export default {
 				'draw-heart': 'draw-heart 3s ease-out forwards',
 				'sparkle': 'sparkle 2s ease-in-out infinite',
 				'nav-hover': 'nav-hover 0.3s ease-in-out',
+				"sidebar-expand": "sidebar-expand 0.3s ease-out forwards",
+				"sidebar-collapse": "sidebar-collapse 0.3s ease-in forwards",
+				"fade-in": "fade-in 0.2s ease-out forwards",
+				"rotate-180": "rotate-180 0.3s ease-out forwards",
+				"rotate-in": "rotate-180 0.3s ease-in reverse forwards",
 			},
 			boxShadow: {
 				'nav-active': '0 0 10px rgba(251, 108, 62, 0.5)',

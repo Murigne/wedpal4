@@ -44,18 +44,21 @@ const NavigationSidebar: React.FC = () => {
   return (
     <div className={cn(
       "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
-      isExpanded ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl" : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
+      isExpanded 
+        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl animate-sidebar-expand" 
+        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full animate-sidebar-collapse",
       "shadow-lg"
     )}>
       {isExpanded && (
-        <div className="mb-3 px-2">
+        <div className="mb-3 px-2 opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
           <h3 className="text-white/90 font-medium text-sm">Navigation</h3>
         </div>
       )}
       
       <div className={cn("flex", isExpanded ? "flex-col gap-3" : "flex-col gap-3")}>
-        {navigationItems.map((item) => {
+        {navigationItems.map((item, index) => {
           const isActive = location.pathname === item.path;
+          const animationDelay = isExpanded ? `${150 + index * 50}ms` : '0ms';
           
           return (
             <button
@@ -67,8 +70,13 @@ const NavigationSidebar: React.FC = () => {
                 isExpanded ? "px-3 py-2 rounded-lg w-full justify-start" : "w-10 h-10 rounded-full justify-center",
                 isActive 
                   ? "bg-pink-500 text-white" 
-                  : "bg-white text-gray-600 hover:bg-white/90"
+                  : "bg-white text-gray-600 hover:bg-white/90",
+                isExpanded ? "opacity-0 animate-fade-in" : ""
               )}
+              style={{ 
+                animationDelay: animationDelay,
+                animationFillMode: 'forwards'
+              }}
               aria-label={item.name}
               title={item.name}
             >
@@ -76,7 +84,7 @@ const NavigationSidebar: React.FC = () => {
                 "w-4 h-4 transition-colors",
                 isActive ? "text-white" : "text-gray-600 group-hover:text-gray-600"
               )} />
-              {isExpanded && <span className="text-sm">{item.name}</span>}
+              {isExpanded && <span className="text-sm whitespace-nowrap">{item.name}</span>}
             </button>
           );
         })}
@@ -92,7 +100,11 @@ const NavigationSidebar: React.FC = () => {
         aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
         title={isExpanded ? "Collapse menu" : "Expand menu"}
       >
-        {isExpanded ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+        {isExpanded ? (
+          <X className="w-4 h-4 animate-rotate-180" />
+        ) : (
+          <Plus className="w-4 h-4 animate-rotate-in" />
+        )}
       </button>
     </div>
   );
