@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import HeartAnimation from '@/components/HeartAnimation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
@@ -32,12 +33,18 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [weddingHashtag, setWeddingHashtag] = useState('');
   const [isNewUser] = useState(location.state?.isNewUser || false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   
   // New states for the invite partner dialog
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
   const [partnerEmail, setPartnerEmail] = useState('');
   const [isSendingInvite, setIsSendingInvite] = useState(false);
   
+  // Handle sidebar expansion
+  const handleSidebarExpandChange = (expanded: boolean) => {
+    setSidebarExpanded(expanded);
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       // Check if we have data passed from onboarding
@@ -388,14 +395,17 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
-      <NavigationSidebar />
+      <NavigationSidebar onExpandChange={handleSidebarExpandChange} />
       
       <div className="w-full animated-gradient dynamic-gradient relative">
         <HeartAnimation avoidTextAreas={true} count={10} />
         
         <DashboardHeader userName={userName} partnerName={partnerName} />
         
-        <main className="w-full px-6 md:px-6 py-8">
+        <main className={cn(
+          "w-full px-6 md:px-6 py-8 transition-all duration-300",
+          sidebarExpanded ? "ml-[220px]" : "ml-[80px]"
+        )}>
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">
               Welcome back, {userName} & {partnerName}!

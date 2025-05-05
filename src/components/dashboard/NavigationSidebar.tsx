@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard,
@@ -16,7 +16,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const NavigationSidebar: React.FC = () => {
+interface NavigationSidebarProps {
+  onExpandChange?: (expanded: boolean) => void;
+}
+
+const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,15 +42,26 @@ const NavigationSidebar: React.FC = () => {
   };
 
   const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    if (onExpandChange) {
+      onExpandChange(newExpandedState);
+    }
   };
+
+  // Notify parent on mount of initial state
+  useEffect(() => {
+    if (onExpandChange) {
+      onExpandChange(isExpanded);
+    }
+  }, []);
 
   return (
     <div className={cn(
       "fixed left-6 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
       isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl animate-sidebar-expand" 
-        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full animate-sidebar-collapse",
+        ? "bg-white/10 backdrop-blur-lg p-4 rounded-xl" 
+        : "gap-3 py-4 px-2 bg-white/10 backdrop-blur-lg rounded-full",
       "shadow-lg"
     )}>
       {isExpanded && (
@@ -95,9 +110,9 @@ const NavigationSidebar: React.FC = () => {
         title={isExpanded ? "Collapse menu" : "Expand menu"}
       >
         {isExpanded ? (
-          <X className="w-4 h-4 animate-rotate-180" />
+          <X className="w-4 h-4" />
         ) : (
-          <Plus className="w-4 h-4 animate-rotate-in" />
+          <Plus className="w-4 h-4" />
         )}
       </button>
     </div>
