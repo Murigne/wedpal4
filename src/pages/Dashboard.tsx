@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -18,7 +17,6 @@ import { UserRound, Mail, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import NavigationSidebar from '@/components/NavigationSidebar';
-import { SidebarInset } from '@/components/ui/sidebar';
 
 const Dashboard = () => {
   const location = useLocation();
@@ -394,7 +392,7 @@ const Dashboard = () => {
       <NavigationSidebar />
       
       {/* Main content area */}
-      <SidebarInset>
+      <div className="flex-1 overflow-auto">
         <div className="w-full animated-gradient dynamic-gradient relative">
           <HeartAnimation avoidTextAreas={true} count={10} />
           
@@ -515,7 +513,7 @@ const Dashboard = () => {
             </div>
           </main>
         </div>
-      </SidebarInset>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -79,6 +80,10 @@ export default {
 						DEFAULT: '#FFD700',
 						dark: '#FFC107',
 					},
+				},
+				navbar: {
+					active: '#FB6C3E',
+					hover: '#f0f0f0',
 				}
 			},
 			borderRadius: {
@@ -121,6 +126,11 @@ export default {
 					'50%': { transform: 'scale(1) rotate(180deg)', opacity: '1' },
 					'100%': { transform: 'scale(0) rotate(360deg)', opacity: '0' }
 				},
+				'nav-hover': {
+					'0%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-2px)' },
+					'100%': { transform: 'translateY(0px)' }
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -131,7 +141,12 @@ export default {
 				'scale-in': 'scale-in 0.4s ease-out',
 				'draw-heart': 'draw-heart 3s ease-out forwards',
 				'sparkle': 'sparkle 2s ease-in-out infinite',
-			}
+				'nav-hover': 'nav-hover 0.3s ease-in-out',
+			},
+			boxShadow: {
+				'nav-active': '0 0 10px rgba(251, 108, 62, 0.5)',
+				'nav-hover': '0 4px 10px -2px rgba(0, 0, 0, 0.05)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

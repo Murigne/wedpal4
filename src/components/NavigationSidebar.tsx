@@ -2,25 +2,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, 
-  DollarSign, 
+  LayoutDashboard, 
+  Wallet, 
   Users, 
-  Palette, 
+  Image, 
   Gift, 
-  PaintBucket, 
-  Calendar,
+  Palette, 
+  Clock,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 interface NavigationItem {
   icon: React.ElementType;
@@ -30,51 +22,95 @@ interface NavigationItem {
 
 const NavigationSidebar: React.FC = () => {
   const location = useLocation();
-  const isMobile = useIsMobile();
-  const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   const navigationItems: NavigationItem[] = [
-    { icon: Home, label: "Dashboard", path: "/dashboard" },
-    { icon: DollarSign, label: "Budget", path: "/budget" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: Wallet, label: "Budget", path: "/budget" },
     { icon: Users, label: "Guests", path: "/guests" },
-    { icon: Palette, label: "Mood Board", path: "/mood-board" },
+    { icon: Image, label: "Mood Board", path: "/mood-board" },
     { icon: Gift, label: "Gifts", path: "/gifts" },
-    { icon: PaintBucket, label: "Theme", path: "/theme" },
-    { icon: Calendar, label: "Timeline", path: "/timeline" }
+    { icon: Palette, label: "Theme", path: "/theme" },
+    { icon: Clock, label: "Timeline", path: "/timeline" }
   ];
 
   return (
     <div className="flex h-screen">
-      <Sidebar className={`transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
-        <SidebarContent className="py-6">
-          <div className="flex justify-end mb-4 px-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsCollapsed(prev => !prev)}
-              className="h-8 w-8 p-0"
-            >
-              {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </Button>
-          </div>
-          <SidebarMenu>
-            {navigationItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip={isCollapsed ? item.label : undefined}
-                  isActive={location.pathname === item.path}
-                >
-                  <Link to={item.path} className="flex items-center gap-2">
-                    <item.icon size={20} />
-                    {!isCollapsed && <span>{item.label}</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
+      <div 
+        className={cn(
+          "flex flex-col h-full transition-all duration-300 ease-in-out bg-gray-50 shadow-lg relative",
+          isCollapsed ? "w-[70px]" : "w-[240px]"
+        )}
+      >
+        {/* Toggle button */}
+        <button
+          onClick={() => setIsCollapsed(prev => !prev)}
+          className="absolute -right-3 top-12 bg-white rounded-full p-1 shadow-md z-10 hover:bg-gray-50 transition-colors"
+        >
+          {isCollapsed ? 
+            <ChevronRight size={16} className="text-gray-600" /> : 
+            <ChevronLeft size={16} className="text-gray-600" />
+          }
+        </button>
+        
+        {/* Logo or app name */}
+        <div className={cn(
+          "flex items-center px-5 h-16 border-b border-gray-100",
+          isCollapsed ? "justify-center" : "justify-start"
+        )}>
+          {!isCollapsed && <span className="text-lg font-medium">WedPal</span>}
+        </div>
+        
+        {/* Navigation Items */}
+        <div className="flex flex-col space-y-1 px-3 py-5">
+          {navigationItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex items-center rounded-lg px-3 py-2 group transition-all duration-200 relative",
+                  isActive 
+                    ? "bg-gradient-to-r from-red-400 to-orange-500 text-white shadow-md" 
+                    : "text-gray-600 hover:bg-gray-100 hover:shadow-sm"
+                )}
+              >
+                <div className={cn(
+                  "flex items-center",
+                  isCollapsed ? "justify-center w-full" : "justify-start"
+                )}>
+                  <item.icon 
+                    size={20} 
+                    className={cn(
+                      "transition-transform duration-200",
+                      isActive ? "text-white" : "text-gray-500 group-hover:text-gray-700",
+                      !isCollapsed && "mr-3"
+                    )} 
+                  />
+                  
+                  {!isCollapsed && (
+                    <span className={cn(
+                      "font-medium transition-opacity duration-200",
+                      isActive ? "text-white" : "text-gray-700"
+                    )}>
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Tooltip for collapsed state */}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity z-50 whitespace-nowrap">
+                    {item.label}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
