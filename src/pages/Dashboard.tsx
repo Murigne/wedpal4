@@ -405,7 +405,7 @@ const Dashboard = () => {
         
         <main className={cn(
           "w-full px-4 md:px-6 py-8 transition-all duration-300",
-          sidebarExpanded ? "ml-[170px]" : "ml-[60px]"
+          sidebarExpanded ? "ml-[140px]" : "ml-[50px]"
         )}>
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">
@@ -498,10 +498,10 @@ const Dashboard = () => {
           </Dialog>
           
           <div className={cn(
-            "grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1600px] mx-auto transition-all duration-300",
-            sidebarExpanded ? "pr-2" : ""
+            "grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1600px] mx-auto transition-all duration-300",
+            sidebarExpanded ? "pr-0" : ""
           )}>
-            <div className="lg:col-span-9 space-y-6">
+            <div className="lg:col-span-9 space-y-5">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget={preferredBudget}
@@ -514,7 +514,7 @@ const Dashboard = () => {
               />
             </div>
             
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-3 space-y-5">
               <WeddingProgressTracker tasks={tasks} className="w-full" />
               
               <QuickActions />
