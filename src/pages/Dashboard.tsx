@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { UserRound, Mail, Send } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import NavigationSidebar from '@/components/NavigationSidebar';
 
 const Dashboard = () => {
   const location = useLocation();
@@ -387,132 +386,126 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex w-full">
-      {/* Left sidebar navigation */}
-      <NavigationSidebar />
-      
-      {/* Main content area */}
-      <div className="flex-1 overflow-auto">
-        <div className="w-full animated-gradient dynamic-gradient relative">
-          <HeartAnimation avoidTextAreas={true} count={10} />
-          
-          <DashboardHeader userName={userName} partnerName={partnerName} />
-          
-          <main className="w-full px-6 md:px-6 py-8">
-            <div className="mb-8 text-white max-w-[1600px] mx-auto">
-              <h1 className="text-3xl md:text-4xl font-semibold mb-2">
-                Welcome back, {userName} & {partnerName}!
-              </h1>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-white/80 w-full">
-                <p>
-                  Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
-                  {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
-                </p>
-                
-                {/* Action buttons for non-logged in users */}
-                {!user && (
-                  <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
-                    <Button 
-                      onClick={handleSignUpClick}
-                      className="bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-2"
-                    >
-                      <UserRound size={18} />
-                      Sign up to save your progress
-                    </Button>
-                    <Button 
-                      onClick={handleInvitePartner}
-                      variant="outline" 
-                      className="bg-white/20 text-white border-white/30 hover:bg-white/30 flex items-center gap-2"
-                    >
-                      <Mail size={18} />
-                      Invite your partner
-                    </Button>
-                  </div>
-                )}
-              </div>
+    <div className="min-h-screen">
+      <div className="w-full animated-gradient dynamic-gradient relative">
+        <HeartAnimation avoidTextAreas={true} count={10} />
+        
+        <DashboardHeader userName={userName} partnerName={partnerName} />
+        
+        <main className="w-full px-6 md:px-6 py-8">
+          <div className="mb-8 text-white max-w-[1600px] mx-auto">
+            <h1 className="text-3xl md:text-4xl font-semibold mb-2">
+              Welcome back, {userName} & {partnerName}!
+            </h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-white/80 w-full">
+              <p>
+                Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
+                {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
+              </p>
               
-              {weddingHashtag && (
-                <p className="sm:ml-4 mt-3">
-                  <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-medium">
-                    {weddingHashtag}
-                  </span>
-                </p>
+              {/* Action buttons for non-logged in users */}
+              {!user && (
+                <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
+                  <Button 
+                    onClick={handleSignUpClick}
+                    className="bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-2"
+                  >
+                    <UserRound size={18} />
+                    Sign up to save your progress
+                  </Button>
+                  <Button 
+                    onClick={handleInvitePartner}
+                    variant="outline" 
+                    className="bg-white/20 text-white border-white/30 hover:bg-white/30 flex items-center gap-2"
+                  >
+                    <Mail size={18} />
+                    Invite your partner
+                  </Button>
+                </div>
               )}
             </div>
             
-            {/* Partner invitation dialog */}
-            <Dialog open={invitePartnerDialogOpen} onOpenChange={setInvitePartnerDialogOpen}>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Invite your partner</DialogTitle>
-                  <DialogDescription>
-                    Send an invitation to your partner to collaborate on wedding planning.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <label htmlFor="partner-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      Partner's email
-                    </label>
-                    <Input
-                      id="partner-email"
-                      type="email"
-                      placeholder="partner@example.com"
-                      value={partnerEmail}
-                      onChange={(e) => setPartnerEmail(e.target.value)}
-                    />
-                  </div>
+            {weddingHashtag && (
+              <p className="sm:ml-4 mt-3">
+                <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-medium">
+                  {weddingHashtag}
+                </span>
+              </p>
+            )}
+          </div>
+          
+          {/* Partner invitation dialog */}
+          <Dialog open={invitePartnerDialogOpen} onOpenChange={setInvitePartnerDialogOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Invite your partner</DialogTitle>
+                <DialogDescription>
+                  Send an invitation to your partner to collaborate on wedding planning.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <label htmlFor="partner-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Partner's email
+                  </label>
+                  <Input
+                    id="partner-email"
+                    type="email"
+                    placeholder="partner@example.com"
+                    value={partnerEmail}
+                    onChange={(e) => setPartnerEmail(e.target.value)}
+                  />
                 </div>
-                <DialogFooter className="sm:justify-end">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => setInvitePartnerDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={sendPartnerInvite}
-                    disabled={isSendingInvite || !partnerEmail}
-                    className="bg-wedding-pink hover:bg-wedding-pink-dark"
-                  >
-                    {isSendingInvite ? (
-                      "Sending..."
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" /> Send invitation
-                      </>
-                    )}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
-              <div className="lg:col-span-3 space-y-6">
-                <RecommendedWeddingPlans 
-                  weddingPlans={weddingPlans}
-                  preferredBudget={preferredBudget}
-                />
-                
-                <WeddingTemplates
-                  userBudget={preferredBudget}
-                  userPreferences={userPreferences}
-                  userColors={weddingColors}
-                />
               </div>
+              <DialogFooter className="sm:justify-end">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setInvitePartnerDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={sendPartnerInvite}
+                  disabled={isSendingInvite || !partnerEmail}
+                  className="bg-wedding-pink hover:bg-wedding-pink-dark"
+                >
+                  {isSendingInvite ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" /> Send invitation
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
+            <div className="lg:col-span-3 space-y-6">
+              <RecommendedWeddingPlans 
+                weddingPlans={weddingPlans}
+                preferredBudget={preferredBudget}
+              />
               
-              <div className="lg:col-span-1 space-y-6">
-                <WeddingProgressTracker tasks={tasks} className="w-full" />
-                
-                <QuickActions />
-                
-                <UpcomingTasks tasks={tasks} />
-              </div>
+              <WeddingTemplates
+                userBudget={preferredBudget}
+                userPreferences={userPreferences}
+                userColors={weddingColors}
+              />
             </div>
-          </main>
-        </div>
+            
+            <div className="lg:col-span-1 space-y-6">
+              <WeddingProgressTracker tasks={tasks} className="w-full" />
+              
+              <QuickActions />
+              
+              <UpcomingTasks tasks={tasks} />
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

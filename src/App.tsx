@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./components/AuthProvider";
-import { SidebarProvider } from "./components/ui/sidebar";
 import Index from "./pages/Index";
 import VendorMarketplace from "./pages/VendorMarketplace";
 import Login from "./pages/Login";
@@ -91,17 +90,11 @@ const AppRoutes = () => {
       <Route path="/vendors" element={<VendorMarketplace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/dashboard" element={
-        <SidebarProvider>
-          <Dashboard />
-        </SidebarProvider>
-      } />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/edit-wedding-details" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <EditWeddingDetails />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <EditWeddingDetails />
+        </ProtectedRoute>
       } />
       <Route path="/vendor-signup" element={<VendorSignup />} />
       <Route path="/vendor-login" element={<VendorLogin />} />
@@ -110,48 +103,36 @@ const AppRoutes = () => {
           <VendorDashboard />
         </ProtectedRoute>
       } />
-      {/* Future Routes - Add SidebarProvider to each route */}
+      {/* Future Routes */}
       <Route path="/budget" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       <Route path="/guests" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       <Route path="/mood-board" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       <Route path="/gifts" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       <Route path="/theme" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       <Route path="/timeline" element={
-        <SidebarProvider>
-          <ProtectedRoute vendorOnly={false}>
-            <NotFound />
-          </ProtectedRoute>
-        </SidebarProvider>
+        <ProtectedRoute vendorOnly={false}>
+          <NotFound />
+        </ProtectedRoute>
       } />
       {/* Catch-all route */}
       <Route path="*" element={<NotFound />} />
