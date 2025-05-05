@@ -1,6 +1,7 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Calendar, Coins, Palette, Users } from 'lucide-react';
+import { Heart, Calendar, Coins, Palette, Users, User, ArrowRight } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import FloatingHearts from './FloatingHearts';
 import { Button } from '@/components/ui/button';
