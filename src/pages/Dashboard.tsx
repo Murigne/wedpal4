@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils'; // Add this import for the cn utility
 import HeartAnimation from '@/components/HeartAnimation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
