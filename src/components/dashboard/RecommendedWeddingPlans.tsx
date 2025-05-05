@@ -35,7 +35,7 @@ const RecommendedWeddingPlans: React.FC<RecommendedWeddingPlansProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 transition-all duration-300">
           {weddingPlans.map((plan, index) => (
             <WeddingPlanCard
               key={index}

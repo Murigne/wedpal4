@@ -38,6 +38,9 @@ const Dashboard = () => {
   const [partnerEmail, setPartnerEmail] = useState('');
   const [isSendingInvite, setIsSendingInvite] = useState(false);
   
+  // New state for sidebar expansion
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  
   useEffect(() => {
     const fetchUserData = async () => {
       // Check if we have data passed from onboarding
@@ -387,15 +390,26 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen">
-      <NavigationSidebar />
+    <div className="min-h-screen flex">
+      <div className="h-screen sticky top-0">
+        <NavigationSidebar 
+          isExpanded={sidebarExpanded} 
+          setIsExpanded={setSidebarExpanded} 
+        />
+      </div>
       
-      <div className="w-full animated-gradient dynamic-gradient relative">
+      <div 
+        className="w-full animated-gradient dynamic-gradient relative transition-all duration-300 ease-out"
+        style={{ 
+          marginLeft: sidebarExpanded ? '0' : '0', 
+          width: `calc(100% - ${sidebarExpanded ? '13rem' : '4rem'})` 
+        }}
+      >
         <HeartAnimation avoidTextAreas={true} count={10} />
         
         <DashboardHeader userName={userName} partnerName={partnerName} />
         
-        <main className="w-full px-6 md:px-6 py-8">
+        <main className="w-full px-6 md:px-6 py-8 transition-all duration-300">
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2">
               Welcome back, {userName} & {partnerName}!
@@ -486,7 +500,7 @@ const Dashboard = () => {
             </DialogContent>
           </Dialog>
           
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] mx-auto transition-all duration-300">
             <div className="lg:col-span-3 space-y-6">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}

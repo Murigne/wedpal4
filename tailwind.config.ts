@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -132,25 +133,31 @@ export default {
 				},
 				"sidebar-expand": {
 					"0%": { 
-						transform: "translate(-100%, -50%)", 
-						opacity: "0.5",
-						backgroundSize: "100% 100%"
+						width: "4rem",
+						opacity: "0.9"
 					},
 					"100%": { 
-						transform: "translate(0, -50%)",
-						opacity: "1",
-						backgroundSize: "100% 100%"
+						width: "13rem",
+						opacity: "1"
 					}
 				},
 				"sidebar-collapse": {
 					"0%": { 
-						transform: "translate(0, -50%)",
+						width: "13rem",
 						opacity: "1"
 					},
 					"100%": { 
-						transform: "translate(-10%, -50%)",
-						opacity: "1"
+						width: "4rem",
+						opacity: "0.9"
 					}
+				},
+				"content-shift-right": {
+					"0%": { marginLeft: "0" },
+					"100%": { marginLeft: "9rem" }
+				},
+				"content-shift-left": {
+					"0%": { marginLeft: "9rem" },
+					"100%": { marginLeft: "0" }
 				},
 				"fade-in": {
 					"0%": { opacity: "0" },
@@ -177,6 +184,8 @@ export default {
 				'nav-hover': 'nav-hover 0.3s ease-in-out',
 				"sidebar-expand": "sidebar-expand 0.3s ease-out forwards",
 				"sidebar-collapse": "sidebar-collapse 0.3s ease-in forwards",
+				"content-shift-right": "content-shift-right 0.3s ease-out forwards",
+				"content-shift-left": "content-shift-left 0.3s ease-in forwards",
 				"fade-in": "fade-in 0.2s ease-out forwards",
 				"rotate-180": "rotate-180 0.3s ease-out forwards",
 				"rotate-in": "rotate-180 0.3s ease-in reverse forwards",
