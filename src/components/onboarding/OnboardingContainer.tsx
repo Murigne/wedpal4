@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
@@ -22,7 +21,9 @@ const OnboardingContainer: React.FC = () => {
     setCurrentStep, 
     messages, 
     setMessages, 
-    QUESTIONS 
+    QUESTIONS,
+    validationErrors,
+    setValidationErrors 
   } = useOnboardingState();
 
   useEffect(() => {
@@ -126,8 +127,52 @@ const OnboardingContainer: React.FC = () => {
     }
   };
 
+  const validateCurrentStep = (): boolean => {
+    const currentQuestion = QUESTIONS[currentStep];
+    const errors: Record<string, string> = {};
+    let isValid = true;
+
+    if (Array.isArray(currentQuestion.field)) {
+      // Handle first step with two fields
+      const field1 = currentQuestion.field[0] as keyof typeof formData;
+      const field2 = currentQuestion.field[1] as keyof typeof formData;
+      
+      if (currentQuestion.validation) {
+        const error1 = currentQuestion.validation(formData[field1]);
+        const error2 = currentQuestion.validation(formData[field2]);
+        
+        if (error1) {
+          errors[field1] = error1;
+          isValid = false;
+        }
+        
+        if (error2) {
+          errors[field2] = error2;
+          isValid = false;
+        }
+      }
+    } else {
+      // Handle steps with a single field
+      const field = currentQuestion.field as keyof typeof formData;
+      
+      if (currentQuestion.validation) {
+        const error = currentQuestion.validation(formData[field]);
+        if (error) {
+          errors[field] = error;
+          isValid = false;
+        }
+      }
+    }
+    
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate the current step
+    if (!validateCurrentStep()) return;
     
     const question = QUESTIONS[currentStep];
     let userResponse = '';
@@ -189,6 +234,7 @@ const OnboardingContainer: React.FC = () => {
         <OnboardingForm 
           currentStep={currentStep}
           formData={formData}
+          validationErrors={validationErrors}
           setFormData={setFormData}
           handleSubmit={handleFormSubmit}
           QUESTIONS={QUESTIONS}

@@ -19,6 +19,8 @@ const ChatOnboardingContainer: React.FC = () => {
     setCurrentStep,
     formData,
     setFormData,
+    validationErrors,
+    setValidationErrors,
     messages,
     setMessages,
     showAnimation,
@@ -49,6 +51,14 @@ const ChatOnboardingContainer: React.FC = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name as keyof typeof validationErrors]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
   };
 
   const handleLoginClick = () => {
@@ -74,8 +84,52 @@ const ChatOnboardingContainer: React.FC = () => {
     }
   };
 
+  const validateCurrentStep = (): boolean => {
+    const currentQuestion = QUESTIONS[currentStep];
+    const errors: Record<string, string> = {};
+    let isValid = true;
+
+    if (Array.isArray(currentQuestion.field)) {
+      // Handle first step with two fields
+      const field1 = currentQuestion.field[0];
+      const field2 = currentQuestion.field[1];
+      
+      if (currentQuestion.validation) {
+        const error1 = currentQuestion.validation(formData[field1]);
+        const error2 = currentQuestion.validation(formData[field2]);
+        
+        if (error1) {
+          errors[field1] = error1;
+          isValid = false;
+        }
+        
+        if (error2) {
+          errors[field2] = error2;
+          isValid = false;
+        }
+      }
+    } else {
+      // Handle steps with a single field
+      const field = Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field;
+      
+      if (currentQuestion.validation) {
+        const error = currentQuestion.validation(formData[field]);
+        if (error) {
+          errors[field] = error;
+          isValid = false;
+        }
+      }
+    }
+    
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate the current step
+    if (!validateCurrentStep()) return;
     
     const question = QUESTIONS[currentStep];
     let userResponse = '';
@@ -161,6 +215,7 @@ const ChatOnboardingContainer: React.FC = () => {
           <ChatOnboardingForm
             currentStep={currentStep}
             formData={formData}
+            validationErrors={validationErrors}
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
             QUESTIONS={QUESTIONS}

@@ -2,15 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-
-interface FormData {
-  partner1Name: string;
-  partner2Name: string;
-  weddingDate: string;
-  budget: string;
-  theme: string;
-  guestCount: string;
-}
+import { FormData, ValidationErrors } from './useOnboardingState';
 
 interface Question {
   id: string;
@@ -18,11 +10,13 @@ interface Question {
   field: string | string[];
   icon: JSX.Element;
   placeholder: string;
+  validation?: (value: string) => string | undefined;
 }
 
 interface OnboardingFormProps {
   currentStep: number;
   formData: FormData;
+  validationErrors: ValidationErrors;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (e: React.FormEvent) => void;
   QUESTIONS: Question[];
@@ -31,6 +25,7 @@ interface OnboardingFormProps {
 const OnboardingForm: React.FC<OnboardingFormProps> = ({ 
   currentStep, 
   formData, 
+  validationErrors,
   setFormData, 
   handleSubmit,
   QUESTIONS 
@@ -45,7 +40,7 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
 
   const currentQuestion = QUESTIONS[currentStep];
   const isFirstQuestion = Array.isArray(currentQuestion.field);
-
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {currentStep === 0 ? (
@@ -61,8 +56,11 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
               onChange={handleInputChange}
               placeholder="Your name"
               required
-              className="wedding-input pl-10 w-full"
+              className={`wedding-input pl-10 w-full ${validationErrors.partner1Name ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
+            {validationErrors.partner1Name && (
+              <p className="text-red-500 text-sm mt-1">{validationErrors.partner1Name}</p>
+            )}
           </div>
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -75,8 +73,11 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
               onChange={handleInputChange}
               placeholder="Partner's name"
               required
-              className="wedding-input pl-10 w-full"
+              className={`wedding-input pl-10 w-full ${validationErrors.partner2Name ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
+            {validationErrors.partner2Name && (
+              <p className="text-red-500 text-sm mt-1">{validationErrors.partner2Name}</p>
+            )}
           </div>
         </div>
       ) : (
@@ -91,8 +92,11 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
             onChange={handleInputChange}
             placeholder={QUESTIONS[currentStep].placeholder}
             required
-            className="wedding-input pl-10 w-full"
+            className={`wedding-input pl-10 w-full ${validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
+          {validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors] && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors]}</p>
+          )}
         </div>
       )}
       

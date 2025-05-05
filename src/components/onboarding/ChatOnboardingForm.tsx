@@ -2,11 +2,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { QuestionType, ChatFormData } from './useChatOnboardingState';
+import { QuestionType, ChatFormData, ValidationErrors } from './useChatOnboardingState';
 
 interface ChatOnboardingFormProps {
   currentStep: number;
   formData: ChatFormData;
+  validationErrors: ValidationErrors;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
   QUESTIONS: QuestionType[];
@@ -17,6 +18,7 @@ interface ChatOnboardingFormProps {
 const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
   currentStep,
   formData,
+  validationErrors,
   handleInputChange,
   handleSubmit,
   QUESTIONS,
@@ -51,8 +53,11 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
               onChange={handleInputChange}
               placeholder={placeholders[0]}
               required
-              className="wedding-input pl-10 w-full"
+              className={`wedding-input pl-10 w-full ${validationErrors.partner1Name ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
+            {validationErrors.partner1Name && (
+              <p className="text-red-500 text-sm mt-1">{validationErrors.partner1Name}</p>
+            )}
           </div>
           <div className="flex-1 relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -65,8 +70,11 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
               onChange={handleInputChange}
               placeholder={placeholders[1] || ""}
               required
-              className="wedding-input pl-10 w-full"
+              className={`wedding-input pl-10 w-full ${validationErrors.partner2Name ? 'border-red-500 focus:ring-red-500' : ''}`}
             />
+            {validationErrors.partner2Name && (
+              <p className="text-red-500 text-sm mt-1">{validationErrors.partner2Name}</p>
+            )}
           </div>
         </div>
       ) : currentStep === QUESTIONS.length - 1 ? (
@@ -81,8 +89,11 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
             onChange={handleInputChange}
             placeholder={placeholders[0]}
             required
-            className="wedding-input pl-10 w-full"
+            className={`wedding-input pl-10 w-full ${validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
+          {validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}</p>
+          )}
         </div>
       ) : currentStep === QUESTIONS.length - 2 ? (
         <div className="relative">
@@ -96,8 +107,11 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
             onChange={handleInputChange}
             placeholder={placeholders[0]}
             required
-            className="wedding-input pl-10 w-full"
+            className={`wedding-input pl-10 w-full ${validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
+          {validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}</p>
+          )}
         </div>
       ) : (
         <div className="relative">
@@ -111,8 +125,11 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
             onChange={handleInputChange}
             placeholder={placeholders[0]}
             required
-            className="wedding-input pl-10 w-full"
+            className={`wedding-input pl-10 w-full ${validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
+          {validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}</p>
+          )}
         </div>
       )}
       
