@@ -110,6 +110,7 @@ const Dashboard = () => {
       sidebarExpanded={sidebarExpanded}
       onSidebarExpandChange={handleSidebarExpandChange}
       isLoading={dashboardData.isLoading}
+      onInvitePartner={handleInvitePartner}
     >
       <DashboardWelcomeHeader
         userName={dashboardData.userName}

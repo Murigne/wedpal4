@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Store } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WedPalLogo from '@/components/WedPalLogo';
 import ProfileMenu from './ProfileMenu';
@@ -9,13 +9,20 @@ import ProfileMenu from './ProfileMenu';
 interface DashboardHeaderProps {
   userName: string;
   partnerName: string;
+  onInvitePartner?: () => void;
 }
 
-const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName }) => {
+const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
+  userName, 
+  partnerName,
+  onInvitePartner
+}) => {
   const navigate = useNavigate();
 
-  const handleVendorMarketplaceClick = () => {
-    navigate('/vendors');
+  const handleInvitePartnerClick = () => {
+    if (onInvitePartner) {
+      onInvitePartner();
+    }
   };
 
   return (
@@ -30,10 +37,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, partnerName
             <Button 
               variant="outline" 
               className="bg-white/30 hover:bg-white/40 text-white border-white/30"
-              onClick={handleVendorMarketplaceClick}
+              onClick={handleInvitePartnerClick}
             >
-              <Store className="w-4 h-4 mr-2" />
-              Vendor Marketplace
+              <UserPlus className="w-4 h-4 mr-2" />
+              Invite your partner
             </Button>
             
             <ProfileMenu userName={userName} partnerName={partnerName} />

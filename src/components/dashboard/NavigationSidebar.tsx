@@ -35,9 +35,9 @@ const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange })
 
   return (
     <div className={cn(
-      "fixed left-4 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
+      "fixed left-5 top-1/2 -translate-y-1/2 flex flex-col z-50 transition-all duration-300",
       isExpanded 
-        ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl" 
+        ? "bg-white/10 backdrop-blur-lg p-3 rounded-xl w-[180px]" 
         : "gap-3 py-4 px-3 bg-white/10 backdrop-blur-lg rounded-full",
       "shadow-lg"
     )}>

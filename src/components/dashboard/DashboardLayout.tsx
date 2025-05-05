@@ -12,6 +12,7 @@ interface DashboardLayoutProps {
   onSidebarExpandChange: (expanded: boolean) => void;
   children: ReactNode;
   isLoading?: boolean;
+  onInvitePartner?: () => void;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -20,7 +21,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   sidebarExpanded,
   onSidebarExpandChange,
   children,
-  isLoading = false
+  isLoading = false,
+  onInvitePartner
 }) => {
   if (isLoading) {
     return (
@@ -39,11 +41,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <div className="w-full animated-gradient dynamic-gradient relative">
         <HeartAnimation avoidTextAreas={true} count={10} />
         
-        <DashboardHeader userName={userName} partnerName={partnerName} />
+        <DashboardHeader 
+          userName={userName} 
+          partnerName={partnerName}
+          onInvitePartner={onInvitePartner}
+        />
         
         <main className={cn(
           "w-full px-4 md:px-6 py-8 transition-all duration-300",
-          sidebarExpanded ? "ml-[120px]" : "ml-[60px]"
+          sidebarExpanded ? "ml-[180px]" : "ml-[60px]"
         )}>
           {children}
         </main>
