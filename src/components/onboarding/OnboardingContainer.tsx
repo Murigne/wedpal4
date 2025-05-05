@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
@@ -201,8 +202,15 @@ const OnboardingContainer: React.FC = () => {
         sender: 'ai' 
       }]);
       
-      setTimeout(() => {
+      setTimeout(async () => {
         await saveDataToSupabase();
+        navigate('/dashboard', { 
+          state: { 
+            formData,
+            userColors: [],
+            isNewUser: true
+          } 
+        });
       }, 1000);
     }
   };
