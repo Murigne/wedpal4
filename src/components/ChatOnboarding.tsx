@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import ChatMessage from './ChatMessage';
 import { useAuth } from './AuthProvider';
 import SparkleAnimation from './SparkleAnimation';
-import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
 
 interface FormData {
   partner1Name: string;
