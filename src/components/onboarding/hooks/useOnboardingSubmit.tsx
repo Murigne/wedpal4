@@ -134,14 +134,15 @@ export const useOnboardingSubmit = (
       // Use a setTimeout with an async function inside to handle asynchronous operations
       setTimeout(() => {
         const navigateToDashboard = async () => {
+          // Fix: Get current user properly with async/await
+          const { data } = await supabase.auth.getUser();
+          const user = data?.user;
           await saveDataToSupabase(user?.id);
         };
         navigateToDashboard();
       }, 1000);
     }
   };
-
-  const user = supabase.auth.getUser()?.data?.user;
 
   return {
     validationErrors,
