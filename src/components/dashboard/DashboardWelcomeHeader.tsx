@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRound, Mail } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { calculateDaysUntil } from '@/utils/dateUtils';
 
@@ -49,23 +49,16 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
           {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
         </p>
         
-        {/* Action buttons for non-logged in users */}
+        {/* Action button for non-logged in users - remove duplicate button */}
         {!user && (
           <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
             <Button 
               onClick={handleSignUpClick}
-              className="bg-white text-wedding-pink-dark hover:bg-white/90 flex items-center gap-2"
-            >
-              <UserRound size={18} />
-              Sign up to save your progress
-            </Button>
-            <Button 
-              onClick={onInvitePartner}
               variant="outline" 
               className="bg-white/20 text-white border-white/30 hover:bg-white/30 flex items-center gap-2"
             >
-              <Mail size={18} />
-              Invite your partner
+              <UserRound size={18} />
+              Sign up to save your progress
             </Button>
           </div>
         )}
