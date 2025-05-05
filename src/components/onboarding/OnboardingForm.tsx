@@ -16,7 +16,7 @@ interface Question {
 interface OnboardingFormProps {
   currentStep: number;
   formData: FormData;
-  validationErrors: ValidationErrors;
+  validationErrors: Record<string, string>; // Changed from ValidationErrors
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (e: React.FormEvent) => void;
   QUESTIONS: Question[];
@@ -92,10 +92,10 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
             onChange={handleInputChange}
             placeholder={QUESTIONS[currentStep].placeholder}
             required
-            className={`wedding-input pl-10 w-full ${validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors] ? 'border-red-500 focus:ring-red-500' : ''}`}
+            className={`wedding-input pl-10 w-full ${validationErrors[QUESTIONS[currentStep].field as string] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
-          {validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors] && (
-            <p className="text-red-500 text-sm mt-1">{validationErrors[QUESTIONS[currentStep].field as keyof ValidationErrors]}</p>
+          {validationErrors[QUESTIONS[currentStep].field as string] && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors[QUESTIONS[currentStep].field as string]}</p>
           )}
         </div>
       )}

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -8,7 +8,9 @@ import {
   Palette, 
   Gift, 
   PaintBucket, 
-  Calendar 
+  Calendar,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import {
   Sidebar,
@@ -17,6 +19,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface NavigationItem {
   icon: React.ElementType;
@@ -26,6 +30,8 @@ interface NavigationItem {
 
 const NavigationSidebar: React.FC = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
   
   const navigationItems: NavigationItem[] = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
@@ -38,26 +44,38 @@ const NavigationSidebar: React.FC = () => {
   ];
 
   return (
-    <Sidebar>
-      <SidebarContent className="py-6">
-        <SidebarMenu>
-          {navigationItems.map((item) => (
-            <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton 
-                asChild 
-                tooltip={item.label}
-                isActive={location.pathname === item.path}
-              >
-                <Link to={item.path} className="flex items-center gap-2">
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
+    <div className="flex h-screen">
+      <Sidebar className={`transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+        <SidebarContent className="py-6">
+          <div className="flex justify-end mb-4 px-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsCollapsed(prev => !prev)}
+              className="h-8 w-8 p-0"
+            >
+              {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </Button>
+          </div>
+          <SidebarMenu>
+            {navigationItems.map((item) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip={isCollapsed ? item.label : undefined}
+                  isActive={location.pathname === item.path}
+                >
+                  <Link to={item.path} className="flex items-center gap-2">
+                    <item.icon size={20} />
+                    {!isCollapsed && <span>{item.label}</span>}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarContent>
+      </Sidebar>
+    </div>
   );
 };
 
