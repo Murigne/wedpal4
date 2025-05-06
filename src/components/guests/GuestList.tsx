@@ -141,7 +141,7 @@ export const GuestList: React.FC<GuestListProps> = ({
       <div className="text-sm text-muted-foreground mb-4">
         Manage your wedding guests and their RSVP status
       </div>
-      <Tabs defaultValue={currentTab} className="h-[500px] flex flex-col" onValueChange={onTabChange}>
+      <Tabs defaultValue={currentTab} className="flex-1 flex flex-col" onValueChange={onTabChange}>
         <div className="mb-4">
           <TabsList className="w-auto inline-flex">
             <TabsTrigger value="all">All Guests</TabsTrigger>
@@ -151,7 +151,7 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsList>
         </div>
         
-        <ScrollArea className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1 max-h-[430px] overflow-y-auto">
           <TabsContent value="all" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
