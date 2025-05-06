@@ -12,6 +12,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 
 interface TimelineItem {
   id: string;
@@ -28,6 +31,7 @@ const Timeline = () => {
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [tempWeddingDate, setTempWeddingDate] = useState(weddingDate);
   const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date(weddingDate));
   
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([
     { 
@@ -114,20 +118,25 @@ const Timeline = () => {
   const handleEditWeddingDate = () => {
     if (isEditingDate) {
       try {
-        // Validate date
-        const parsedDate = parseISO(tempWeddingDate);
-        if (isNaN(parsedDate.getTime())) throw new Error("Invalid date");
-        
-        setWeddingDate(tempWeddingDate);
-        setIsEditingDate(false);
-        toast({
-          title: "Wedding date updated",
-          description: `Your wedding date has been set to ${format(parseISO(tempWeddingDate), 'MMMM d, yyyy')}`
-        });
+        if (selectedDate) {
+          const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+          setWeddingDate(formattedDate);
+          setTempWeddingDate(formattedDate);
+          setIsEditingDate(false);
+          toast({
+            title: "Wedding date updated",
+            description: `Your wedding date has been set to ${format(selectedDate, 'MMMM d, yyyy')}`
+          });
+        } else {
+          toast({
+            title: "Invalid date",
+            description: "Please select a valid date"
+          });
+        }
       } catch (error) {
         toast({
           title: "Invalid date",
-          description: "Please enter a valid date"
+          description: "Please select a valid date"
         });
       }
     } else {
@@ -197,7 +206,7 @@ const Timeline = () => {
       description="Track your wedding planning progress"
       icon={<Clock className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-h-[calc(100vh-180px)]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
           <Card>
             <CardHeader>
@@ -208,12 +217,29 @@ const Timeline = () => {
                 <Calendar className="mx-auto h-12 w-12 text-pink-500 mb-2" />
                 {isEditingDate ? (
                   <div className="space-y-2">
-                    <Input
-                      type="date"
-                      value={tempWeddingDate}
-                      onChange={(e) => setTempWeddingDate(e.target.value)}
-                      className="max-w-xs mx-auto"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedDate && "text-muted-foreground"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : <span>Select date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 pointer-events-auto" align="center">
+                        <CalendarComponent
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 ) : (
                   <>
@@ -285,7 +311,7 @@ const Timeline = () => {
                   {/* Timeline line */}
                   <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200" />
                   
-                  {sortedItems.map((item, index) => (
+                  {sortedItems.map((item) => (
                     <div key={item.id} className="relative">
                       {/* Timeline dot */}
                       <div 

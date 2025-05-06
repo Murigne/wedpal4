@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -49,6 +49,8 @@ const Guests = () => {
     { id: '3', name: 'David Williams', email: 'david@example.com', phone: '233-552-9012', type: 'friend', side: 'partner1', rsvp: 'pending' },
     { id: '4', name: 'Sarah Brown', email: 'sarah@example.com', phone: '233-553-3456', type: 'friend', side: 'partner2', rsvp: 'pending' },
     { id: '5', name: 'Michael Davis', email: 'michael@example.com', phone: '233-554-7890', type: 'colleague', side: 'partner1', rsvp: 'declined' },
+    { id: '6', name: 'Emma Wilson', email: 'emma@example.com', phone: '233-555-1234', type: 'friend', side: 'both', rsvp: 'confirmed' },
+    { id: '7', name: 'Robert Taylor', email: 'robert@example.com', phone: '233-556-5678', type: 'colleague', side: 'partner2', rsvp: 'pending' },
   ]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState('all');
@@ -133,7 +135,7 @@ const Guests = () => {
     declined: guests.filter(g => g.rsvp === 'declined').length,
   };
   
-  // Guest type distribution for donut chart
+  // Guest type distribution for donut chart with count for each type
   const guestTypeData = [
     { name: 'Family', value: guests.filter(g => g.type === 'family').length, color: '#4ade80' },
     { name: 'Friends', value: guests.filter(g => g.type === 'friend').length, color: '#60a5fa' },
@@ -157,9 +159,9 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-6 max-h-[calc(100vh-180px)]">
-        <div className="md:col-span-4 space-y-6">
-          <Card>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+        <div className="md:col-span-4 space-y-6 flex flex-col">
+          <Card className="flex-shrink-0">
             <CardHeader>
               <CardTitle>Guest Summary</CardTitle>
             </CardHeader>
@@ -190,30 +192,47 @@ const Guests = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="flex-grow">
             <CardHeader>
               <CardTitle>Guest Distribution</CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center">
-              <div className="h-[200px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={guestTypeData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {guestTypeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+            <CardContent className="flex h-full">
+              <div className="h-[220px] w-full flex items-center">
+                <div className="w-1/2">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={guestTypeData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                        strokeWidth={3}
+                        stroke="#ffffff"
+                      >
+                        {guestTypeData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.color} 
+                            style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.1))' }}
+                          />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                <div className="w-1/2 pl-4 flex flex-col justify-center">
+                  {guestTypeData.map((entry, index) => (
+                    <div key={index} className="flex items-center mb-3">
+                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
+                      <div className="text-sm font-medium">{entry.name}</div>
+                      <div className="ml-auto font-bold">{entry.value}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -240,8 +259,8 @@ const Guests = () => {
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden flex flex-col">
               <Tabs defaultValue="all" className="flex-1 flex flex-col" onValueChange={setCurrentTab}>
-                <div className="mb-4 w-fit">
-                  <TabsList>
+                <div className="mb-4">
+                  <TabsList className="w-auto inline-flex">
                     <TabsTrigger value="all">All Guests</TabsTrigger>
                     <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
                     <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -249,7 +268,7 @@ const Guests = () => {
                   </TabsList>
                 </div>
                 
-                <ScrollArea className="flex-1 max-h-[calc(100vh-350px)]">
+                <ScrollArea className="flex-1 h-[calc(100vh-350px)]">
                   <TabsContent value="all" className="space-y-4 m-0">
                     {filteredGuests.length > 0 ? (
                       filteredGuests.map((guest) => (

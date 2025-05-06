@@ -1,14 +1,11 @@
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Search, Star, Filter, Heart } from 'lucide-react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useToast } from '@/hooks/use-toast';
 
 const VendorMarketplace = () => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [favoriteVendors, setFavoriteVendors] = useState<number[]>([]);
@@ -154,24 +151,16 @@ const VendorMarketplace = () => {
       onSidebarExpandChange={handleSidebarExpandChange}
       isLoading={dashboardData.isLoading}
     >
-      <div className="mb-8 text-white max-w-[1600px] mx-auto">
-        <Button 
-          variant="ghost" 
-          className="mb-4 text-white" 
-          onClick={() => navigate('/dashboard')}
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
-        </Button>
-        
-        <h1 className="text-3xl md:text-4xl font-semibold mb-2">Vendor Marketplace</h1>
-        <p className="text-white/80">Find and book the perfect vendors for your wedding day</p>
-      </div>
-      
       <div className="max-w-[1600px] mx-auto">
+        <div className="mb-4 text-white">
+          <h1 className="text-3xl md:text-4xl font-semibold">Vendor Marketplace</h1>
+          <p className="text-white/80">Find and book the perfect vendors for your wedding day</p>
+        </div>
+        
         {/* Search and filter - Fixed position */}
-        <div className="sticky top-[73px] z-30 pt-4 pb-4 bg-wedding-pink/30 backdrop-blur-md">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="relative flex-grow">
+        <div className="sticky top-[73px] z-30 pt-2 pb-4 bg-wedding-pink/30 backdrop-blur-md rounded-lg mb-4">
+          <div className="flex flex-col md:flex-row gap-4 mb-4 px-4 pt-2">
+            <div className="relative md:w-2/3">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <input 
                 type="text" 
@@ -181,17 +170,10 @@ const VendorMarketplace = () => {
                 onChange={handleSearchChange}
               />
             </div>
-            
-            <Button 
-              className="bg-pink-500 hover:bg-pink-600 text-white"
-              onClick={() => toast({ title: "Filters", description: "Filter options would open here" })}
-            >
-              <Filter className="w-4 h-4 mr-2" /> Filters
-            </Button>
           </div>
           
           {/* Categories */}
-          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
+          <div className="flex overflow-x-auto gap-2 pb-2 px-4 no-scrollbar">
             <Button 
               className={`whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-pink-500 hover:bg-pink-600 text-white' : 'bg-white/70 hover:bg-white/80 text-gray-800'}`}
               onClick={() => handleCategoryClick('All Categories')}
@@ -212,71 +194,73 @@ const VendorMarketplace = () => {
           </div>
         </div>
         
-        {/* Vendors grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 pb-20">
-          {filteredVendors.map(vendor => (
-            <div key={vendor.id} className="bg-white rounded-lg shadow-md overflow-hidden group relative">
-              <div className="absolute top-2 right-2 z-10">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-sm"
-                  onClick={() => handleToggleFavorite(vendor.id)}
-                >
-                  <Heart 
-                    className={`h-4 w-4 ${favoriteVendors.includes(vendor.id) ? 'fill-pink-500 text-pink-500' : 'text-muted-foreground'}`} 
-                  />
-                </Button>
-              </div>
-              
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src={vendor.image} 
-                  alt={vendor.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium">{vendor.name}</h3>
-                  <span className="text-sm bg-pink-100 px-2 py-0.5 rounded-full text-pink-800">
-                    {vendor.price}
-                  </span>
-                </div>
-                
-                <p className="text-sm text-muted-foreground mb-3">{vendor.category}</p>
-                
-                <p className="text-sm mb-4">{vendor.description}</p>
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                    <span className="text-sm font-medium">{vendor.rating}</span>
-                    <span className="text-xs text-muted-foreground ml-1">({vendor.reviewCount} reviews)</span>
-                  </div>
-                  
+        {/* Vendors grid - rounded container */}
+        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2 pb-4">
+            {filteredVendors.map(vendor => (
+              <div key={vendor.id} className="bg-white rounded-lg shadow-md overflow-hidden group relative">
+                <div className="absolute top-2 right-2 z-10">
                   <Button 
-                    className="text-sm px-3 py-1 h-auto bg-pink-500 hover:bg-pink-600 text-white"
-                    onClick={() => handleViewDetails(vendor.id)}
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-sm"
+                    onClick={() => handleToggleFavorite(vendor.id)}
                   >
-                    View Details
+                    <Heart 
+                      className={`h-4 w-4 ${favoriteVendors.includes(vendor.id) ? 'fill-pink-500 text-pink-500' : 'text-muted-foreground'}`} 
+                    />
                   </Button>
                 </div>
+                
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={vendor.image} 
+                    alt={vendor.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium">{vendor.name}</h3>
+                    <span className="text-sm bg-pink-100 px-2 py-0.5 rounded-full text-pink-800">
+                      {vendor.price}
+                    </span>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground mb-3">{vendor.category}</p>
+                  
+                  <p className="text-sm mb-4">{vendor.description}</p>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                      <span className="text-sm font-medium">{vendor.rating}</span>
+                      <span className="text-xs text-muted-foreground ml-1">({vendor.reviewCount} reviews)</span>
+                    </div>
+                    
+                    <Button 
+                      className="text-sm px-3 py-1 h-auto bg-pink-500 hover:bg-pink-600 text-white"
+                      onClick={() => handleViewDetails(vendor.id)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-        
-        {/* Load more */}
-        <div className="flex justify-center mt-10 pb-20">
-          <Button 
-            variant="outline" 
-            className="border-pink-300 hover:bg-pink-50 px-8"
-            onClick={() => toast({ title: "Load More", description: "Loading more vendors..." })}
-          >
-            Load More Vendors
-          </Button>
+            ))}
+          </div>
+          
+          {/* Load more */}
+          <div className="flex justify-center mt-4 pb-4">
+            <Button 
+              variant="outline" 
+              className="border-pink-300 hover:bg-pink-50 px-8"
+              onClick={() => toast({ title: "Load More", description: "Loading more vendors..." })}
+            >
+              Load More Vendors
+            </Button>
+          </div>
         </div>
       </div>
     </DashboardLayout>
