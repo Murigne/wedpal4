@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -139,11 +138,11 @@ export const GuestList: React.FC<GuestListProps> = ({
           />
         </div>
       </div>
-      <div className="text-sm text-muted-foreground mb-2">
+      <div className="text-sm text-muted-foreground mb-4">
         Manage your wedding guests and their RSVP status
       </div>
       <Tabs defaultValue={currentTab} className="flex-1 flex flex-col" onValueChange={onTabChange}>
-        <div className="mb-2">
+        <div className="mb-4">
           <TabsList className="w-auto inline-flex">
             <TabsTrigger value="all">All Guests</TabsTrigger>
             <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
@@ -152,8 +151,8 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsList>
         </div>
         
-        <ScrollArea className="flex-1 h-[200px] overflow-y-auto">
-          <TabsContent value="all" className="space-y-3 m-0">
+        <ScrollArea className="flex-1 max-h-[430px] overflow-y-auto">
+          <TabsContent value="all" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
                 <GuestCard 
@@ -164,13 +163,13 @@ export const GuestList: React.FC<GuestListProps> = ({
                 />
               ))
             ) : (
-              <div className="text-center p-4 text-gray-500">
+              <div className="text-center p-8 text-gray-500">
                 No guests found matching your search.
               </div>
             )}
           </TabsContent>
           
-          <TabsContent value="confirmed" className="space-y-3 m-0">
+          <TabsContent value="confirmed" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
                 <GuestCard 
@@ -181,13 +180,13 @@ export const GuestList: React.FC<GuestListProps> = ({
                 />
               ))
             ) : (
-              <div className="text-center p-4 text-gray-500">
+              <div className="text-center p-8 text-gray-500">
                 No confirmed guests found matching your search.
               </div>
             )}
           </TabsContent>
           
-          <TabsContent value="pending" className="space-y-3 m-0">
+          <TabsContent value="pending" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
                 <GuestCard 
@@ -198,13 +197,13 @@ export const GuestList: React.FC<GuestListProps> = ({
                 />
               ))
             ) : (
-              <div className="text-center p-4 text-gray-500">
+              <div className="text-center p-8 text-gray-500">
                 No pending guests found matching your search.
               </div>
             )}
           </TabsContent>
           
-          <TabsContent value="declined" className="space-y-3 m-0">
+          <TabsContent value="declined" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
                 <GuestCard 
@@ -215,7 +214,7 @@ export const GuestList: React.FC<GuestListProps> = ({
                 />
               ))
             ) : (
-              <div className="text-center p-4 text-gray-500">
+              <div className="text-center p-8 text-gray-500">
                 No declined guests found matching your search.
               </div>
             )}
@@ -223,7 +222,7 @@ export const GuestList: React.FC<GuestListProps> = ({
         </ScrollArea>
 
         {totalPages > 1 && (
-          <Pagination className="mt-1">
+          <Pagination className="mt-2">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious onClick={prevPage} />

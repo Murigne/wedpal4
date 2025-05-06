@@ -54,18 +54,18 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
         <CardHeader>
           <CardTitle>Guest Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-[250px] flex items-center justify-center py-0">
+        <CardContent className="h-[250px] flex items-center justify-center py-2">
           <div className="flex items-center justify-between w-full">
             <div className="w-1/2 flex justify-center">
               <div className="relative">
-                <ResponsiveContainer width={180} height={180}>
+                <ResponsiveContainer width={160} height={160}>
                   <PieChart>
                     <Pie
                       data={typeData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={70}
-                      outerRadius={85}
+                      innerRadius={60}
+                      outerRadius={75}
                       startAngle={90}
                       endAngle={-270}
                       paddingAngle={4}
@@ -92,7 +92,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
             
             <div className="w-1/2 flex flex-col justify-center">
               {typeData.map((entry, index) => (
-                <div key={index} className="flex items-center mb-2">
+                <div key={index} className="flex items-center mb-3">
                   <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
                   <div className="text-sm font-medium">{entry.name}</div>
                   <div className="ml-auto font-bold">{entry.value}</div>
