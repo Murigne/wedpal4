@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Users, Plus, Search, Check, X, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -15,7 +16,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import PageLayout from '@/components/dashboard/PageLayout';
 import { useToast } from '@/hooks/use-toast';
-import { ChartContainer } from '@/components/ui/chart';
 
 interface Guest {
   id: string;
@@ -159,7 +159,7 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-170px)]">
         <div className="md:col-span-4 space-y-6">
           <Card className="flex-shrink-0">
             <CardHeader>
@@ -192,7 +192,7 @@ const Guests = () => {
             </CardContent>
           </Card>
           
-          <Card className="h-[500px]">
+          <Card className="flex-grow">
             <CardHeader>
               <CardTitle>Guest Distribution</CardTitle>
             </CardHeader>
@@ -217,7 +217,8 @@ const Guests = () => {
                           {guestTypeData.map((entry, index) => (
                             <Cell 
                               key={`cell-${index}`} 
-                              fill={entry.color}
+                              fill={entry.color} 
+                              cornerRadius={4}
                             />
                           ))}
                         </Pie>
@@ -276,7 +277,7 @@ const Guests = () => {
                   </TabsList>
                 </div>
                 
-                <ScrollArea className="h-[500px]">
+                <ScrollArea className="flex-1 h-[calc(100vh-350px)]">
                   <TabsContent value="all" className="space-y-4 m-0">
                     {filteredGuests.length > 0 ? (
                       filteredGuests.map((guest) => (
