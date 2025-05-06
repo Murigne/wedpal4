@@ -54,7 +54,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
         <CardHeader>
           <CardTitle>Guest Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-[500px]">
+        <CardContent className="h-[380px]">
           <div className="flex items-center justify-between">
             <div className="w-1/2 flex justify-center">
               <div className="relative">
