@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -151,7 +152,7 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsList>
         </div>
         
-        <ScrollArea className="flex-1 h-[165px]">
+        <ScrollArea className="flex-1 h-[117px]">
           <TabsContent value="all" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
