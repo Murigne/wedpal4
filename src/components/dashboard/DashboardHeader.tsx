@@ -26,7 +26,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   };
 
   return (
-    <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 py-4">
+    <header className="w-full backdrop-blur-sm bg-white/30 border-b border-white/20 py-4 sticky top-0 z-40">
       <div className="container mx-auto max-w-[1600px] px-2">
         <div className="flex items-center justify-between">
           <div className="flex justify-start pl-1">

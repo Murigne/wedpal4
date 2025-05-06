@@ -35,10 +35,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden flex flex-col">
       <NavigationSidebar onExpandChange={onSidebarExpandChange} />
       
-      <div className="w-full animated-gradient dynamic-gradient relative">
+      <div className="w-full animated-gradient dynamic-gradient flex-grow flex flex-col h-screen overflow-hidden">
         <HeartAnimation avoidTextAreas={true} count={10} />
         
         <DashboardHeader 
@@ -48,7 +48,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
         
         <main className={cn(
-          "w-full px-4 md:px-6 py-8 transition-all duration-300",
+          "w-full px-4 md:px-6 py-8 transition-all duration-300 flex-grow overflow-auto",
           sidebarExpanded ? "ml-[100px]" : "ml-[60px]"
         )}>
           {children}
