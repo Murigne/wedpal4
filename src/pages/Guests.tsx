@@ -114,7 +114,7 @@ const Guests = () => {
           />
         </div>
         
-        <div className="md:col-span-8">
+        <div className="md:col-span-8" style="max-height:700px">
           <Card className="h-full flex flex-col">
             <div className="flex-1 overflow-hidden flex flex-col p-6">
               <GuestList 
