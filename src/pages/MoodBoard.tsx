@@ -28,14 +28,14 @@ const MoodBoard = () => {
     {
       id: '2',
       type: 'memory',
-      content: 'I'll never forget our first date at that small café by the beach. The way you laughed when I spilled coffee all over myself, instead of being embarrassed, made me realize how comfortable I felt with you.',
+      content: "I'll never forget our first date at that small café by the beach. The way you laughed when I spilled coffee all over myself, instead of being embarrassed, made me realize how comfortable I felt with you.",
       title: 'Our First Date',
       date: '2023-06-15',
     },
     {
       id: '3',
       type: 'love-note',
-      content: 'Your kindness and compassion for others always inspires me to be a better person. I love how you see the best in everyone and everything.',
+      content: "Your kindness and compassion for others always inspires me to be a better person. I love how you see the best in everyone and everything.",
       title: 'What I Love About You',
     },
     {
