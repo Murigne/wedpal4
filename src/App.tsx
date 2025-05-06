@@ -62,6 +62,9 @@ const ProtectedRoute = ({ children, vendorOnly = false }: { children: React.Reac
     checkVendorStatus();
   }, [user]);
   
+  // Add debug logging to understand the state
+  console.log("Protected Route State:", { isLoading, checking, user: !!user, isVendor, vendorOnly });
+  
   if (isLoading || checking) {
     return (
       <div className="min-h-screen flex items-center justify-center animated-gradient">
@@ -73,19 +76,23 @@ const ProtectedRoute = ({ children, vendorOnly = false }: { children: React.Reac
   }
   
   if (!user) {
+    console.log("No user, redirecting to login");
     return <Navigate to="/login" />;
   }
   
   // Vendor page access check
   if (vendorOnly && !isVendor) {
+    console.log("Not a vendor, redirecting to dashboard");
     return <Navigate to="/dashboard" />;
   }
   
   // Couples page access check - redirect vendors to vendor dashboard
   if (!vendorOnly && isVendor) {
+    console.log("Is a vendor on couples page, redirecting to vendor dashboard");
     return <Navigate to="/vendor-dashboard" />;
   }
   
+  console.log("Rendering protected content");
   return <>{children}</>;
 };
 
@@ -110,7 +117,11 @@ const AppRoutes = () => {
           <VendorDashboard />
         </ProtectedRoute>
       } />
-      <Route path="/vendor-marketplace" element={<VendorMarketplace />} />
+      <Route path="/vendor-marketplace" element={
+        <ProtectedRoute vendorOnly={false}>
+          <VendorMarketplace />
+        </ProtectedRoute>
+      } />
       
       {/* Navigation Routes with implemented components */}
       <Route path="/budget" element={

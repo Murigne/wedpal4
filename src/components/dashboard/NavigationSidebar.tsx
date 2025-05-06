@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import NavigationItem from './NavigationItem';
 import SidebarToggle from './SidebarToggle';
@@ -12,9 +12,11 @@ interface NavigationSidebarProps {
 
 const NavigationSidebar: React.FC<NavigationSidebarProps> = ({ onExpandChange }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleNavigate = (path: string) => {
+    console.log("Navigating to:", path);
     navigate(path);
   };
 

@@ -22,9 +22,15 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   const location = useLocation();
   const isActive = location.pathname === path;
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log(`NavigationItem clicked: ${name}, path: ${path}`);
+    onClick(path);
+  };
+  
   return (
     <button
-      onClick={() => onClick(path)}
+      onClick={handleClick}
       className={cn(
         "transition-all duration-300 flex items-center gap-2 group",
         "hover:shadow-lg hover:scale-105",
