@@ -19,6 +19,6 @@ export const navigationItems = [
   { name: 'Gifts', icon: Gift, path: '/gifts' },
   { name: 'Mood Board', icon: Image, path: '/mood-board' },
   { name: 'Theme', icon: Palette, path: '/theme' },
-  { name: 'Vendors', icon: Store, path: '/vendors' },
+  { name: 'Vendors', icon: Store, path: '/vendor-marketplace' },
   { name: 'Naa AI', icon: Bot, path: '/ai-assistant' },
 ];

@@ -18,6 +18,12 @@ import VendorLogin from "./pages/VendorLogin";
 import VendorDashboard from "./pages/VendorDashboard";
 import Vendors from "./pages/Vendors";
 import AIAssistant from "./pages/AIAssistant";
+import Budget from "./pages/Budget";
+import Guests from "./pages/Guests";
+import Timeline from "./pages/Timeline";
+import Gifts from "./pages/Gifts";
+import MoodBoard from "./pages/MoodBoard";
+import Theme from "./pages/Theme";
 import { useState, useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
 
@@ -106,39 +112,37 @@ const AppRoutes = () => {
       } />
       <Route path="/vendor-marketplace" element={<VendorMarketplace />} />
       
-      {/* Navigation Routes */}
+      {/* Navigation Routes with implemented components */}
       <Route path="/budget" element={
         <ProtectedRoute vendorOnly={false}>
-          <NotFound />
+          <Budget />
         </ProtectedRoute>
       } />
       <Route path="/guests" element={
         <ProtectedRoute vendorOnly={false}>
-          <NotFound />
-        </ProtectedRoute>
-      } />
-      <Route path="/mood-board" element={
-        <ProtectedRoute vendorOnly={false}>
-          <NotFound />
-        </ProtectedRoute>
-      } />
-      <Route path="/gifts" element={
-        <ProtectedRoute vendorOnly={false}>
-          <NotFound />
-        </ProtectedRoute>
-      } />
-      <Route path="/theme" element={
-        <ProtectedRoute vendorOnly={false}>
-          <NotFound />
+          <Guests />
         </ProtectedRoute>
       } />
       <Route path="/timeline" element={
         <ProtectedRoute vendorOnly={false}>
-          <NotFound />
+          <Timeline />
         </ProtectedRoute>
       } />
-      
-      {/* New Navigation Routes with actual components */}
+      <Route path="/gifts" element={
+        <ProtectedRoute vendorOnly={false}>
+          <Gifts />
+        </ProtectedRoute>
+      } />
+      <Route path="/mood-board" element={
+        <ProtectedRoute vendorOnly={false}>
+          <MoodBoard />
+        </ProtectedRoute>
+      } />
+      <Route path="/theme" element={
+        <ProtectedRoute vendorOnly={false}>
+          <Theme />
+        </ProtectedRoute>
+      } />
       <Route path="/vendors" element={
         <ProtectedRoute vendorOnly={false}>
           <Vendors />
