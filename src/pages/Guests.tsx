@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Users, Plus, Search, Check, X, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import PageLayout from '@/components/dashboard/PageLayout';
 import { useToast } from '@/hooks/use-toast';
+import { ChartContainer } from '@/components/ui/chart';
 
 interface Guest {
   id: string;
@@ -217,8 +217,7 @@ const Guests = () => {
                           {guestTypeData.map((entry, index) => (
                             <Cell 
                               key={`cell-${index}`} 
-                              fill={entry.color} 
-                              cornerRadius={4}
+                              fill={entry.color}
                             />
                           ))}
                         </Pie>
