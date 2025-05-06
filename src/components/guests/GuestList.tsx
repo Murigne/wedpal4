@@ -151,7 +151,7 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsList>
         </div>
         
-        <ScrollArea className="flex-1 max-h-[500px] overflow-y-auto">
+        <ScrollArea className="flex-1 max-h-[600px] overflow-y-auto">
           <TabsContent value="all" className="space-y-4 m-0">
             {paginatedGuests.length > 0 ? (
               paginatedGuests.map((guest) => (
