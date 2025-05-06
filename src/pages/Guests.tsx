@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -131,6 +132,13 @@ const Guests = () => {
     pending: guests.filter(g => g.rsvp === 'pending').length,
     declined: guests.filter(g => g.rsvp === 'declined').length,
   };
+  
+  // Guest type distribution for donut chart
+  const guestTypeData = [
+    { name: 'Family', value: guests.filter(g => g.type === 'family').length, color: '#4ade80' },
+    { name: 'Friends', value: guests.filter(g => g.type === 'friend').length, color: '#60a5fa' },
+    { name: 'Colleagues', value: guests.filter(g => g.type === 'colleague').length, color: '#f472b6' },
+  ];
 
   const getRsvpBadge = (rsvp: string) => {
     switch(rsvp) {
@@ -139,7 +147,7 @@ const Guests = () => {
       case 'declined': 
         return <Badge className="bg-red-500 hover:bg-red-500"><X className="w-3 h-3 mr-1" /> Declined</Badge>;
       default: 
-        return <Badge variant="outline" className="hover:bg-transparent hover:text-current">Pending</Badge>;
+        return <Badge variant="outline" className="hover:bg-transparent">Pending</Badge>;
     }
   };
 
@@ -149,7 +157,7 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-8">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pb-6 max-h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
           <Card>
             <CardHeader>
@@ -181,6 +189,34 @@ const Guests = () => {
               </Button>
             </CardContent>
           </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Guest Distribution</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={guestTypeData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {guestTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </div>
         
         <div className="md:col-span-8">
@@ -204,14 +240,16 @@ const Guests = () => {
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden flex flex-col">
               <Tabs defaultValue="all" className="flex-1 flex flex-col" onValueChange={setCurrentTab}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">All Guests</TabsTrigger>
-                  <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
-                  <TabsTrigger value="pending">Pending</TabsTrigger>
-                  <TabsTrigger value="declined">Declined</TabsTrigger>
-                </TabsList>
+                <div className="mb-4 w-fit">
+                  <TabsList>
+                    <TabsTrigger value="all">All Guests</TabsTrigger>
+                    <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
+                    <TabsTrigger value="pending">Pending</TabsTrigger>
+                    <TabsTrigger value="declined">Declined</TabsTrigger>
+                  </TabsList>
+                </div>
                 
-                <ScrollArea className="flex-1">
+                <ScrollArea className="flex-1 max-h-[calc(100vh-350px)]">
                   <TabsContent value="all" className="space-y-4 m-0">
                     {filteredGuests.length > 0 ? (
                       filteredGuests.map((guest) => (

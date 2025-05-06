@@ -1,10 +1,16 @@
 
 import React, { useState } from 'react';
-import { Clock, Plus, Check, Calendar, Edit } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Clock, Plus, Check, Calendar, Edit, Trash2, Save } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { format, differenceInDays } from 'date-fns';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { format, differenceInDays, parseISO } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
 
 interface TimelineItem {
@@ -17,7 +23,11 @@ interface TimelineItem {
 }
 
 const Timeline = () => {
+  const { toast } = useToast();
   const [weddingDate, setWeddingDate] = useState('2025-12-15');
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [tempWeddingDate, setTempWeddingDate] = useState(weddingDate);
+  const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
   
   const [timelineItems, setTimelineItems] = useState<TimelineItem[]>([
     { 
@@ -70,16 +80,102 @@ const Timeline = () => {
     },
   ]);
 
+  const [newTask, setNewTask] = useState<Omit<TimelineItem, 'id' | 'completed'>>({
+    title: '',
+    description: '',
+    dueDate: format(new Date(), 'yyyy-MM-dd'),
+    category: 'planning'
+  });
+
   const sortedItems = [...timelineItems].sort((a, b) => 
     new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
   );
 
   const toggleCompleted = (itemId: string) => {
-    setTimelineItems(items => 
-      items.map(item => 
+    setTimelineItems(items => {
+      const updatedItems = items.map(item => 
         item.id === itemId ? { ...item, completed: !item.completed } : item
-      )
-    );
+      );
+      
+      const task = items.find(item => item.id === itemId);
+      if (task) {
+        toast({
+          title: task.completed ? "Task unmarked" : "Task completed",
+          description: task.completed 
+            ? `"${task.title}" has been marked as incomplete.` 
+            : `"${task.title}" has been marked as completed!`
+        });
+      }
+      
+      return updatedItems;
+    });
+  };
+
+  const handleEditWeddingDate = () => {
+    if (isEditingDate) {
+      try {
+        // Validate date
+        const parsedDate = parseISO(tempWeddingDate);
+        if (isNaN(parsedDate.getTime())) throw new Error("Invalid date");
+        
+        setWeddingDate(tempWeddingDate);
+        setIsEditingDate(false);
+        toast({
+          title: "Wedding date updated",
+          description: `Your wedding date has been set to ${format(parseISO(tempWeddingDate), 'MMMM d, yyyy')}`
+        });
+      } catch (error) {
+        toast({
+          title: "Invalid date",
+          description: "Please enter a valid date"
+        });
+      }
+    } else {
+      setIsEditingDate(true);
+    }
+  };
+
+  const handleAddTask = () => {
+    if (newTask.title.trim() === '') {
+      toast({
+        title: "Task title required",
+        description: "Please enter a title for the task"
+      });
+      return;
+    }
+    
+    const newTaskItem: TimelineItem = {
+      ...newTask,
+      id: Date.now().toString(),
+      completed: false
+    };
+    
+    setTimelineItems([...timelineItems, newTaskItem]);
+    setIsAddTaskDialogOpen(false);
+    
+    // Reset form fields
+    setNewTask({
+      title: '',
+      description: '',
+      dueDate: format(new Date(), 'yyyy-MM-dd'),
+      category: 'planning'
+    });
+    
+    toast({
+      title: "Task added",
+      description: `"${newTask.title}" has been added to your timeline`
+    });
+  };
+
+  const deleteTask = (id: string) => {
+    const task = timelineItems.find(item => item.id === id);
+    if (task) {
+      setTimelineItems(timelineItems.filter(item => item.id !== id));
+      toast({
+        title: "Task deleted",
+        description: `"${task.title}" has been removed from your timeline`
+      });
+    }
   };
 
   const formattedWeddingDate = format(new Date(weddingDate), 'MMMM d, yyyy');
@@ -101,7 +197,7 @@ const Timeline = () => {
       description="Track your wedding planning progress"
       icon={<Clock className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
           <Card>
             <CardHeader>
@@ -110,14 +206,39 @@ const Timeline = () => {
             <CardContent className="space-y-4 text-center">
               <div className="p-6 bg-pink-50 rounded-lg">
                 <Calendar className="mx-auto h-12 w-12 text-pink-500 mb-2" />
-                <h3 className="text-xl font-semibold text-gray-900">{formattedWeddingDate}</h3>
-                <div className="text-4xl font-bold text-pink-600 mt-2">{daysUntilWedding}</div>
-                <p className="text-gray-600">days until your wedding</p>
+                {isEditingDate ? (
+                  <div className="space-y-2">
+                    <Input
+                      type="date"
+                      value={tempWeddingDate}
+                      onChange={(e) => setTempWeddingDate(e.target.value)}
+                      className="max-w-xs mx-auto"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-semibold text-gray-900">{formattedWeddingDate}</h3>
+                    <div className="text-4xl font-bold text-pink-600 mt-2">{daysUntilWedding}</div>
+                    <p className="text-gray-600">days until your wedding</p>
+                  </>
+                )}
               </div>
               
-              <Button className="w-full">
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Wedding Date
+              <Button 
+                className="w-full" 
+                onClick={handleEditWeddingDate}
+              >
+                {isEditingDate ? (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Wedding Date
+                  </>
+                ) : (
+                  <>
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Wedding Date
+                  </>
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -145,7 +266,7 @@ const Timeline = () => {
         </div>
         
         <div className="md:col-span-8">
-          <Card>
+          <Card className="h-full flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Wedding Timeline</CardTitle>
@@ -153,57 +274,133 @@ const Timeline = () => {
                   Your wedding planning schedule
                 </CardDescription>
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setIsAddTaskDialogOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Task
               </Button>
             </CardHeader>
-            <CardContent>
-              <div className="relative pl-8 space-y-6">
-                {/* Timeline line */}
-                <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200" />
-                
-                {sortedItems.map((item, index) => (
-                  <div key={item.id} className="relative">
-                    {/* Timeline dot */}
-                    <div 
-                      className={`absolute -left-5 h-6 w-6 rounded-full border-2 flex items-center justify-center ${
-                        item.completed 
-                          ? 'bg-green-500 border-green-500 text-white' 
-                          : 'bg-white border-gray-300'
-                      }`}
-                      onClick={() => toggleCompleted(item.id)}
-                    >
-                      {item.completed && <Check className="h-3 w-3" />}
-                    </div>
-                    
-                    <div className={`p-4 rounded-lg border ${
-                      item.completed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'
-                    }`}>
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                            {item.title}
-                          </h3>
-                          <p className={`text-sm ${item.completed ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {item.description}
-                          </p>
+            <CardContent className="flex-1 overflow-hidden">
+              <ScrollArea className="h-[calc(100vh-350px)]">
+                <div className="relative pl-8 space-y-6">
+                  {/* Timeline line */}
+                  <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200" />
+                  
+                  {sortedItems.map((item, index) => (
+                    <div key={item.id} className="relative">
+                      {/* Timeline dot */}
+                      <div 
+                        className={`absolute -left-5 h-6 w-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${
+                          item.completed 
+                            ? 'bg-green-500 border-green-500 text-white' 
+                            : 'bg-white border-gray-300'
+                        }`}
+                        onClick={() => toggleCompleted(item.id)}
+                      >
+                        {item.completed && <Check className="h-3 w-3" />}
+                      </div>
+                      
+                      <div className={`p-4 rounded-lg border ${
+                        item.completed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'
+                      }`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                              {item.title}
+                            </h3>
+                            <p className={`text-sm ${item.completed ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {item.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded ${getCategoryColor(item.category)}`}>
+                              {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                            </span>
+                            <Button variant="ghost" size="icon" onClick={() => deleteTask(item.id)} className="h-6 w-6 text-red-500">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
-                        <span className={`text-xs px-2 py-1 rounded ${getCategoryColor(item.category)}`}>
-                          {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Due: {format(new Date(item.dueDate), 'MMM d, yyyy')}
+                        <div className="text-sm text-gray-500">
+                          Due: {format(new Date(item.dueDate), 'MMM d, yyyy')}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Add Task Dialog */}
+      <Dialog open={isAddTaskDialogOpen} onOpenChange={setIsAddTaskDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Task</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Task Title</label>
+              <Input 
+                placeholder="Enter task title" 
+                value={newTask.title}
+                onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <Textarea 
+                placeholder="Enter task description" 
+                value={newTask.description}
+                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Due Date</label>
+                <Input 
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <Select 
+                  value={newTask.category} 
+                  onValueChange={(value: 'venue' | 'vendors' | 'attire' | 'planning') => 
+                    setNewTask({...newTask, category: value})
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="planning">Planning</SelectItem>
+                    <SelectItem value="venue">Venue</SelectItem>
+                    <SelectItem value="vendors">Vendors</SelectItem>
+                    <SelectItem value="attire">Attire</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsAddTaskDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleAddTask}>
+              Add Task
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 };

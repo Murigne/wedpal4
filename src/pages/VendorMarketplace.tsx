@@ -3,13 +3,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Search, Star, Filter, Heart } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { useToast } from '@/hooks/use-toast';
 
 const VendorMarketplace = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [favoriteVendors, setFavoriteVendors] = useState<number[]>([]);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const { toast } = useToast();
+  const dashboardData = useDashboardData();
 
   const vendorCategories = [
     "Venues", "Photography", "Catering", "Flowers", "Attire", "Beauty", "Music", "Decor", "Cake"
@@ -136,71 +141,81 @@ const VendorMarketplace = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Handle sidebar expansion
+  const handleSidebarExpandChange = (expanded: boolean) => {
+    setSidebarExpanded(expanded);
+  };
+
   return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <div className="bg-wedding-pink/30 backdrop-blur-sm py-6 px-4 mb-8">
-        <div className="container max-w-[1600px] mx-auto">
-          <Button 
-            variant="ghost" 
-            className="mb-4" 
-            onClick={() => navigate('/dashboard')}
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
-          </Button>
-          
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Vendor Marketplace</h1>
-          <p className="text-muted-foreground">Find and book the perfect vendors for your wedding day</p>
-        </div>
+    <DashboardLayout
+      userName={dashboardData.userName}
+      partnerName={dashboardData.partnerName}
+      sidebarExpanded={sidebarExpanded}
+      onSidebarExpandChange={handleSidebarExpandChange}
+      isLoading={dashboardData.isLoading}
+    >
+      <div className="mb-8 text-white max-w-[1600px] mx-auto">
+        <Button 
+          variant="ghost" 
+          className="mb-4 text-white" 
+          onClick={() => navigate('/dashboard')}
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+        </Button>
+        
+        <h1 className="text-3xl md:text-4xl font-semibold mb-2">Vendor Marketplace</h1>
+        <p className="text-white/80">Find and book the perfect vendors for your wedding day</p>
       </div>
       
-      {/* Main content */}
-      <div className="container max-w-[1600px] mx-auto px-4">
-        {/* Search and filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-            <input 
-              type="text" 
-              placeholder="Search vendors..." 
-              className="wedding-input w-full pl-12"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
+      <div className="max-w-[1600px] mx-auto">
+        {/* Search and filter - Fixed position */}
+        <div className="sticky top-[73px] z-30 pt-4 pb-4 bg-wedding-pink/30 backdrop-blur-md">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <input 
+                type="text" 
+                placeholder="Search vendors..." 
+                className="w-full pl-12 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+            
+            <Button 
+              className="bg-pink-500 hover:bg-pink-600 text-white"
+              onClick={() => toast({ title: "Filters", description: "Filter options would open here" })}
+            >
+              <Filter className="w-4 h-4 mr-2" /> Filters
+            </Button>
           </div>
           
-          <Button 
-            className="wedding-button-secondary"
-            onClick={() => toast({ title: "Filters", description: "Filter options would open here" })}
-          >
-            <Filter className="w-4 h-4 mr-2" /> Filters
-          </Button>
-        </div>
-        
-        {/* Categories */}
-        <div className="flex overflow-x-auto gap-2 pb-4 mb-6 no-scrollbar">
-          <Button 
-            className={`wedding-button whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-wedding-pink' : ''}`}
-            onClick={() => handleCategoryClick('All Categories')}
-          >
-            All Categories
-          </Button>
-          {vendorCategories.map(category => (
+          {/* Categories */}
+          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
             <Button 
-              key={category} 
-              variant="outline" 
-              className={`bg-white/70 border-wedding-pink/30 hover:bg-wedding-pink/20 whitespace-nowrap ${selectedCategory === category ? 'bg-wedding-pink/40' : ''}`}
-              onClick={() => handleCategoryClick(category)}
+              className={`whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-pink-500 hover:bg-pink-600 text-white' : 'bg-white/70 hover:bg-white/80 text-gray-800'}`}
+              onClick={() => handleCategoryClick('All Categories')}
             >
-              {category}
+              All Categories
             </Button>
-          ))}
+            {vendorCategories.map(category => (
+              <Button 
+                key={category} 
+                variant="outline" 
+                className={`bg-white/70 border-pink-300 hover:bg-white/80 whitespace-nowrap 
+                  ${selectedCategory === category ? 'bg-pink-100 text-pink-800 border-pink-400' : 'text-gray-800'}`}
+                onClick={() => handleCategoryClick(category)}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
         </div>
         
         {/* Vendors grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 pb-20">
           {filteredVendors.map(vendor => (
-            <div key={vendor.id} className="wedding-card overflow-hidden group relative">
+            <div key={vendor.id} className="bg-white rounded-lg shadow-md overflow-hidden group relative">
               <div className="absolute top-2 right-2 z-10">
                 <Button 
                   variant="ghost" 
@@ -209,12 +224,12 @@ const VendorMarketplace = () => {
                   onClick={() => handleToggleFavorite(vendor.id)}
                 >
                   <Heart 
-                    className={`h-4 w-4 ${favoriteVendors.includes(vendor.id) ? 'fill-wedding-pink text-wedding-pink' : 'text-muted-foreground'}`} 
+                    className={`h-4 w-4 ${favoriteVendors.includes(vendor.id) ? 'fill-pink-500 text-pink-500' : 'text-muted-foreground'}`} 
                   />
                 </Button>
               </div>
               
-              <div className="h-48 overflow-hidden rounded-md mb-4">
+              <div className="h-48 overflow-hidden">
                 <img 
                   src={vendor.image} 
                   alt={vendor.name}
@@ -222,47 +237,49 @@ const VendorMarketplace = () => {
                 />
               </div>
               
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-medium">{vendor.name}</h3>
-                <span className="text-sm bg-wedding-lavender/30 px-2 py-0.5 rounded-full">
-                  {vendor.price}
-                </span>
-              </div>
-              
-              <p className="text-sm text-muted-foreground mb-3">{vendor.category}</p>
-              
-              <p className="text-sm mb-4">{vendor.description}</p>
-              
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 fill-wedding-gold text-wedding-gold mr-1" />
-                  <span className="text-sm font-medium">{vendor.rating}</span>
-                  <span className="text-xs text-muted-foreground ml-1">({vendor.reviewCount} reviews)</span>
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-medium">{vendor.name}</h3>
+                  <span className="text-sm bg-pink-100 px-2 py-0.5 rounded-full text-pink-800">
+                    {vendor.price}
+                  </span>
                 </div>
                 
-                <Button 
-                  className="text-sm px-3 py-1 h-auto wedding-button"
-                  onClick={() => handleViewDetails(vendor.id)}
-                >
-                  View Details
-                </Button>
+                <p className="text-sm text-muted-foreground mb-3">{vendor.category}</p>
+                
+                <p className="text-sm mb-4">{vendor.description}</p>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                    <span className="text-sm font-medium">{vendor.rating}</span>
+                    <span className="text-xs text-muted-foreground ml-1">({vendor.reviewCount} reviews)</span>
+                  </div>
+                  
+                  <Button 
+                    className="text-sm px-3 py-1 h-auto bg-pink-500 hover:bg-pink-600 text-white"
+                    onClick={() => handleViewDetails(vendor.id)}
+                  >
+                    View Details
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
         </div>
         
         {/* Load more */}
-        <div className="flex justify-center mt-10">
+        <div className="flex justify-center mt-10 pb-20">
           <Button 
             variant="outline" 
-            className="wedding-button-secondary px-8"
+            className="border-pink-300 hover:bg-pink-50 px-8"
             onClick={() => toast({ title: "Load More", description: "Loading more vendors..." })}
           >
             Load More Vendors
           </Button>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
