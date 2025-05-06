@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2 } from 'lucide-react';
+import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,7 +11,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface MoodBoardItem {
   id: string;
@@ -91,6 +92,9 @@ const MoodBoard = () => {
     content: '',
     image: ''
   });
+
+  // FAB state
+  const [isFabOpen, setIsFabOpen] = useState(false);
 
   // File input ref
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -213,94 +217,121 @@ const MoodBoard = () => {
       description="Capture your favorite memories and moments together"
       icon={<Image className="w-8 h-8" />}
     >
-      <div className="space-y-6">
-        <div className="flex flex-wrap gap-4">
-          <Card className="w-full md:w-auto">
-            <CardHeader>
-              <CardTitle>Add to Your Mood Board</CardTitle>
-              <CardDescription>
-                Share memories, moments, and what you love about each other
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex gap-4 flex-wrap">
-              <Button className="flex-1" onClick={() => setShowAddPhotoForm(true)}>
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Photo
-              </Button>
-              <Button className="flex-1" variant="outline" onClick={() => setShowAddMemoryForm(true)}>
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Add Memory
-              </Button>
-              <Button className="flex-1" variant="outline" onClick={() => setShowAddLoveNoteForm(true)}>
-                <Heart className="w-4 h-4 mr-2" />
-                Love Note
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="h-[calc(100vh-300px)] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" style={{ minHeight: '500px' }}>
-          {/* Draggable Items */}
-          {moodBoardItems.map((item) => (
-            <motion.div
-              key={item.id}
-              className="absolute"
-              initial={{ x: item.position?.x || 0, y: item.position?.y || 0 }}
-              drag
-              dragMomentum={false}
-              onDragEnd={(_, info) => {
-                const position = {
-                  x: item.position?.x + info.offset.x || 0,
-                  y: item.position?.y + info.offset.y || 0
-                };
-                handleDragEnd(item.id, position);
-              }}
-            >
-              {item.type === 'image' ? (
-                <Card className="w-64 overflow-hidden shadow-lg">
-                  <div className="h-40 overflow-hidden">
-                    <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
-                  </div>
-                  <CardContent className="p-3">
-                    <p className="text-sm">{item.content}</p>
-                  </CardContent>
-                  <CardFooter className="flex justify-end p-2 gap-1">
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                      <Heart className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ) : (
-                <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative`}>
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  
-                  <h3 className="font-medium mb-1">{item.title}</h3>
-                  <p className="text-sm overflow-auto max-h-[180px]">{item.content}</p>
-                  
-                  {item.date && (
-                    <p className="text-xs text-gray-600 mt-2 italic">
-                      {new Date(item.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  )}
-                  
-                  <Badge className="absolute bottom-2 right-2" variant="outline">
-                    {item.type === 'memory' ? 'Memory' : 'Love Note'}
-                  </Badge>
+      <div className="h-[calc(100vh-180px)] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" style={{ minHeight: '500px' }}>
+        {/* Draggable Items */}
+        {moodBoardItems.map((item) => (
+          <motion.div
+            key={item.id}
+            className="absolute"
+            initial={{ x: item.position?.x || 0, y: item.position?.y || 0 }}
+            drag
+            dragMomentum={false}
+            onDragEnd={(_, info) => {
+              const position = {
+                x: item.position?.x + info.offset.x || 0,
+                y: item.position?.y + info.offset.y || 0
+              };
+              handleDragEnd(item.id, position);
+            }}
+          >
+            {item.type === 'image' ? (
+              <Card className="w-64 overflow-hidden shadow-lg">
+                <div className="h-40 overflow-hidden">
+                  <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                 </div>
-              )}
-            </motion.div>
-          ))}
+                <CardContent className="p-3">
+                  <p className="text-sm">{item.content}</p>
+                </CardContent>
+                <CardFooter className="flex justify-end p-2 gap-1">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                    <Heart className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ) : (
+              <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative`}>
+                <div className="absolute top-2 right-2 flex gap-1">
+                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+                
+                <h3 className="font-medium mb-1">{item.title}</h3>
+                <p className="text-sm overflow-auto max-h-[180px]">{item.content}</p>
+                
+                {item.date && (
+                  <p className="text-xs text-gray-600 mt-2 italic">
+                    {new Date(item.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                )}
+                
+                <Badge className="absolute bottom-2 right-2" variant="outline">
+                  {item.type === 'memory' ? 'Memory' : 'Love Note'}
+                </Badge>
+              </div>
+            )}
+          </motion.div>
+        ))}
+
+        {/* Floating Action Button */}
+        <div className="absolute bottom-6 right-6 z-50">
+          <Popover open={isFabOpen} onOpenChange={setIsFabOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                size="icon" 
+                className="h-14 w-14 rounded-full shadow-lg bg-pink-500 hover:bg-pink-600 text-white"
+              >
+                <Plus className="w-6 h-6" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-auto p-1">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-blue-100 hover:bg-blue-200 border-blue-300" 
+                  title="Add Photo"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddPhotoForm(true);
+                  }}
+                >
+                  <Upload className="h-5 w-5 text-blue-800" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-green-100 hover:bg-green-200 border-green-300" 
+                  title="Add Memory"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddMemoryForm(true);
+                  }}
+                >
+                  <MessageSquare className="h-5 w-5 text-green-800" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-pink-100 hover:bg-pink-200 border-pink-300" 
+                  title="Add Love Note"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddLoveNoteForm(true);
+                  }}
+                >
+                  <StickyNote className="h-5 w-5 text-pink-800" />
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 

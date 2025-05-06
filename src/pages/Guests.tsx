@@ -137,9 +137,9 @@ const Guests = () => {
   
   // Guest type distribution for donut chart with count for each type
   const guestTypeData = [
-    { name: 'Family', value: guests.filter(g => g.type === 'family').length, color: '#4ade80' },
-    { name: 'Friends', value: guests.filter(g => g.type === 'friend').length, color: '#60a5fa' },
-    { name: 'Colleagues', value: guests.filter(g => g.type === 'colleague').length, color: '#f472b6' },
+    { name: 'Family', value: guests.filter(g => g.type === 'family').length, color: '#4d79ff' },
+    { name: 'Friends', value: guests.filter(g => g.type === 'friend').length, color: '#00cccc' },
+    { name: 'Colleagues', value: guests.filter(g => g.type === 'colleague').length, color: '#e066ff' },
   ];
 
   const getRsvpBadge = (rsvp: string) => {
@@ -159,8 +159,8 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
-        <div className="md:col-span-4 space-y-6 flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-170px)]">
+        <div className="md:col-span-4 space-y-6">
           <Card className="flex-shrink-0">
             <CardHeader>
               <CardTitle>Guest Summary</CardTitle>
@@ -196,35 +196,44 @@ const Guests = () => {
             <CardHeader>
               <CardTitle>Guest Distribution</CardTitle>
             </CardHeader>
-            <CardContent className="flex h-full">
-              <div className="h-[220px] w-full flex items-center">
-                <div className="w-1/2">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie
-                        data={guestTypeData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
-                        paddingAngle={2}
-                        dataKey="value"
-                        strokeWidth={3}
-                        stroke="#ffffff"
-                      >
-                        {guestTypeData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.color} 
-                            style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.1))' }}
-                          />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="w-1/2 flex justify-center">
+                  <div className="relative">
+                    <ResponsiveContainer width={140} height={140}>
+                      <PieChart>
+                        <Pie
+                          data={guestTypeData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={40}
+                          outerRadius={60}
+                          startAngle={90}
+                          endAngle={-270}
+                          paddingAngle={4}
+                          dataKey="value"
+                          strokeWidth={0}
+                        >
+                          {guestTypeData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.color} 
+                              cornerRadius={4}
+                            />
+                          ))}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    {guestStats.total > 0 && (
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                        <div className="text-2xl font-bold">{guestStats.total}</div>
+                        <div className="text-xs text-gray-500">Total</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
-                <div className="w-1/2 pl-4 flex flex-col justify-center">
+                <div className="w-1/2 flex flex-col justify-center">
                   {guestTypeData.map((entry, index) => (
                     <div key={index} className="flex items-center mb-3">
                       <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
