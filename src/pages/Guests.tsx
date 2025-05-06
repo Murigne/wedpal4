@@ -159,7 +159,7 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-170px)]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div className="md:col-span-4 space-y-6">
           <Card className="flex-shrink-0">
             <CardHeader>
@@ -192,7 +192,7 @@ const Guests = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-grow">
+          <Card className="h-[540px]">
             <CardHeader>
               <CardTitle>Guest Distribution</CardTitle>
             </CardHeader>
@@ -276,7 +276,7 @@ const Guests = () => {
                   </TabsList>
                 </div>
                 
-                <ScrollArea className="flex-1 h-[calc(100vh-350px)]">
+                <ScrollArea className="h-[540px]">
                   <TabsContent value="all" className="space-y-4 m-0">
                     {filteredGuests.length > 0 ? (
                       filteredGuests.map((guest) => (
