@@ -192,7 +192,7 @@ const Guests = () => {
             </CardContent>
           </Card>
           
-          <Card className="h-[540px]">
+          <Card className="h-[500px]">
             <CardHeader>
               <CardTitle>Guest Distribution</CardTitle>
             </CardHeader>
@@ -276,7 +276,7 @@ const Guests = () => {
                   </TabsList>
                 </div>
                 
-                <ScrollArea className="h-[540px]">
+                <ScrollArea className="h-[500px]">
                   <TabsContent value="all" className="space-y-4 m-0">
                     {filteredGuests.length > 0 ? (
                       filteredGuests.map((guest) => (
