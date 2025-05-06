@@ -76,7 +76,6 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
                         <Cell 
                           key={`cell-${index}`} 
                           fill={entry.color} 
-                          cornerRadius={4}
                         />
                       ))}
                     </Pie>

@@ -6,6 +6,16 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { GuestCard } from './GuestCard';
 import { Guest } from '@/types/guest';
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationEllipsis, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from '@/components/ui/pagination';
+import { usePagination } from '@/hooks/usePagination';
 
 interface GuestListProps {
   guests: Guest[];
@@ -35,6 +45,86 @@ export const GuestList: React.FC<GuestListProps> = ({
     return matchesSearch && guest.rsvp === currentTab;
   });
 
+  // Implement pagination
+  const { 
+    currentPage, 
+    pageSize, 
+    totalPages, 
+    nextPage, 
+    prevPage, 
+    setPage,
+    getCurrentItems 
+  } = usePagination(filteredGuests.length, 1, 5);
+
+  const paginatedGuests = getCurrentItems(filteredGuests);
+
+  // Generate page numbers for pagination links
+  const generatePaginationLinks = () => {
+    let pages = [];
+    
+    // Always include first page
+    pages.push(
+      <PaginationItem key="page-1">
+        <PaginationLink 
+          onClick={() => setPage(1)} 
+          isActive={currentPage === 1}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+    
+    // Add ellipsis if needed
+    if (currentPage > 3) {
+      pages.push(
+        <PaginationItem key="ellipsis-1">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+    
+    // Add intermediate pages
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      if (i <= 1 || i >= totalPages) continue;
+      
+      pages.push(
+        <PaginationItem key={`page-${i}`}>
+          <PaginationLink 
+            onClick={() => setPage(i)} 
+            isActive={currentPage === i}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    // Add ellipsis if needed
+    if (currentPage < totalPages - 2 && totalPages > 3) {
+      pages.push(
+        <PaginationItem key="ellipsis-2">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+    
+    // Always include last page if there is more than one page
+    if (totalPages > 1) {
+      pages.push(
+        <PaginationItem key={`page-${totalPages}`}>
+          <PaginationLink 
+            onClick={() => setPage(totalPages)} 
+            isActive={currentPage === totalPages}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    return pages;
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -62,10 +152,10 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsList>
         </div>
         
-        <ScrollArea className="flex-1 h-[500px]">
+        <ScrollArea className="flex-1 h-[400px]">
           <TabsContent value="all" className="space-y-4 m-0">
-            {filteredGuests.length > 0 ? (
-              filteredGuests.map((guest) => (
+            {paginatedGuests.length > 0 ? (
+              paginatedGuests.map((guest) => (
                 <GuestCard 
                   key={guest.id} 
                   guest={guest} 
@@ -81,8 +171,8 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsContent>
           
           <TabsContent value="confirmed" className="space-y-4 m-0">
-            {filteredGuests.length > 0 ? (
-              filteredGuests.map((guest) => (
+            {paginatedGuests.length > 0 ? (
+              paginatedGuests.map((guest) => (
                 <GuestCard 
                   key={guest.id} 
                   guest={guest} 
@@ -98,8 +188,8 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsContent>
           
           <TabsContent value="pending" className="space-y-4 m-0">
-            {filteredGuests.length > 0 ? (
-              filteredGuests.map((guest) => (
+            {paginatedGuests.length > 0 ? (
+              paginatedGuests.map((guest) => (
                 <GuestCard 
                   key={guest.id} 
                   guest={guest} 
@@ -115,8 +205,8 @@ export const GuestList: React.FC<GuestListProps> = ({
           </TabsContent>
           
           <TabsContent value="declined" className="space-y-4 m-0">
-            {filteredGuests.length > 0 ? (
-              filteredGuests.map((guest) => (
+            {paginatedGuests.length > 0 ? (
+              paginatedGuests.map((guest) => (
                 <GuestCard 
                   key={guest.id} 
                   guest={guest} 
@@ -131,6 +221,22 @@ export const GuestList: React.FC<GuestListProps> = ({
             )}
           </TabsContent>
         </ScrollArea>
+
+        {totalPages > 1 && (
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious onClick={prevPage} />
+              </PaginationItem>
+              
+              {generatePaginationLinks()}
+              
+              <PaginationItem>
+                <PaginationNext onClick={nextPage} />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </Tabs>
     </>
   );
