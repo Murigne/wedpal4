@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -54,7 +53,7 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
         <CardHeader>
           <CardTitle>Guest Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-[380px]">
+        <CardContent className="h-[250px]">
           <div className="flex items-center justify-between">
             <div className="w-1/2 flex justify-center">
               <div className="relative">
