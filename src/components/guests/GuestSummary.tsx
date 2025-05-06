@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -53,18 +54,18 @@ export const GuestSummary: React.FC<GuestSummaryProps> = ({
         <CardHeader>
           <CardTitle>Guest Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-[250px]">
-          <div className="flex items-center justify-between">
+        <CardContent className="h-[250px] flex items-center justify-center py-2">
+          <div className="flex items-center justify-between w-full">
             <div className="w-1/2 flex justify-center">
               <div className="relative">
-                <ResponsiveContainer width={140} height={140}>
+                <ResponsiveContainer width={160} height={160}>
                   <PieChart>
                     <Pie
                       data={typeData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={40}
-                      outerRadius={60}
+                      innerRadius={50}
+                      outerRadius={75}
                       startAngle={90}
                       endAngle={-270}
                       paddingAngle={4}

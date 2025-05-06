@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -223,7 +222,7 @@ export const GuestList: React.FC<GuestListProps> = ({
         </ScrollArea>
 
         {totalPages > 1 && (
-          <Pagination className="mt-4">
+          <Pagination className="mt-2">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious onClick={prevPage} />
