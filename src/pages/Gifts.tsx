@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Gift, Plus, Heart, Link as LinkIcon, ExternalLink, Edit, Trash } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -298,7 +297,7 @@ const Gifts = () => {
         </div>
         
         <div className="md:col-span-8">
-          <Card className="h-full flex flex-col">
+          <Card className="h-full flex flex-col md:max-h-[695px]">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Your Gift Registry</CardTitle>

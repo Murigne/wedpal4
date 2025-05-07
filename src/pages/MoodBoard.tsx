@@ -217,7 +217,7 @@ const MoodBoard = () => {
       description="Capture your favorite memories and moments together"
       icon={<Image className="w-8 h-8" />}
     >
-      <div className="h-[calc(100vh-180px)] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" style={{ minHeight: '500px' }}>
+      <div className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" style={{ minHeight: '500px' }}>
         {/* Draggable Items */}
         {moodBoardItems.map((item) => (
           <motion.div
