@@ -271,7 +271,7 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card className="h-[calc(100vh-430px)]">
+          <Card className="flex-1 flex flex-col md:max-h-[700px]">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
