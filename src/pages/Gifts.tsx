@@ -236,7 +236,7 @@ const Gifts = () => {
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
-          {/* Registry Summary Card - Removed "Add Gift Item" button */}
+          {/* Registry Summary Card */}
           <Card>
             <CardHeader>
               <CardTitle>Registry Summary</CardTitle>
@@ -259,6 +259,11 @@ const Gifts = () => {
                 <p className="text-sm text-purple-700 mt-2">Purchased Value</p>
                 <p className="text-xl font-medium text-purple-600">GHS {stats.purchasedValue.toLocaleString()}</p>
               </div>
+              
+              <Button className="w-full" onClick={openAddDialog}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Gift Item
+              </Button>
             </CardContent>
           </Card>
           
@@ -309,17 +314,16 @@ const Gifts = () => {
                 <ScrollArea className="flex-1 h-[calc(100vh-320px)]">
                   <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
-                      <Card key={item.id} className={`${item.purchased ? "opacity-60" : ""} h-full`}>
-                        <CardContent className="p-4 flex flex-col h-full">
+                      <Card key={item.id} className={item.purchased ? "opacity-60" : ""}>
+                        <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className={`font-medium ${item.purchased ? "line-through" : ""}`}>{item.name}</h3>
                             {getPriorityBadge(item.priority)}
                           </div>
                           <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2 w-fit">
+                          <Badge variant="outline" className="mt-2">
                             {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
                           </Badge>
-                          <div className="flex-grow"></div>
                         </CardContent>
                         <CardFooter className="flex justify-between p-4 pt-0">
                           <div className="flex gap-2">
@@ -340,7 +344,6 @@ const Gifts = () => {
                               size="sm" 
                               variant={item.purchased ? "outline" : "default"}
                               onClick={() => togglePurchased(item.id)}
-                              className={item.purchased ? "" : "bg-pink-500 hover:bg-pink-600"}
                             >
                               {item.purchased ? "Mark Unpurchased" : "Mark Purchased"}
                             </Button>
@@ -352,17 +355,16 @@ const Gifts = () => {
                   
                   <TabsContent value="unpurchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
-                      <Card key={item.id} className="h-full">
-                        <CardContent className="p-4 flex flex-col h-full">
+                      <Card key={item.id}>
+                        <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-medium">{item.name}</h3>
                             {getPriorityBadge(item.priority)}
                           </div>
                           <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2 w-fit">
+                          <Badge variant="outline" className="mt-2">
                             {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
                           </Badge>
-                          <div className="flex-grow"></div>
                         </CardContent>
                         <CardFooter className="flex justify-between p-4 pt-0">
                           <div className="flex gap-2">
@@ -380,8 +382,7 @@ const Gifts = () => {
                               </a>
                             </Button>
                             <Button 
-                              size="sm"
-                              className="bg-pink-500 hover:bg-pink-600" 
+                              size="sm" 
                               onClick={() => togglePurchased(item.id)}
                             >
                               Mark Purchased
@@ -394,17 +395,16 @@ const Gifts = () => {
                   
                   <TabsContent value="purchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
-                      <Card key={item.id} className="opacity-60 h-full">
-                        <CardContent className="p-4 flex flex-col h-full">
+                      <Card key={item.id} className="opacity-60">
+                        <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-medium line-through">{item.name}</h3>
                             {getPriorityBadge(item.priority)}
                           </div>
                           <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2 w-fit">
+                          <Badge variant="outline" className="mt-2">
                             {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
                           </Badge>
-                          <div className="flex-grow"></div>
                         </CardContent>
                         <CardFooter className="flex justify-between p-4 pt-0">
                           <div className="flex gap-2">
