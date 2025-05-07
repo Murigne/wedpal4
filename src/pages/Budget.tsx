@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wallet, Plus, Edit, Trash2 } from 'lucide-react';
+import { Wallet, Plus, Edit, Trash2, ChartBar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import PageLayout from '@/components/dashboard/PageLayout';
@@ -264,30 +264,37 @@ const Budget = () => {
             </Card>
             
             {/* Budget Breakdown - Horizontal Bar Chart */}
-            <Card className="flex-grow">
-              <CardHeader className="flex flex-row items-center justify-between">
+            <Card className="flex-grow md:max-h-[700px] flex flex-col">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
-              <CardContent className="pb-6">
-                <div className="space-y-5 mt-6">
-                  {budget.categories.map((category, index) => (
-                    <div key={category.id} className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span>{category.name}</span>
-                        <span>{Math.round(category.allocation)}%</span>
+              <CardContent className="pb-6 flex-1 overflow-hidden">
+                <ScrollArea className="h-full max-h-[540px]">
+                  <div className="space-y-4">
+                    {budget.categories.map((category, index) => (
+                      <div key={category.id} className="space-y-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <div>
+                            <span className="text-sm font-medium">{category.name}</span>
+                            <div className="text-xs text-muted-foreground">
+                              GHS {category.spent.toLocaleString()} of {category.total.toLocaleString()}
+                            </div>
+                          </div>
+                          <span className="text-xs font-medium">{Math.round(category.allocation)}%</span>
+                        </div>
+                        <div className="h-7 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full ${getBarColor(index)} rounded-full transition-all duration-500`}
+                            style={{ 
+                              width: `${Math.round(category.allocation)}%`,
+                              opacity: category.spent > 0 ? 1 : 0.7
+                            }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="h-6 w-full bg-gray-100 rounded-full flex items-center">
-                        <div 
-                          className={`h-2 rounded-full ${getBarColor(index)} transition-all duration-500 ml-2`}
-                          style={{ 
-                            width: `${Math.max(category.allocation - 5, 0)}%`,
-                            opacity: category.spent > 0 ? 1 : 0.5
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>

@@ -207,7 +207,7 @@ const Timeline = () => {
       icon={<Clock className="w-8 h-8" />}
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
-        <div className="md:col-span-4 space-y-6">
+        <div className="md:col-span-4 space-y-6 flex flex-col h-full">
           <Card>
             <CardHeader>
               <CardTitle>Wedding Countdown</CardTitle>
@@ -269,22 +269,22 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-1 flex flex-col">
+          <Card className="flex-1 flex flex-col md:max-h-[700px]">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-center items-center">
               <div className="flex flex-col items-center justify-center h-full">
-                <div className="h-48 w-48 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
+                <div className="h-60 w-60 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div 
-                      className="h-36 w-36 rounded-full bg-white"
+                      className="h-48 w-48 rounded-full bg-white"
                       style={{
-                        background: `conic-gradient(#ec4899 ${Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%, transparent 0)`
+                        background: `conic-gradient(#ec4899 ${Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%, #f3f4f6 0)`
                       }}
                     ></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-28 w-28 rounded-full bg-white flex items-center justify-center">
+                      <div className="h-36 w-36 rounded-full bg-white flex items-center justify-center">
                         <span className="text-4xl font-bold text-pink-500">
                           {Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%
                         </span>

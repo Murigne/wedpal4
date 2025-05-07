@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote } from 'lucide-react';
+import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,7 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface MoodBoardItem {
   id: string;
@@ -23,6 +23,11 @@ interface MoodBoardItem {
   date?: string;
   color?: string;
   position?: { x: number; y: number };
+  rotation?: number;
+}
+
+interface EditingItem extends Omit<MoodBoardItem, 'id'> {
+  id?: string;
 }
 
 const stickyNoteColors = [
@@ -36,13 +41,21 @@ const stickyNoteColors = [
 const MoodBoard = () => {
   const { toast } = useToast();
   const moodBoardRef = useRef<HTMLDivElement>(null);
+  const dragAreaRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startDragPos, setStartDragPos] = useState({ x: 0, y: 0 });
+  const [scrollPos, setScrollPos] = useState({ x: 0, y: 0 });
+  const [isEditingItem, setIsEditingItem] = useState(false);
+  const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
+
   const [moodBoardItems, setMoodBoardItems] = useState<MoodBoardItem[]>([
     {
       id: '1',
       type: 'image',
       content: 'Our first vacation together',
       image: 'https://placehold.co/600x400',
-      position: { x: 0, y: 0 }
+      position: { x: 0, y: 0 },
+      rotation: 0
     },
     {
       id: '2',
@@ -51,7 +64,8 @@ const MoodBoard = () => {
       title: 'Our First Date',
       date: '2023-06-15',
       color: 'yellow',
-      position: { x: 350, y: 50 }
+      position: { x: 350, y: 50 },
+      rotation: -3
     },
     {
       id: '3',
@@ -59,14 +73,16 @@ const MoodBoard = () => {
       content: "Your kindness and compassion for others always inspires me to be a better person. I love how you see the best in everyone and everything.",
       title: 'What I Love About You',
       color: 'pink',
-      position: { x: 700, y: 100 }
+      position: { x: 700, y: 100 },
+      rotation: 2
     },
     {
       id: '4',
       type: 'image',
       content: 'The day we got engaged',
       image: 'https://placehold.co/600x400',
-      position: { x: 0, y: 450 }
+      position: { x: 0, y: 450 },
+      rotation: -2
     },
   ]);
 
@@ -100,6 +116,68 @@ const MoodBoard = () => {
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Drag to scroll functionality
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start drag if not on a card
+    if ((e.target as HTMLElement).closest('.mood-board-item')) return;
+    
+    setIsDragging(true);
+    setStartDragPos({ x: e.clientX, y: e.clientY });
+    setScrollPos({ 
+      x: dragAreaRef.current?.scrollLeft || 0, 
+      y: dragAreaRef.current?.scrollTop || 0 
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !dragAreaRef.current) return;
+    
+    const dx = e.clientX - startDragPos.x;
+    const dy = e.clientY - startDragPos.y;
+    
+    dragAreaRef.current.scrollLeft = scrollPos.x - dx;
+    dragAreaRef.current.scrollTop = scrollPos.y - dy;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Rotation handling
+  const startRotate = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const item = moodBoardItems.find(item => item.id === id);
+      if (!item || !item.position) return;
+      
+      const itemRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const itemCenterX = itemRect.left + itemRect.width / 2;
+      const itemCenterY = itemRect.top + itemRect.height / 2;
+      
+      // Calculate angle between center and current mouse position
+      const angle = Math.atan2(
+        moveEvent.clientY - itemCenterY,
+        moveEvent.clientX - itemCenterX
+      ) * (180 / Math.PI);
+      
+      setMoodBoardItems(items => 
+        items.map(item => 
+          item.id === id ? { ...item, rotation: angle } : item
+        )
+      );
+    };
+    
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -142,7 +220,12 @@ const MoodBoard = () => {
             
             // Get resized image as data URL
             const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-            setNewPhoto({ ...newPhoto, image: resizedImageUrl });
+            
+            if (editingItem && editingItem.type === 'image') {
+              setEditingItem({...editingItem, image: resizedImageUrl});
+            } else {
+              setNewPhoto({ ...newPhoto, image: resizedImageUrl });
+            }
           }
         };
         
@@ -153,26 +236,78 @@ const MoodBoard = () => {
     }
   };
 
-  const addMemory = () => {
+  const editItem = (item: MoodBoardItem) => {
+    setEditingItem(item);
+    setIsEditingItem(true);
+    
+    if (item.type === 'memory') {
+      setShowAddMemoryForm(true);
+      setNewMemory({
+        title: item.title || '',
+        date: item.date || '',
+        content: item.content,
+        color: item.color || 'yellow'
+      });
+    } else if (item.type === 'love-note') {
+      setShowAddLoveNoteForm(true);
+      setNewLoveNote({
+        title: item.title || '',
+        content: item.content,
+        color: item.color || 'pink'
+      });
+    } else if (item.type === 'image') {
+      setShowAddPhotoForm(true);
+      setNewPhoto({
+        content: item.content,
+        image: item.image || ''
+      });
+    }
+  };
+
+  const addOrUpdateMemory = () => {
     if (newMemory.title && newMemory.content) {
-      setMoodBoardItems([
-        ...moodBoardItems,
-        {
-          id: `memory-${Date.now()}`,
-          type: 'memory',
-          content: newMemory.content,
-          title: newMemory.title,
-          date: newMemory.date,
-          color: newMemory.color,
-          position: { x: Math.random() * 300, y: Math.random() * 300 }
-        }
-      ]);
+      if (isEditingItem && editingItem && editingItem.id) {
+        // Update existing item
+        setMoodBoardItems(items => 
+          items.map(item => 
+            item.id === editingItem.id ? {
+              ...item,
+              title: newMemory.title,
+              content: newMemory.content,
+              date: newMemory.date,
+              color: newMemory.color
+            } : item
+          )
+        );
+        toast({
+          title: "Memory updated",
+          description: "Your memory has been updated on the mood board"
+        });
+      } else {
+        // Add new item
+        setMoodBoardItems([
+          ...moodBoardItems,
+          {
+            id: `memory-${Date.now()}`,
+            type: 'memory',
+            content: newMemory.content,
+            title: newMemory.title,
+            date: newMemory.date,
+            color: newMemory.color,
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
+          }
+        ]);
+        toast({
+          title: "Memory added",
+          description: "Your memory has been added to the mood board"
+        });
+      }
+      
       setNewMemory({ title: '', date: '', content: '', color: 'yellow' });
       setShowAddMemoryForm(false);
-      toast({
-        title: "Memory added",
-        description: "Your memory has been added to the mood board"
-      });
+      setIsEditingItem(false);
+      setEditingItem(null);
     } else {
       toast({
         title: "Missing information",
@@ -181,25 +316,48 @@ const MoodBoard = () => {
     }
   };
 
-  const addLoveNote = () => {
+  const addOrUpdateLoveNote = () => {
     if (newLoveNote.title && newLoveNote.content) {
-      setMoodBoardItems([
-        ...moodBoardItems,
-        {
-          id: `love-note-${Date.now()}`,
-          type: 'love-note',
-          content: newLoveNote.content,
-          title: newLoveNote.title,
-          color: newLoveNote.color,
-          position: { x: Math.random() * 300, y: Math.random() * 300 }
-        }
-      ]);
+      if (isEditingItem && editingItem && editingItem.id) {
+        // Update existing item
+        setMoodBoardItems(items => 
+          items.map(item => 
+            item.id === editingItem.id ? {
+              ...item,
+              title: newLoveNote.title,
+              content: newLoveNote.content,
+              color: newLoveNote.color
+            } : item
+          )
+        );
+        toast({
+          title: "Love note updated",
+          description: "Your love note has been updated on the mood board"
+        });
+      } else {
+        // Add new item
+        setMoodBoardItems([
+          ...moodBoardItems,
+          {
+            id: `love-note-${Date.now()}`,
+            type: 'love-note',
+            content: newLoveNote.content,
+            title: newLoveNote.title,
+            color: newLoveNote.color,
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
+          }
+        ]);
+        toast({
+          title: "Love note added",
+          description: "Your love note has been added to the mood board"
+        });
+      }
+      
       setNewLoveNote({ title: '', content: '', color: 'pink' });
       setShowAddLoveNoteForm(false);
-      toast({
-        title: "Love note added",
-        description: "Your love note has been added to the mood board"
-      });
+      setIsEditingItem(false);
+      setEditingItem(null);
     } else {
       toast({
         title: "Missing information",
@@ -208,24 +366,46 @@ const MoodBoard = () => {
     }
   };
 
-  const addPhoto = () => {
+  const addOrUpdatePhoto = () => {
     if (newPhoto.image && newPhoto.content) {
-      setMoodBoardItems([
-        ...moodBoardItems,
-        {
-          id: `image-${Date.now()}`,
-          type: 'image',
-          content: newPhoto.content,
-          image: newPhoto.image,
-          position: { x: Math.random() * 300, y: Math.random() * 300 }
-        }
-      ]);
+      if (isEditingItem && editingItem && editingItem.id) {
+        // Update existing item
+        setMoodBoardItems(items => 
+          items.map(item => 
+            item.id === editingItem.id ? {
+              ...item,
+              content: newPhoto.content,
+              image: newPhoto.image
+            } : item
+          )
+        );
+        toast({
+          title: "Photo updated",
+          description: "Your photo has been updated on the mood board"
+        });
+      } else {
+        // Add new item
+        setMoodBoardItems([
+          ...moodBoardItems,
+          {
+            id: `image-${Date.now()}`,
+            type: 'image',
+            content: newPhoto.content,
+            image: newPhoto.image,
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
+          }
+        ]);
+        toast({
+          title: "Photo added",
+          description: "Your photo has been added to the mood board"
+        });
+      }
+      
       setNewPhoto({ content: '', image: '' });
       setShowAddPhotoForm(false);
-      toast({
-        title: "Photo added",
-        description: "Your photo has been added to the mood board"
-      });
+      setIsEditingItem(false);
+      setEditingItem(null);
     } else {
       toast({
         title: "Missing information",
@@ -273,7 +453,12 @@ const MoodBoard = () => {
 
   const getStickyNoteClass = (color: string = 'yellow') => {
     const colorClass = stickyNoteColors.find(c => c.value === color)?.class || 'bg-yellow-100';
-    return `${colorClass} shadow-md transform rotate-[1deg]`;
+    return `${colorClass} shadow-md`;
+  };
+
+  const handleDialogClose = () => {
+    setIsEditingItem(false);
+    setEditingItem(null);
   };
 
   return (
@@ -284,17 +469,29 @@ const MoodBoard = () => {
     >
       <div 
         ref={moodBoardRef}
-        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" 
+        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden cursor-grab" 
         style={{ minHeight: '500px' }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
-        <ScrollArea className="h-full w-full">
-          <div className="min-w-full min-h-full w-[2000px] relative">
+        <div 
+          ref={dragAreaRef}
+          className="h-full w-full overflow-auto no-scrollbar"
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
+          <div className="min-w-full min-h-full w-[2000px] h-[1500px] relative">
             {/* Draggable Items */}
             {moodBoardItems.map((item) => (
               <motion.div
                 key={item.id}
-                className="absolute"
-                initial={{ x: item.position?.x || 0, y: item.position?.y || 0 }}
+                className="absolute mood-board-item"
+                initial={{ 
+                  x: item.position?.x || 0, 
+                  y: item.position?.y || 0,
+                  rotate: item.rotation || 0
+                }}
                 drag
                 dragMomentum={false}
                 onDragEnd={(_, info) => {
@@ -305,9 +502,10 @@ const MoodBoard = () => {
                   handleDragEnd(item.id, position);
                 }}
                 dragConstraints={moodBoardRef}
+                style={{ rotate: item.rotation || 0 }}
               >
                 {item.type === 'image' ? (
-                  <Card className="w-64 overflow-hidden shadow-lg">
+                  <Card className="w-64 overflow-hidden shadow-lg relative group">
                     <div className="h-40 overflow-hidden">
                       <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                     </div>
@@ -315,6 +513,10 @@ const MoodBoard = () => {
                       <p className="text-sm">{item.content}</p>
                     </CardContent>
                     <CardFooter className="flex justify-end p-2 gap-1">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity" 
+                        onClick={() => editItem(item)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
                       <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
                         <Heart className="w-4 h-4" />
                       </Button>
@@ -322,10 +524,21 @@ const MoodBoard = () => {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </CardFooter>
+                    {/* Rotation handle */}
+                    <div 
+                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
+                      onMouseDown={(e) => startRotate(e, item.id)}
+                    >
+                      <RotateCcw className="w-3 h-3 text-gray-600" />
+                    </div>
                   </Card>
                 ) : (
-                  <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative`}>
+                  <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}>
                     <div className="absolute top-2 right-2 flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity" 
+                        onClick={() => editItem(item)}>
+                        <Edit className="w-3 h-3" />
+                      </Button>
                       <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
                         <Trash2 className="w-3 h-3" />
                       </Button>
@@ -347,17 +560,19 @@ const MoodBoard = () => {
                     <Badge className="absolute bottom-2 right-2" variant="outline">
                       {item.type === 'memory' ? 'Memory' : 'Love Note'}
                     </Badge>
+                    
+                    {/* Rotation handle */}
+                    <div 
+                      className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
+                      onMouseDown={(e) => startRotate(e, item.id)}
+                    >
+                      <RotateCcw className="w-3 h-3 text-gray-600" />
+                    </div>
                   </div>
                 )}
               </motion.div>
             ))}
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-
-        {/* Subtle scrollbar indicator */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-gray-200 h-1 w-32 rounded-full">
-          <div className="bg-gray-400 h-full w-1/2 rounded-full"></div>
         </div>
 
         {/* Floating Action Button */}
@@ -381,6 +596,9 @@ const MoodBoard = () => {
                   onClick={() => {
                     setIsFabOpen(false);
                     setShowAddPhotoForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewPhoto({ content: '', image: '' });
                   }}
                 >
                   <Upload className="h-5 w-5 text-blue-800" />
@@ -393,6 +611,9 @@ const MoodBoard = () => {
                   onClick={() => {
                     setIsFabOpen(false);
                     setShowAddMemoryForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewMemory({ title: '', date: '', content: '', color: 'yellow' });
                   }}
                 >
                   <MessageSquare className="h-5 w-5 text-green-800" />
@@ -405,6 +626,9 @@ const MoodBoard = () => {
                   onClick={() => {
                     setIsFabOpen(false);
                     setShowAddLoveNoteForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewLoveNote({ title: '', content: '', color: 'pink' });
                   }}
                 >
                   <StickyNote className="h-5 w-5 text-pink-800" />
@@ -415,11 +639,14 @@ const MoodBoard = () => {
         </div>
       </div>
 
-      {/* Add Memory Form Dialog */}
-      <Dialog open={showAddMemoryForm} onOpenChange={setShowAddMemoryForm}>
+      {/* Add/Edit Memory Form Dialog */}
+      <Dialog open={showAddMemoryForm} onOpenChange={(open) => {
+        setShowAddMemoryForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add a Memory</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Memory" : "Add a Memory"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -466,16 +693,19 @@ const MoodBoard = () => {
                 ))}
               </RadioGroup>
             </div>
-            <Button onClick={addMemory}>Add Memory</Button>
+            <Button onClick={addOrUpdateMemory}>{isEditingItem ? "Update Memory" : "Add Memory"}</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Add Love Note Form Dialog */}
-      <Dialog open={showAddLoveNoteForm} onOpenChange={setShowAddLoveNoteForm}>
+      {/* Add/Edit Love Note Form Dialog */}
+      <Dialog open={showAddLoveNoteForm} onOpenChange={(open) => {
+        setShowAddLoveNoteForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add a Love Note</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Love Note" : "Add a Love Note"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -514,16 +744,19 @@ const MoodBoard = () => {
                 ))}
               </RadioGroup>
             </div>
-            <Button onClick={addLoveNote}>Add Love Note</Button>
+            <Button onClick={addOrUpdateLoveNote}>{isEditingItem ? "Update Love Note" : "Add Love Note"}</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Add Photo Form Dialog */}
-      <Dialog open={showAddPhotoForm} onOpenChange={setShowAddPhotoForm}>
+      {/* Add/Edit Photo Form Dialog */}
+      <Dialog open={showAddPhotoForm} onOpenChange={(open) => {
+        setShowAddPhotoForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add a Photo</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Photo" : "Add a Photo"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -535,10 +768,10 @@ const MoodBoard = () => {
                   ref={fileInputRef}
                   onChange={handleImageUpload}
                 />
-                {newPhoto.image && (
+                {(isEditingItem ? editingItem?.image : newPhoto.image) && (
                   <div className="relative h-40 mt-2 rounded-md overflow-hidden">
                     <img 
-                      src={newPhoto.image} 
+                      src={isEditingItem && editingItem?.image ? editingItem.image : newPhoto.image} 
                       alt="Preview" 
                       className="w-full h-full object-cover"
                     />
@@ -550,11 +783,19 @@ const MoodBoard = () => {
               <Label className="block text-sm font-medium mb-1">Caption</Label>
               <Input 
                 placeholder="Add a caption for your photo" 
-                value={newPhoto.content}
-                onChange={(e) => setNewPhoto({...newPhoto, content: e.target.value})}
+                value={isEditingItem && editingItem?.content ? editingItem.content : newPhoto.content}
+                onChange={(e) => isEditingItem && editingItem 
+                  ? setEditingItem({...editingItem, content: e.target.value})
+                  : setNewPhoto({...newPhoto, content: e.target.value})
+                }
               />
             </div>
-            <Button onClick={addPhoto} disabled={!newPhoto.image || !newPhoto.content}>Add Photo</Button>
+            <Button 
+              onClick={addOrUpdatePhoto} 
+              disabled={(isEditingItem ? !(editingItem?.image && editingItem?.content) : !(newPhoto.image && newPhoto.content))}
+            >
+              {isEditingItem ? "Update Photo" : "Add Photo"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
