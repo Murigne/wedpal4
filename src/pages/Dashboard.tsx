@@ -13,6 +13,14 @@ const Dashboard = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
   
+  // Last update data - in a real app, this would come from a database
+  const lastUpdate = {
+    user: "Taylor",
+    action: "updated the guest list",
+    timestamp: "Today, 3:45 PM",
+    screen: "Guests"
+  };
+  
   // Wedding plans data
   const weddingPlans = [
     {
@@ -120,6 +128,7 @@ const Dashboard = () => {
         weddingHashtag={dashboardData.weddingHashtag}
         user={user}
         onInvitePartner={handleInvitePartner}
+        partnerActiveScreen="Budget" // Added to show partner's active screen
       />
       
       <PartnerInviteDialog 
@@ -134,6 +143,7 @@ const Dashboard = () => {
         preferredBudget={dashboardData.preferredBudget}
         userPreferences={userPreferences}
         weddingColors={dashboardData.weddingColors}
+        lastUpdate={lastUpdate}
       />
     </DashboardLayout>
   );
