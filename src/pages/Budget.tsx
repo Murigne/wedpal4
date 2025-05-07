@@ -264,7 +264,7 @@ const Budget = () => {
             </Card>
             
             {/* Budget Breakdown - Horizontal Bar Chart */}
-            <Card className="flex-grow md:max-h-[700px] flex flex-col">
+            <Card className="flex-grow md:max-h-[600px] flex flex-col">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
