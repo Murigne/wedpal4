@@ -208,9 +208,12 @@ const Timeline = () => {
       description="Track your wedding planning progress"
       icon={<Clock className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
-        <div className="md:col-span-4 space-y-6 flex flex-col h-full">
-          <Card>
+      {/* Main container with proper spacing */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-200px)] px-4">
+        {/* Left column - fixed height with margin */}
+        <div className="md:col-span-4 flex flex-col h-full">
+          {/* Wedding countdown card */}
+          <Card className="mb-6">
             <CardHeader>
               <CardTitle>Wedding Countdown</CardTitle>
             </CardHeader>
@@ -271,42 +274,45 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-1 flex flex-col md:max-h-[600px]">
+          {/* Progress card with fixed height */}
+          <Card className="flex-1">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col md:max-h-[600px]">
-              <div className="flex flex-col items-center h-full">
-                <div className="h-56 w-56 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
+            <CardContent className="flex flex-col items-center justify-center h-[calc(100%-80px)]">
+              {/* Progress chart with proportional sizing */}
+              <div className="relative flex items-center justify-center w-full">
+                <div className="h-40 w-40 md:h-48 md:w-48 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div 
-                      className="h-48 w-48 rounded-full bg-white"
+                      className="h-32 w-32 md:h-40 md:w-40 rounded-full bg-white"
                       style={{
                         background: `conic-gradient(#ec4899 ${completedPercentage}%, #f3f4f6 0)`
                       }}
                     ></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-36 w-36 rounded-full bg-white flex items-center justify-center">
-                        <span className="text-4xl font-bold text-pink-500">
+                      <div className="h-24 w-24 md:h-28 md:w-28 rounded-full bg-white flex items-center justify-center">
+                        <span className="text-3xl md:text-4xl font-bold text-pink-500">
                           {completedPercentage}%
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-500">Tasks completed</p>
-                  <p className="font-medium text-lg">
-                    {timelineItems.filter(item => item.completed).length} of {timelineItems.length}
-                  </p>
-                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-500">Tasks completed</p>
+                <p className="font-medium text-lg">
+                  {timelineItems.filter(item => item.completed).length} of {timelineItems.length}
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
         
-        <div className="md:col-span-8">
-          <Card className="h-[calc(100vh-180px)] flex flex-col">
+        {/* Right column - timeline with proper scrolling */}
+        <div className="md:col-span-8 flex flex-col h-full">
+          <Card className="h-full flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Wedding Timeline</CardTitle>
@@ -320,8 +326,8 @@ const Timeline = () => {
               </Button>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden">
-              <ScrollArea className="h-[calc(100vh-320px)]">
-                <div className="relative pl-8 space-y-6">
+              <ScrollArea className="h-[calc(100vh-320px)] pr-4">
+                <div className="relative pl-8 space-y-6 pb-4">
                   {/* Timeline line */}
                   <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200" />
                   
