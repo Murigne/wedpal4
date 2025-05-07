@@ -269,7 +269,7 @@ const Budget = () => {
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
               <CardContent className="pb-6 flex-1 overflow-hidden">
-                <ScrollArea className="h-full max-h-[540px]">
+                <ScrollArea className="h-full max-h-[400px]">
                   <div className="space-y-4">
                     {budget.categories.map((category, index) => (
                       <div key={category.id} className="space-y-1">
