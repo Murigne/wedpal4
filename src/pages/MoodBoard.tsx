@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -101,6 +100,59 @@ const MoodBoard = () => {
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create a FileReader to read the file
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        // Create an Image object to get the dimensions
+        const img = new window.Image();
+        img.onload = () => {
+          const aspectRatio = 600 / 400; // Target aspect ratio (600x400)
+          
+          // Create a canvas to resize and maintain aspect ratio
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions to maintain aspect ratio
+          if (width / height > aspectRatio) {
+            // Image is wider than target ratio
+            height = width / aspectRatio;
+          } else {
+            // Image is taller than target ratio
+            width = height * aspectRatio;
+          }
+          
+          // Set canvas dimensions
+          canvas.width = 600;
+          canvas.height = 400;
+          
+          // Draw image on canvas with proper centering
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate centering
+            const offsetX = (img.width - width) / 2;
+            const offsetY = (img.height - height) / 2;
+            
+            // Draw image with proper centering and scaling
+            ctx.drawImage(img, offsetX, offsetY, width, height, 0, 0, 600, 400);
+            
+            // Get resized image as data URL
+            const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+            setNewPhoto({ ...newPhoto, image: resizedImageUrl });
+          }
+        };
+        
+        img.src = event.target?.result as string;
+      };
+      
+      reader.readAsDataURL(file);
+    }
+  };
+
   const addMemory = () => {
     if (newMemory.title && newMemory.content) {
       setMoodBoardItems([
@@ -153,59 +205,6 @@ const MoodBoard = () => {
         title: "Missing information",
         description: "Please fill in the title and content"
       });
-    }
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Create a FileReader to read the file
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        // Create an Image object to get the dimensions
-        const img = new Image();
-        img.onload = () => {
-          const aspectRatio = 600 / 400; // Target aspect ratio (600x400)
-          
-          // Create a canvas to resize and maintain aspect ratio
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          
-          // Calculate new dimensions to maintain aspect ratio
-          if (width / height > aspectRatio) {
-            // Image is wider than target ratio
-            height = width / aspectRatio;
-          } else {
-            // Image is taller than target ratio
-            width = height * aspectRatio;
-          }
-          
-          // Set canvas dimensions
-          canvas.width = 600;
-          canvas.height = 400;
-          
-          // Draw image on canvas with proper centering
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            // Calculate centering
-            const offsetX = (img.width - width) / 2;
-            const offsetY = (img.height - height) / 2;
-            
-            // Draw image with proper centering and scaling
-            ctx.drawImage(img, offsetX, offsetY, width, height, 0, 0, 600, 400);
-            
-            // Get resized image as data URL
-            const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-            setNewPhoto({ ...newPhoto, image: resizedImageUrl });
-          }
-        };
-        
-        img.src = event.target?.result as string;
-      };
-      
-      reader.readAsDataURL(file);
     }
   };
 
