@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 interface MoodBoardItem {
   id: string;
@@ -162,7 +162,7 @@ const MoodBoard = () => {
       // Create a FileReader to read the file
       const reader = new FileReader();
       
-      reader.onload = (e) => {
+      reader.onload = (event) => {
         // Create an Image object to get the dimensions
         const img = new Image();
         img.onload = () => {
@@ -202,7 +202,7 @@ const MoodBoard = () => {
           }
         };
         
-        img.src = e.target?.result as string;
+        img.src = event.target?.result as string;
       };
       
       reader.readAsDataURL(file);
@@ -288,7 +288,7 @@ const MoodBoard = () => {
         className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" 
         style={{ minHeight: '500px' }}
       >
-        <ScrollArea className="h-full w-full" orientation="horizontal">
+        <ScrollArea className="h-full w-full">
           <div className="min-w-full min-h-full w-[2000px] relative">
             {/* Draggable Items */}
             {moodBoardItems.map((item) => (
@@ -353,6 +353,7 @@ const MoodBoard = () => {
               </motion.div>
             ))}
           </div>
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
         {/* Subtle scrollbar indicator */}
