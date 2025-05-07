@@ -16,7 +16,6 @@ interface GiftItem {
   id: string;
   name: string;
   price: number;
-  image: string;
   link: string;
   category: string;
   purchased: boolean;
@@ -31,7 +30,6 @@ const Gifts = () => {
       id: '1', 
       name: 'Stand Mixer', 
       price: 350, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/mixer', 
       category: 'kitchen', 
       purchased: false, 
@@ -41,7 +39,6 @@ const Gifts = () => {
       id: '2', 
       name: 'Luxury Bedding Set', 
       price: 200, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/bedding', 
       category: 'bedroom', 
       purchased: true, 
@@ -51,7 +48,6 @@ const Gifts = () => {
       id: '3', 
       name: 'Smart TV', 
       price: 800, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/tv', 
       category: 'electronics', 
       purchased: false, 
@@ -61,7 +57,6 @@ const Gifts = () => {
       id: '4', 
       name: 'Honeymoon Fund', 
       price: 1000, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/honeymoon', 
       category: 'experience', 
       purchased: false, 
@@ -71,7 +66,6 @@ const Gifts = () => {
       id: '5', 
       name: 'Dining Set', 
       price: 450, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/dining', 
       category: 'kitchen', 
       purchased: false, 
@@ -81,7 +75,6 @@ const Gifts = () => {
       id: '6', 
       name: 'Coffee Machine', 
       price: 250, 
-      image: 'https://placehold.co/300x200', 
       link: 'https://example.com/coffee', 
       category: 'kitchen', 
       purchased: false, 
@@ -94,7 +87,6 @@ const Gifts = () => {
   const [newGift, setNewGift] = useState({
     name: '',
     price: '',
-    image: 'https://placehold.co/300x200',
     link: '',
     category: 'kitchen',
     priority: 'medium' as 'high' | 'medium' | 'low'
@@ -137,7 +129,6 @@ const Gifts = () => {
     setNewGift({
       name: '',
       price: '',
-      image: 'https://placehold.co/300x200',
       link: '',
       category: 'kitchen',
       priority: 'medium'
@@ -150,7 +141,6 @@ const Gifts = () => {
     setNewGift({
       name: item.name,
       price: item.price.toString(),
-      image: item.image,
       link: item.link,
       category: item.category,
       priority: item.priority
@@ -170,7 +160,6 @@ const Gifts = () => {
     const giftData = {
       name: newGift.name,
       price: parseFloat(newGift.price),
-      image: newGift.image,
       link: newGift.link,
       category: newGift.category,
       priority: newGift.priority,
@@ -247,6 +236,7 @@ const Gifts = () => {
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
+          {/* Registry Summary Card */}
           <Card>
             <CardHeader>
               <CardTitle>Registry Summary</CardTitle>
@@ -277,6 +267,7 @@ const Gifts = () => {
             </CardContent>
           </Card>
           
+          {/* Share Registry Card */}
           <Card>
             <CardHeader>
               <CardTitle>Share Your Registry</CardTitle>
@@ -312,19 +303,18 @@ const Gifts = () => {
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden flex flex-col">
               <Tabs defaultValue="all" onValueChange={setCurrentTab} className="flex-1 flex flex-col">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">All Items</TabsTrigger>
-                  <TabsTrigger value="unpurchased">Unpurchased</TabsTrigger>
-                  <TabsTrigger value="purchased">Purchased</TabsTrigger>
-                </TabsList>
+                <div className="mb-4">
+                  <TabsList className="inline-flex">
+                    <TabsTrigger value="all">All Items</TabsTrigger>
+                    <TabsTrigger value="unpurchased">Unpurchased</TabsTrigger>
+                    <TabsTrigger value="purchased">Purchased</TabsTrigger>
+                  </TabsList>
+                </div>
                 
                 <ScrollArea className="flex-1 h-[calc(100vh-320px)]">
                   <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
                       <Card key={item.id} className={item.purchased ? "opacity-60" : ""}>
-                        <div className="aspect-video w-full overflow-hidden">
-                          <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
-                        </div>
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className={`font-medium ${item.purchased ? "line-through" : ""}`}>{item.name}</h3>
@@ -366,9 +356,6 @@ const Gifts = () => {
                   <TabsContent value="unpurchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
                       <Card key={item.id}>
-                        <div className="aspect-video w-full overflow-hidden">
-                          <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
-                        </div>
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-medium">{item.name}</h3>
@@ -409,9 +396,6 @@ const Gifts = () => {
                   <TabsContent value="purchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
                       <Card key={item.id} className="opacity-60">
-                        <div className="aspect-video w-full overflow-hidden">
-                          <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
-                        </div>
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start mb-2">
                             <h3 className="font-medium line-through">{item.name}</h3>
@@ -480,15 +464,6 @@ const Gifts = () => {
                 placeholder="Enter price" 
                 value={newGift.price}
                 onChange={e => setNewGift({...newGift, price: e.target.value})}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Image URL</label>
-              <Input 
-                placeholder="https://example.com/image.jpg" 
-                value={newGift.image}
-                onChange={e => setNewGift({...newGift, image: e.target.value})}
               />
             </div>
             
