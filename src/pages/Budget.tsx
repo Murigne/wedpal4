@@ -70,6 +70,16 @@ const Budget = () => {
     total: 0,
   });
 
+  // Function to determine progress bar color based on percentage
+  const getBudgetProgressColor = (percentage: number) => {
+    if (percentage >= 100) return '#ea384c'; // Red for over budget
+    if (percentage >= 70) return '#FFC107';  // Yellow for approaching limit
+    return '#4CAF50';                        // Green for under budget
+  };
+
+  // Calculate budget percentage
+  const budgetPercentage = (budget.spent / budget.total) * 100;
+
   // Mock vendors from the vendor marketplace
   const mockVendors = [
     { id: 1, name: "Elegant Gardens Venue", category: "Venues", price: 10000 },
@@ -228,61 +238,65 @@ const Budget = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-5">
           <div className="grid grid-cols-1 gap-6 h-full">
-            {/* Budget Summary Card */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+            {/* Budget Summary Card - Reduced height */}
+            <Card className="mb-0">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Summary</CardTitle>
                 <Button onClick={() => setIsEditBudgetOpen(true)} size="sm" variant="ghost">
                   <Edit className="w-4 h-4 mr-1" />
                   Edit
                 </Button>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Total Budget</span>
+              <CardContent className="space-y-2">
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <div>
+                    <span className="text-sm text-muted-foreground block">Total Budget</span>
                     <span className="font-medium">GHS {budget.total.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Spent</span>
+                  <div>
+                    <span className="text-sm text-muted-foreground block">Spent</span>
                     <span className="font-medium">GHS {budget.spent.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Remaining</span>
+                  <div>
+                    <span className="text-sm text-muted-foreground block">Remaining</span>
                     <span className="font-medium">GHS {(budget.total - budget.spent).toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div>
-                  <div className="flex justify-between mb-2">
+                  <div className="flex justify-between mb-1">
                     <span className="text-sm">Budget used</span>
-                    <span className="text-sm">{Math.round((budget.spent / budget.total) * 100)}%</span>
                   </div>
-                  <Progress value={(budget.spent / budget.total) * 100} className="h-2" />
+                  <Progress 
+                    value={budgetPercentage} 
+                    className="h-3" 
+                    indicatorColor={getBudgetProgressColor(budgetPercentage)}
+                    showValueOnBar={true}
+                  />
+                  {budgetPercentage >= 100 && (
+                    <p className="text-sm text-red-500 font-medium mt-1">
+                      You have exceeded your budget
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
             
-            {/* Budget Breakdown - Horizontal Bar Chart */}
-            <Card className="md:max-h-[313px]">
+            {/* Budget Breakdown - Horizontal Bar Chart - Increased height */}
+            <Card className="md:max-h-[420px] flex-grow">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
-              <CardContent className="pb-6 flex-1 overflow-hidden">
-                <ScrollArea className="h-full max-h-[200px]">
+              <CardContent className="pb-4 flex-1 overflow-hidden">
+                <ScrollArea className="h-full max-h-[300px] w-[95%] mx-auto">
                   <div className="space-y-4">
                     {budget.categories.map((category, index) => (
                       <div key={category.id} className="space-y-1">
                         <div className="flex justify-between items-center mb-1">
-                          <div>
-                            <span className="text-sm font-medium">{category.name}</span>
-                            <div className="text-xs text-muted-foreground">
-                              GHS {category.spent.toLocaleString()} of {category.total.toLocaleString()}
-                            </div>
-                          </div>
+                          <span className="text-sm font-medium">{category.name}</span>
                           <span className="text-xs font-medium">{Math.round(category.allocation)}%</span>
                         </div>
-                        <div className="h-7 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-5 w-full bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className={`h-full ${getBarColor(index)} rounded-full transition-all duration-500`}
                             style={{ 
@@ -343,7 +357,11 @@ const Budget = () => {
                             {Math.round((category.spent / category.total) * 100)}%
                           </span>
                         </div>
-                        <Progress value={(category.spent / category.total) * 100} className="h-2" />
+                        <Progress 
+                          value={(category.spent / category.total) * 100} 
+                          className="h-2"
+                          indicatorColor={getBudgetProgressColor((category.spent / category.total) * 100)}
+                        />
                       </div>
                     </div>
                   ))}

@@ -4,10 +4,17 @@ import * as ProgressPrimitive from "@radix-ui/react-progress"
 
 import { cn } from "@/lib/utils"
 
+interface ProgressProps extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
+  value?: number;
+  indicatorColor?: string;
+  indicatorClassName?: string;
+  showValueOnBar?: boolean;
+}
+
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => (
+  ProgressProps
+>(({ className, value, indicatorColor, indicatorClassName, showValueOnBar = false, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
@@ -17,9 +24,19 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={cn("h-full w-full flex-1 bg-primary transition-all")}
-      style={{ transform: `translateX(-${100 - (value || 0)}%)`, backgroundColor: "var(--wedding-pink, #FAD2E1)" }}
-    />
+      className={cn("h-full flex items-center justify-end pr-2 transition-all", indicatorClassName)}
+      style={{ 
+        transform: `translateX(-${100 - (value || 0)}%)`, 
+        backgroundColor: indicatorColor || "var(--wedding-pink, #FAD2E1)",
+        width: "100%"
+      }}
+    >
+      {showValueOnBar && value !== undefined && value > 10 && (
+        <span className="text-xs font-medium text-white">
+          {Math.round(value)}%
+        </span>
+      )}
+    </ProgressPrimitive.Indicator>
   </ProgressPrimitive.Root>
 ))
 Progress.displayName = ProgressPrimitive.Root.displayName
