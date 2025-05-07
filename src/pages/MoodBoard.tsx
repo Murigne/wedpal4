@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import PageLayout from '@/components/dashboard/PageLayout';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface MoodBoardItem {
   id: string;
@@ -35,6 +36,7 @@ const stickyNoteColors = [
 
 const MoodBoard = () => {
   const { toast } = useToast();
+  const moodBoardRef = useRef<HTMLDivElement>(null);
   const [moodBoardItems, setMoodBoardItems] = useState<MoodBoardItem[]>([
     {
       id: '1',
@@ -97,7 +99,7 @@ const MoodBoard = () => {
   const [isFabOpen, setIsFabOpen] = useState(false);
 
   // File input ref
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addMemory = () => {
     if (newMemory.title && newMemory.content) {
@@ -157,10 +159,53 @@ const MoodBoard = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real app, we would upload this file to a server
-      // Here we'll just create a local URL for preview
-      const imageUrl = URL.createObjectURL(file);
-      setNewPhoto({ ...newPhoto, image: imageUrl });
+      // Create a FileReader to read the file
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        // Create an Image object to get the dimensions
+        const img = new Image();
+        img.onload = () => {
+          const aspectRatio = 600 / 400; // Target aspect ratio (600x400)
+          
+          // Create a canvas to resize and maintain aspect ratio
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions to maintain aspect ratio
+          if (width / height > aspectRatio) {
+            // Image is wider than target ratio
+            height = width / aspectRatio;
+          } else {
+            // Image is taller than target ratio
+            width = height * aspectRatio;
+          }
+          
+          // Set canvas dimensions
+          canvas.width = 600;
+          canvas.height = 400;
+          
+          // Draw image on canvas with proper centering
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            // Calculate centering
+            const offsetX = (img.width - width) / 2;
+            const offsetY = (img.height - height) / 2;
+            
+            // Draw image with proper centering and scaling
+            ctx.drawImage(img, offsetX, offsetY, width, height, 0, 0, 600, 400);
+            
+            // Get resized image as data URL
+            const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+            setNewPhoto({ ...newPhoto, image: resizedImageUrl });
+          }
+        };
+        
+        img.src = e.target?.result as string;
+      };
+      
+      reader.readAsDataURL(file);
     }
   };
 
@@ -199,11 +244,32 @@ const MoodBoard = () => {
   };
 
   const handleDragEnd = (id: string, position: { x: number, y: number }) => {
-    setMoodBoardItems(
-      moodBoardItems.map(item => 
-        item.id === id ? { ...item, position } : item
-      )
-    );
+    // Ensure position is within the bounds of the mood board
+    if (moodBoardRef.current) {
+      const boardRect = moodBoardRef.current.getBoundingClientRect();
+      const item = moodBoardItems.find(item => item.id === id);
+      
+      if (item) {
+        // Estimate item size (this would ideally be dynamic based on the actual item)
+        const itemWidth = item.type === 'image' ? 256 : 256; // Card width
+        const itemHeight = item.type === 'image' ? 200 : 256; // Approximate height
+        
+        // Calculate bounds
+        const maxX = boardRect.width - itemWidth;
+        const maxY = boardRect.height - itemHeight;
+        
+        // Constrain position
+        const constrainedX = Math.max(0, Math.min(position.x, maxX));
+        const constrainedY = Math.max(0, Math.min(position.y, maxY));
+        
+        // Update position in state
+        setMoodBoardItems(
+          moodBoardItems.map(item => 
+            item.id === id ? { ...item, position: { x: constrainedX, y: constrainedY } } : item
+          )
+        );
+      }
+    }
   };
 
   const getStickyNoteClass = (color: string = 'yellow') => {
@@ -217,68 +283,82 @@ const MoodBoard = () => {
       description="Capture your favorite memories and moments together"
       icon={<Image className="w-8 h-8" />}
     >
-      <div className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" style={{ minHeight: '500px' }}>
-        {/* Draggable Items */}
-        {moodBoardItems.map((item) => (
-          <motion.div
-            key={item.id}
-            className="absolute"
-            initial={{ x: item.position?.x || 0, y: item.position?.y || 0 }}
-            drag
-            dragMomentum={false}
-            onDragEnd={(_, info) => {
-              const position = {
-                x: item.position?.x + info.offset.x || 0,
-                y: item.position?.y + info.offset.y || 0
-              };
-              handleDragEnd(item.id, position);
-            }}
-          >
-            {item.type === 'image' ? (
-              <Card className="w-64 overflow-hidden shadow-lg">
-                <div className="h-40 overflow-hidden">
-                  <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
-                </div>
-                <CardContent className="p-3">
-                  <p className="text-sm">{item.content}</p>
-                </CardContent>
-                <CardFooter className="flex justify-end p-2 gap-1">
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                    <Heart className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </CardFooter>
-              </Card>
-            ) : (
-              <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative`}>
-                <div className="absolute top-2 right-2 flex gap-1">
-                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-                
-                <h3 className="font-medium mb-1">{item.title}</h3>
-                <p className="text-sm overflow-auto max-h-[180px]">{item.content}</p>
-                
-                {item.date && (
-                  <p className="text-xs text-gray-600 mt-2 italic">
-                    {new Date(item.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
+      <div 
+        ref={moodBoardRef}
+        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" 
+        style={{ minHeight: '500px' }}
+      >
+        <ScrollArea className="h-full w-full" orientation="horizontal">
+          <div className="min-w-full min-h-full w-[2000px] relative">
+            {/* Draggable Items */}
+            {moodBoardItems.map((item) => (
+              <motion.div
+                key={item.id}
+                className="absolute"
+                initial={{ x: item.position?.x || 0, y: item.position?.y || 0 }}
+                drag
+                dragMomentum={false}
+                onDragEnd={(_, info) => {
+                  const position = {
+                    x: (item.position?.x || 0) + info.offset.x,
+                    y: (item.position?.y || 0) + info.offset.y
+                  };
+                  handleDragEnd(item.id, position);
+                }}
+                dragConstraints={moodBoardRef}
+              >
+                {item.type === 'image' ? (
+                  <Card className="w-64 overflow-hidden shadow-lg">
+                    <div className="h-40 overflow-hidden">
+                      <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
+                    </div>
+                    <CardContent className="p-3">
+                      <p className="text-sm">{item.content}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-end p-2 gap-1">
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                        <Heart className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ) : (
+                  <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative`}>
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    
+                    <h3 className="font-medium mb-1">{item.title}</h3>
+                    <p className="text-sm overflow-auto max-h-[180px]">{item.content}</p>
+                    
+                    {item.date && (
+                      <p className="text-xs text-gray-600 mt-2 italic">
+                        {new Date(item.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    )}
+                    
+                    <Badge className="absolute bottom-2 right-2" variant="outline">
+                      {item.type === 'memory' ? 'Memory' : 'Love Note'}
+                    </Badge>
+                  </div>
                 )}
-                
-                <Badge className="absolute bottom-2 right-2" variant="outline">
-                  {item.type === 'memory' ? 'Memory' : 'Love Note'}
-                </Badge>
-              </div>
-            )}
-          </motion.div>
-        ))}
+              </motion.div>
+            ))}
+          </div>
+        </ScrollArea>
+
+        {/* Subtle scrollbar indicator */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-gray-200 h-1 w-32 rounded-full">
+          <div className="bg-gray-400 h-full w-1/2 rounded-full"></div>
+        </div>
 
         {/* Floating Action Button */}
         <div className="absolute bottom-6 right-6 z-50">

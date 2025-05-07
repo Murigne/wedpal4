@@ -269,20 +269,32 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="flex-1 flex flex-col">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="h-24 w-24 rounded-full border-8 border-pink-200 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-pink-500">
-                    {Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%
-                  </span>
+            <CardContent className="flex-1 flex flex-col justify-center items-center">
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="h-48 w-48 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div 
+                      className="h-36 w-36 rounded-full bg-white"
+                      style={{
+                        background: `conic-gradient(#ec4899 ${Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%, transparent 0)`
+                      }}
+                    ></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="h-28 w-28 rounded-full bg-white flex items-center justify-center">
+                        <span className="text-4xl font-bold text-pink-500">
+                          {Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
+                <div className="mt-6 text-center">
                   <p className="text-sm text-gray-500">Tasks completed</p>
-                  <p className="font-medium">
+                  <p className="font-medium text-lg">
                     {timelineItems.filter(item => item.completed).length} of {timelineItems.length}
                   </p>
                 </div>

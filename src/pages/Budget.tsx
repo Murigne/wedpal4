@@ -206,6 +206,19 @@ const Budget = () => {
     setIsVendorSelectorOpen(false);
   };
 
+  // Generate different colors for bars
+  const getBarColor = (index: number) => {
+    const colors = [
+      'bg-pink-500',
+      'bg-purple-500',
+      'bg-blue-500',
+      'bg-green-500',
+      'bg-yellow-500',
+      'bg-orange-500'
+    ];
+    return colors[index % colors.length];
+  };
+
   return (
     <PageLayout 
       title="Budget Planner" 
@@ -214,7 +227,7 @@ const Budget = () => {
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-5">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 h-full">
             {/* Budget Summary Card */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
@@ -250,32 +263,27 @@ const Budget = () => {
               </CardContent>
             </Card>
             
-            {/* Budget Breakdown - Vertical Bar Chart */}
-            <Card>
+            {/* Budget Breakdown - Horizontal Bar Chart */}
+            <Card className="flex-grow">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="h-64 flex items-end gap-3 pt-6 px-2">
-                  {budget.categories.map((category) => (
-                    <div 
-                      key={category.id} 
-                      className="flex flex-col items-center flex-1"
-                    >
-                      <div className="w-full flex flex-col items-center">
+              <CardContent className="pb-6">
+                <div className="space-y-5 mt-6">
+                  {budget.categories.map((category, index) => (
+                    <div key={category.id} className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span>{category.name}</span>
+                        <span>{Math.round(category.allocation)}%</span>
+                      </div>
+                      <div className="h-6 w-full bg-gray-100 rounded-full flex items-center">
                         <div 
-                          className="w-full max-w-[30px] rounded-t-md bg-pink-500"
+                          className={`h-2 rounded-full ${getBarColor(index)} transition-all duration-500 ml-2`}
                           style={{ 
-                            height: `${(category.allocation / 100) * 180}px`,
+                            width: `${Math.max(category.allocation - 5, 0)}%`,
                             opacity: category.spent > 0 ? 1 : 0.5
                           }}
                         ></div>
-                        <span className="text-xs font-medium mt-2 text-center" style={{ maxWidth: '60px', wordWrap: 'break-word' }}>
-                          {category.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {Math.round(category.allocation)}%
-                        </span>
                       </div>
                     </div>
                   ))}
@@ -298,9 +306,9 @@ const Budget = () => {
               </Button>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[calc(100vh-320px)]">
+              <ScrollArea className="h-[calc(100vh-320px)] max-h-[600px]">
                 <div className="space-y-4">
-                  {budget.categories.map((category) => (
+                  {budget.categories.slice(0, 4).map((category) => (
                     <div key={category.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start mb-4">
                         <div>
