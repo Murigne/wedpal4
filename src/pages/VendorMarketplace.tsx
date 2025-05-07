@@ -87,6 +87,7 @@ const VendorMarketplace = () => {
     price: "$$",
     description: "Custom wedding cakes and dessert tables to match your theme"
   }];
+  
   const handleToggleFavorite = (vendorId: number) => {
     if (favoriteVendors.includes(vendorId)) {
       setFavoriteVendors(favoriteVendors.filter(id => id !== vendorId));
@@ -102,55 +103,59 @@ const VendorMarketplace = () => {
       });
     }
   };
+  
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
   };
+  
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
+  
   const handleViewDetails = (vendorId: number) => {
     toast({
       title: "Vendor details",
       description: "Viewing details for this vendor. This would navigate to a detailed page in a real app."
     });
   };
+  
   const filteredVendors = mockVendors.filter(vendor => {
     const matchesCategory = selectedCategory === 'All Categories' || vendor.category === selectedCategory;
     const matchesSearch = vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) || vendor.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
+  
   // Handle sidebar expansion
   const handleSidebarExpandChange = (expanded: boolean) => {
     setSidebarExpanded(expanded);
   };
+  
   return <DashboardLayout userName={dashboardData.userName} partnerName={dashboardData.partnerName} sidebarExpanded={sidebarExpanded} onSidebarExpandChange={handleSidebarExpandChange} isLoading={dashboardData.isLoading}>
       <div className="max-w-[1600px] mx-auto">
-        <div className="sticky top-[73px] z-30 pt-4 pb-0 bg-wedding-pink/10 backdrop-blur-md">
-          <div className="mb-4 text-white">
-            <h1 className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2">Vendor Marketplace</h1>
-            <p className="text-white/80">Find and book the perfect vendors for your wedding day</p>
-          </div>
+        {/* Removed background from title section, shifted up to match other screens */}
+        <div className="mb-4">
+          <h1 className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2 text-white">Vendor Marketplace</h1>
+          <p className="text-white/80">Find and book the perfect vendors for your wedding day</p>
+        </div>
           
-          {/* Search and filter - Fixed position */}
-          <div className="bg-wedding-pink/30 backdrop-blur-md rounded-lg mb-4 px-4 py-4">
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-              <div className="relative md:w-1/2">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <input type="text" placeholder="Search vendors..." className="w-full pl-12 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" value={searchQuery} onChange={handleSearchChange} />
-              </div>
+        {/* Search and filter - Fixed position with glassmorphism background */}
+        <div className="bg-wedding-pink/30 backdrop-blur-md rounded-lg mb-4 px-4 py-4">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative md:w-1/2">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+              <input type="text" placeholder="Search vendors..." className="w-full pl-12 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" value={searchQuery} onChange={handleSearchChange} />
             </div>
+          </div>
             
-            {/* Categories */}
-            <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
-              <Button className={`whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-pink-500 hover:bg-pink-600 text-white' : 'bg-white/70 hover:bg-white/80 text-gray-800'}`} onClick={() => handleCategoryClick('All Categories')}>
-                All Categories
-              </Button>
-              {vendorCategories.map(category => <Button key={category} variant="outline" className={`bg-white/70 border-pink-300 hover:bg-white/80 whitespace-nowrap 
-                    ${selectedCategory === category ? 'bg-pink-100 text-pink-800 border-pink-400' : 'text-gray-800'}`} onClick={() => handleCategoryClick(category)}>
-                  {category}
-                </Button>)}
-            </div>
+          {/* Categories */}
+          <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
+            <Button className={`whitespace-nowrap ${selectedCategory === 'All Categories' ? 'bg-pink-500 hover:bg-pink-600 text-white' : 'bg-white/70 hover:bg-white/80 text-gray-800'}`} onClick={() => handleCategoryClick('All Categories')}>
+              All Categories
+            </Button>
+            {vendorCategories.map(category => <Button key={category} variant="outline" className={`bg-white/70 border-pink-300 hover:bg-white/80 whitespace-nowrap 
+                  ${selectedCategory === category ? 'bg-pink-100 text-pink-800 border-pink-400' : 'text-gray-800'}`} onClick={() => handleCategoryClick(category)}>
+                {category}
+              </Button>)}
           </div>
         </div>
         
@@ -198,9 +203,9 @@ const VendorMarketplace = () => {
           {/* Load more */}
           <div className="flex justify-center mt-4 pb-4">
             <Button variant="outline" className="border-pink-300 hover:bg-pink-50 px-8" onClick={() => toast({
-            title: "Load More",
-            description: "Loading more vendors..."
-          })}>
+              title: "Load More",
+              description: "Loading more vendors..."
+            })}>
               Load More Vendors
             </Button>
           </div>

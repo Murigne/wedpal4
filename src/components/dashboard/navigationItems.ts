@@ -6,7 +6,6 @@ import {
   Clock,
   Gift,
   Image,
-  Palette,
   Store,
   Bot,
 } from 'lucide-react';
@@ -18,7 +17,7 @@ export const navigationItems = [
   { name: 'Timeline', icon: Clock, path: '/timeline' },
   { name: 'Gifts', icon: Gift, path: '/gifts' },
   { name: 'Mood Board', icon: Image, path: '/mood-board' },
-  { name: 'Theme', icon: Palette, path: '/theme' },
   { name: 'Vendors', icon: Store, path: '/vendor-marketplace' },
   { name: 'Naa AI', icon: Bot, path: '/ai-assistant' },
 ];
+
