@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Clock, Plus, Check, Calendar, Edit, Trash2, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import PageLayout from '@/components/dashboard/PageLayout';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Progress } from '@/components/ui/progress';
 
 interface TimelineItem {
   id: string;
@@ -200,6 +200,8 @@ const Timeline = () => {
     }
   };
 
+  const completedPercentage = Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100);
+
   return (
     <PageLayout 
       title="Wedding Timeline" 
@@ -269,24 +271,24 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-1 flex flex-col md:max-h-[700px]">
+          <Card className="h-[calc(100vh-430px)]">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-center items-center">
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="h-60 w-60 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
+            <CardContent className="h-[calc(100vh-500px)]">
+              <div className="flex flex-col items-center h-full">
+                <div className="h-56 w-56 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div 
                       className="h-48 w-48 rounded-full bg-white"
                       style={{
-                        background: `conic-gradient(#ec4899 ${Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%, #f3f4f6 0)`
+                        background: `conic-gradient(#ec4899 ${completedPercentage}%, #f3f4f6 0)`
                       }}
                     ></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="h-36 w-36 rounded-full bg-white flex items-center justify-center">
                         <span className="text-4xl font-bold text-pink-500">
-                          {Math.round((timelineItems.filter(item => item.completed).length / timelineItems.length) * 100)}%
+                          {completedPercentage}%
                         </span>
                       </div>
                     </div>
@@ -303,8 +305,8 @@ const Timeline = () => {
           </Card>
         </div>
         
-        <div className="md:col-span-8 md:max-h-[700px]">
-          <Card className="h-full flex flex-col">
+        <div className="md:col-span-8">
+          <Card className="h-[calc(100vh-180px)] flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Wedding Timeline</CardTitle>
