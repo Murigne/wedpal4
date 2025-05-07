@@ -271,11 +271,11 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-1 flex flex-col md:max-h-[700px]">
+          <Card className="flex-1 flex flex-col md:max-h-[690px]">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col md:max-h-[700px]">
+            <CardContent className="flex-1 flex flex-col md:max-h-[690px]">
               <div className="flex flex-col items-center h-full">
                 <div className="h-56 w-56 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
                   <div className="absolute inset-0 flex items-center justify-center">
