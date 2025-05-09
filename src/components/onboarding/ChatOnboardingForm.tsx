@@ -77,42 +77,6 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
             )}
           </div>
         </div>
-      ) : currentStep === QUESTIONS.length - 1 ? (
-        <div className="relative">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            {QUESTIONS[currentStep].icon}
-          </div>
-          <input
-            type="password"
-            name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
-            value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}
-            onChange={handleInputChange}
-            placeholder={placeholders[0]}
-            required
-            className={`wedding-input pl-10 w-full ${validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] ? 'border-red-500 focus:ring-red-500' : ''}`}
-          />
-          {validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] && (
-            <p className="text-red-500 text-sm mt-1">{validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}</p>
-          )}
-        </div>
-      ) : currentStep === QUESTIONS.length - 2 ? (
-        <div className="relative">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            {QUESTIONS[currentStep].icon}
-          </div>
-          <input
-            type="email"
-            name={Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field}
-            value={formData[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}
-            onChange={handleInputChange}
-            placeholder={placeholders[0]}
-            required
-            className={`wedding-input pl-10 w-full ${validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] ? 'border-red-500 focus:ring-red-500' : ''}`}
-          />
-          {validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field] && (
-            <p className="text-red-500 text-sm mt-1">{validationErrors[Array.isArray(currentQuestion.field) ? currentQuestion.field[0] : currentQuestion.field]}</p>
-          )}
-        </div>
       ) : (
         <div className="relative">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -133,7 +97,7 @@ const ChatOnboardingForm: React.FC<ChatOnboardingFormProps> = ({
         </div>
       )}
       
-      <Button type="submit" className="wedding-button w-full" disabled={isCreatingAccount}>
+      <Button type="submit" className="wedding-button w-full" disabled={isCreatingAccount || isTyping}>
         {isCreatingAccount ? "Creating Account..." : (isTyping ? "Thinking..." : "Send")}
         {!isCreatingAccount && !isTyping && <ArrowRight className="w-4 h-4 ml-1" />}
       </Button>

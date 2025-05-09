@@ -15,7 +15,7 @@ const VendorLogin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, checkVendorStatus } = useAuth();
   const [userType, setUserType] = useState<'couple' | 'vendor'>('vendor');
   
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,13 +26,27 @@ const VendorLogin: React.FC = () => {
     try {
       await signIn(email, password);
       
+      // After signing in, check if the user is a vendor
+      const isVendor = await checkVendorStatus();
+      
       toast({
         title: "Success",
         description: "Login successful!",
         variant: "default",
       });
       
-      navigate('/vendor-dashboard');
+      // Redirect to the appropriate dashboard based on vendor status
+      if (isVendor) {
+        navigate('/vendor-dashboard');
+      } else {
+        // If not a vendor but tried to log in as one, show a message
+        toast({
+          title: "Notice",
+          description: "You don't have a vendor account. Redirecting to user dashboard.",
+          variant: "default",
+        });
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast({
         title: "Error",

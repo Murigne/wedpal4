@@ -50,7 +50,7 @@ export const useChatOnboardingForm = (
       navigate('/dashboard', { 
         state: { 
           formData,
-          userColors: [],
+          userColors: formData.weddingColors.split(',').map(color => color.trim()),
           isNewUser: true // Flag to indicate this is a new user coming from onboarding
         } 
       });

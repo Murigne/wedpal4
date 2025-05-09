@@ -5,10 +5,19 @@ import LoginFeatures from '@/components/auth/LoginFeatures';
 import LoginForm from '@/components/auth/LoginForm';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/components/AuthProvider';
 
 const Login: React.FC = () => {
   const [userType, setUserType] = useState<'couple' | 'vendor'>('couple');
   const navigate = useNavigate();
+  const { isVendor } = useAuth();
+  
+  // Redirect vendor to vendor dashboard if they're logged in and on the couple login page
+  React.useEffect(() => {
+    if (isVendor) {
+      navigate('/vendor-dashboard');
+    }
+  }, [isVendor, navigate]);
   
   const handleUserTypeChange = (value: string) => {
     if (value === 'vendor') {

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,42 +24,30 @@ import Gifts from "./pages/Gifts";
 import MoodBoard from "./pages/MoodBoard";
 import Theme from "./pages/Theme";
 import { useState, useEffect } from "react";
-import { supabase } from "./integrations/supabase/client";
 
 // Protected route component with vendor check
 const ProtectedRoute = ({ children, vendorOnly = false }: { children: React.ReactNode, vendorOnly?: boolean }) => {
-  const { user, isLoading } = useAuth();
-  const [isVendor, setIsVendor] = useState<boolean | null>(null);
+  const { user, isLoading, isVendor, checkVendorStatus } = useAuth();
   const [checking, setChecking] = useState(true);
   
   useEffect(() => {
-    const checkVendorStatus = async () => {
+    const verifyAccess = async () => {
       if (!user) {
         setChecking(false);
         return;
       }
       
-      try {
-        const { data, error } = await supabase
-          .from('vendors')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error checking vendor status:', error);
-        }
-        
-        setIsVendor(!!data);
-      } catch (error) {
-        console.error('Error checking vendor status:', error);
-      } finally {
-        setChecking(false);
+      // If isVendor is already determined, use that value
+      // Otherwise, check the vendor status
+      if (isVendor === undefined) {
+        await checkVendorStatus();
       }
+      
+      setChecking(false);
     };
     
-    checkVendorStatus();
-  }, [user]);
+    verifyAccess();
+  }, [user, isVendor, checkVendorStatus]);
   
   // Add debug logging to understand the state
   console.log("Protected Route State:", { isLoading, checking, user: !!user, isVendor, vendorOnly });

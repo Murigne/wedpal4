@@ -9,6 +9,8 @@ type AuthContextType = {
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  isVendor?: boolean;
+  checkVendorStatus: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   signIn: async () => {},
   signOut: async () => {},
+  checkVendorStatus: async () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -25,30 +28,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isVendor, setIsVendor] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         console.log("Auth state changed:", event);
         
         // Update session and user state
         setSession(newSession);
         setUser(newSession?.user ?? null);
-        setIsLoading(false);
         
-        // Log successful sign-in for debugging
-        if (event === 'SIGNED_IN') {
-          console.log("User signed in successfully:", newSession?.user?.id);
+        // Check vendor status on login
+        if (event === 'SIGNED_IN' && newSession?.user) {
+          console.log("User signed in successfully:", newSession.user.id);
+          await checkVendorStatus();
+        } else if (event === 'SIGNED_OUT') {
+          setIsVendor(undefined);
         }
+        
+        setIsLoading(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       console.log("Initial session check:", currentSession ? "Session found" : "No session");
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
+      
+      if (currentSession?.user) {
+        await checkVendorStatus();
+      }
+      
       setIsLoading(false);
     });
 
@@ -57,6 +70,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, []);
+
+  const checkVendorStatus = async (): Promise<boolean> => {
+    if (!user) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('vendors')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+        
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking vendor status:', error);
+      }
+      
+      const vendorStatus = !!data;
+      setIsVendor(vendorStatus);
+      return vendorStatus;
+    } catch (error) {
+      console.error('Error checking vendor status:', error);
+      return false;
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -71,6 +107,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       console.log("Sign in successful:", data.user?.id);
+      
+      // Check vendor status after login
+      if (data.user) {
+        await checkVendorStatus();
+      }
+      
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -84,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await supabase.auth.signOut();
       console.log("User signed out");
+      setIsVendor(undefined);
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
@@ -92,7 +135,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      isLoading, 
+      signIn, 
+      signOut,
+      isVendor,
+      checkVendorStatus
+    }}>
       {children}
     </AuthContext.Provider>
   );
