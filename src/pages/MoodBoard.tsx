@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,20 +24,11 @@ interface MoodBoardItem {
   color?: string;
   position?: { x: number; y: number };
   rotation?: number;
-  scale?: number;
 }
 
 interface EditingItem extends Omit<MoodBoardItem, 'id'> {
   id?: string;
 }
-
-// Resize handle positions
-const RESIZE_HANDLES = {
-  TOP_LEFT: 'top-left',
-  TOP_RIGHT: 'top-right',
-  BOTTOM_LEFT: 'bottom-left',
-  BOTTOM_RIGHT: 'bottom-right'
-};
 
 const stickyNoteColors = [
   { value: 'yellow', class: 'bg-yellow-100' },
@@ -55,13 +47,6 @@ const MoodBoard = () => {
   const [scrollPos, setScrollPos] = useState({ x: 0, y: 0 });
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizeHandle, setResizeHandle] = useState<string | null>(null);
-  const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
-  const [resizeStartScale, setResizeStartScale] = useState(1);
-  const [resizingItemId, setResizingItemId] = useState<string | null>(null);
-  const [isRotating, setIsRotating] = useState(false);
-  const [rotatingItemId, setRotatingItemId] = useState<string | null>(null);
 
   const [moodBoardItems, setMoodBoardItems] = useState<MoodBoardItem[]>([
     {
@@ -70,8 +55,7 @@ const MoodBoard = () => {
       content: 'Our first vacation together',
       image: 'https://placehold.co/600x400',
       position: { x: 0, y: 0 },
-      rotation: 0,
-      scale: 1
+      rotation: 0
     },
     {
       id: '2',
@@ -81,8 +65,7 @@ const MoodBoard = () => {
       date: '2023-06-15',
       color: 'yellow',
       position: { x: 350, y: 50 },
-      rotation: -3,
-      scale: 1
+      rotation: -3
     },
     {
       id: '3',
@@ -91,8 +74,7 @@ const MoodBoard = () => {
       title: 'What I Love About You',
       color: 'pink',
       position: { x: 700, y: 100 },
-      rotation: 2,
-      scale: 1
+      rotation: 2
     },
     {
       id: '4',
@@ -100,8 +82,7 @@ const MoodBoard = () => {
       content: 'The day we got engaged',
       image: 'https://placehold.co/600x400',
       position: { x: 0, y: 450 },
-      rotation: -2,
-      scale: 1
+      rotation: -2
     },
   ]);
 
@@ -135,21 +116,6 @@ const MoodBoard = () => {
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Expanded board size - much larger for infinite scrolling
-  const boardSize = {
-    width: 20000,
-    height: 20000
-  };
-
-  // Initially center the view
-  useEffect(() => {
-    if (dragAreaRef.current) {
-      // Center the scroll area
-      dragAreaRef.current.scrollLeft = boardSize.width / 2 - window.innerWidth / 2;
-      dragAreaRef.current.scrollTop = boardSize.height / 2 - window.innerHeight / 2;
-    }
-  }, []);
-
   // Drag to scroll functionality
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start drag if not on a card
@@ -177,122 +143,38 @@ const MoodBoard = () => {
     setIsDragging(false);
   };
 
-  // Rotation handling - completely revised
+  // Rotation handling
   const startRotate = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    e.preventDefault();
     
-    const item = moodBoardItems.find(item => item.id === id);
-    if (!item || !item.position) return;
-    
-    // Find the element and get its center point
-    const itemElement = document.getElementById(`item-${id}`);
-    if (!itemElement) return;
-    
-    const rect = itemElement.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    // Calculate the starting angle
-    const startAngle = Math.atan2(
-      e.clientY - centerY,
-      e.clientX - centerX
-    );
-    
-    // Store the current rotation
-    const currentRotation = item.rotation || 0;
-    
-    setIsRotating(true);
-    setRotatingItemId(id);
-    
-    // Handle mouse move for rotation
-    const handleRotateMove = (moveEvent: MouseEvent) => {
-      // Calculate the new angle
-      const newAngle = Math.atan2(
-        moveEvent.clientY - centerY,
-        moveEvent.clientX - centerX
-      );
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const item = moodBoardItems.find(item => item.id === id);
+      if (!item || !item.position) return;
       
-      // Calculate the angle difference in radians, then convert to degrees
-      let angleDiff = (newAngle - startAngle) * (180 / Math.PI);
+      const itemRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const itemCenterX = itemRect.left + itemRect.width / 2;
+      const itemCenterY = itemRect.top + itemRect.height / 2;
       
-      // Update the item's rotation
-      setMoodBoardItems(prevItems => 
-        prevItems.map(item => 
-          item.id === id 
-            ? { ...item, rotation: currentRotation + angleDiff } 
-            : item
+      // Calculate angle between center and current mouse position
+      const angle = Math.atan2(
+        moveEvent.clientY - itemCenterY,
+        moveEvent.clientX - itemCenterX
+      ) * (180 / Math.PI);
+      
+      setMoodBoardItems(items => 
+        items.map(item => 
+          item.id === id ? { ...item, rotation: angle } : item
         )
       );
     };
     
-    // Handle mouse up for rotation
-    const handleRotateUp = () => {
-      setIsRotating(false);
-      setRotatingItemId(null);
-      document.removeEventListener('mousemove', handleRotateMove);
-      document.removeEventListener('mouseup', handleRotateUp);
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
     
-    document.addEventListener('mousemove', handleRotateMove);
-    document.addEventListener('mouseup', handleRotateUp);
-  };
-
-  // New resize handler
-  const startResize = (e: React.MouseEvent, id: string, handle: string) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    const item = moodBoardItems.find(item => item.id === id);
-    if (!item) return;
-    
-    setIsResizing(true);
-    setResizingItemId(id);
-    setResizeHandle(handle);
-    setResizeStartPos({ x: e.clientX, y: e.clientY });
-    setResizeStartScale(item.scale || 1);
-    
-    const handleResizeMove = (moveEvent: MouseEvent) => {
-      // Calculate the distance moved
-      const dx = moveEvent.clientX - resizeStartPos.x;
-      const dy = moveEvent.clientY - resizeStartPos.y;
-      
-      // Calculate direction based on which handle was grabbed
-      let direction = 1;
-      if (handle === RESIZE_HANDLES.TOP_LEFT || handle === RESIZE_HANDLES.BOTTOM_LEFT) {
-        direction = -1;
-      }
-      
-      // Determine the distance moved diagonally (positive or negative based on handle)
-      const distance = direction * Math.max(Math.abs(dx), Math.abs(dy));
-      
-      // Scale factor - adjust the sensitivity as needed
-      const scalingFactor = 0.003;
-      const scaleChange = 1 + (distance * scalingFactor);
-      
-      // Calculate the new scale with bounds
-      const newScale = Math.max(0.5, Math.min(3.0, resizeStartScale * scaleChange));
-      
-      // Update the item's scale
-      setMoodBoardItems(prevItems => 
-        prevItems.map(item => 
-          item.id === id 
-            ? { ...item, scale: newScale } 
-            : item
-        )
-      );
-    };
-    
-    const handleResizeUp = () => {
-      setIsResizing(false);
-      setResizingItemId(null);
-      setResizeHandle(null);
-      document.removeEventListener('mousemove', handleResizeMove);
-      document.removeEventListener('mouseup', handleResizeUp);
-    };
-    
-    document.addEventListener('mousemove', handleResizeMove);
-    document.addEventListener('mouseup', handleResizeUp);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   // Handle image upload
@@ -402,10 +284,7 @@ const MoodBoard = () => {
           description: "Your memory has been updated on the mood board"
         });
       } else {
-        // Add new item - place near the center of current view
-        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
-        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
-        
+        // Add new item
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -415,12 +294,8 @@ const MoodBoard = () => {
             title: newMemory.title,
             date: newMemory.date,
             color: newMemory.color,
-            position: { 
-              x: centerX - 150 + Math.random() * 300,
-              y: centerY - 150 + Math.random() * 300
-            },
-            rotation: Math.random() * 6 - 3,
-            scale: 1
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
           }
         ]);
         toast({
@@ -460,10 +335,7 @@ const MoodBoard = () => {
           description: "Your love note has been updated on the mood board"
         });
       } else {
-        // Add new item - place near the center of current view
-        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
-        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
-        
+        // Add new item
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -472,12 +344,8 @@ const MoodBoard = () => {
             content: newLoveNote.content,
             title: newLoveNote.title,
             color: newLoveNote.color,
-            position: { 
-              x: centerX - 150 + Math.random() * 300,
-              y: centerY - 150 + Math.random() * 300
-            },
-            rotation: Math.random() * 6 - 3,
-            scale: 1
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
           }
         ]);
         toast({
@@ -516,10 +384,7 @@ const MoodBoard = () => {
           description: "Your photo has been updated on the mood board"
         });
       } else {
-        // Add new item - place near the center of current view
-        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
-        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
-        
+        // Add new item
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -527,12 +392,8 @@ const MoodBoard = () => {
             type: 'image',
             content: newPhoto.content,
             image: newPhoto.image,
-            position: { 
-              x: centerX - 150 + Math.random() * 300,
-              y: centerY - 150 + Math.random() * 300
-            },
-            rotation: Math.random() * 6 - 3,
-            scale: 1
+            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            rotation: Math.random() * 6 - 3
           }
         ]);
         toast({
@@ -562,11 +423,32 @@ const MoodBoard = () => {
   };
 
   const handleDragEnd = (id: string, position: { x: number, y: number }) => {
-    setMoodBoardItems(
-      moodBoardItems.map(item => 
-        item.id === id ? { ...item, position } : item
-      )
-    );
+    // Ensure position is within the bounds of the mood board
+    if (moodBoardRef.current) {
+      const boardRect = moodBoardRef.current.getBoundingClientRect();
+      const item = moodBoardItems.find(item => item.id === id);
+      
+      if (item) {
+        // Estimate item size (this would ideally be dynamic based on the actual item)
+        const itemWidth = item.type === 'image' ? 256 : 256; // Card width
+        const itemHeight = item.type === 'image' ? 200 : 256; // Approximate height
+        
+        // Calculate bounds
+        const maxX = boardRect.width - itemWidth;
+        const maxY = boardRect.height - itemHeight;
+        
+        // Constrain position
+        const constrainedX = Math.max(0, Math.min(position.x, maxX));
+        const constrainedY = Math.max(0, Math.min(position.y, maxY));
+        
+        // Update position in state
+        setMoodBoardItems(
+          moodBoardItems.map(item => 
+            item.id === id ? { ...item, position: { x: constrainedX, y: constrainedY } } : item
+          )
+        );
+      }
+    }
   };
 
   const getStickyNoteClass = (color: string = 'yellow') => {
@@ -579,22 +461,6 @@ const MoodBoard = () => {
     setEditingItem(null);
   };
 
-  // Get resize handle cursor styles based on handle position
-  const getResizeHandleCursor = (handle: string) => {
-    switch (handle) {
-      case RESIZE_HANDLES.TOP_LEFT:
-        return 'cursor-nwse-resize';
-      case RESIZE_HANDLES.TOP_RIGHT:
-        return 'cursor-nesw-resize';
-      case RESIZE_HANDLES.BOTTOM_LEFT:
-        return 'cursor-nesw-resize';
-      case RESIZE_HANDLES.BOTTOM_RIGHT:
-        return 'cursor-nwse-resize';
-      default:
-        return 'cursor-nwse-resize';
-    }
-  };
-
   return (
     <PageLayout 
       title="Mood Board" 
@@ -603,8 +469,8 @@ const MoodBoard = () => {
     >
       <div 
         ref={moodBoardRef}
-        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" 
-        style={{ minHeight: '500px', cursor: isDragging ? 'grabbing' : 'grab' }}
+        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden cursor-grab" 
+        style={{ minHeight: '500px' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -613,29 +479,18 @@ const MoodBoard = () => {
         <div 
           ref={dragAreaRef}
           className="h-full w-full overflow-auto no-scrollbar"
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
-          <div 
-            className="relative"
-            style={{
-              width: `${boardSize.width}px`,
-              height: `${boardSize.height}px`
-            }}
-          >
+          <div className="min-w-full min-h-full w-[2000px] h-[1500px] relative">
             {/* Draggable Items */}
             {moodBoardItems.map((item) => (
               <motion.div
                 key={item.id}
-                id={`item-${item.id}`}
                 className="absolute mood-board-item"
                 initial={{ 
                   x: item.position?.x || 0, 
                   y: item.position?.y || 0,
-                  rotate: item.rotation || 0,
-                  scale: item.scale || 1
-                }}
-                animate={{
-                  rotate: item.rotation || 0,
-                  scale: item.scale || 1
+                  rotate: item.rotation || 0
                 }}
                 drag
                 dragMomentum={false}
@@ -646,22 +501,12 @@ const MoodBoard = () => {
                   };
                   handleDragEnd(item.id, position);
                 }}
-                style={{ 
-                  transformOrigin: 'center', 
-                  rotate: item.rotation || 0, 
-                  scale: item.scale || 1,
-                  zIndex: (rotatingItemId === item.id || resizingItemId === item.id) ? 10 : 1
-                }}
+                dragConstraints={moodBoardRef}
+                style={{ rotate: item.rotation || 0 }}
               >
                 {item.type === 'image' ? (
-                  <Card 
-                    className="overflow-hidden shadow-lg relative group"
-                    style={{ width: `${256}px` }} // Base width
-                  >
-                    <div 
-                      className="overflow-hidden" 
-                      style={{ height: `${160}px` }} // Base height for image container
-                    >
+                  <Card className="w-64 overflow-hidden shadow-lg relative group">
+                    <div className="h-40 overflow-hidden">
                       <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                     </div>
                     <CardContent className="p-3">
@@ -679,44 +524,16 @@ const MoodBoard = () => {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </CardFooter>
-                    
                     {/* Rotation handle */}
                     <div 
-                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-alias transition-opacity"
+                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
                       onMouseDown={(e) => startRotate(e, item.id)}
-                      title="Rotate"
                     >
                       <RotateCcw className="w-3 h-3 text-gray-600" />
                     </div>
-                    
-                    {/* Resize handles - all four corners */}
-                    <div 
-                      className={`absolute top-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_LEFT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_LEFT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
-                    </div>
-                    <div 
-                      className={`absolute top-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_RIGHT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_RIGHT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
-                    </div>
-                    <div 
-                      className={`absolute bottom-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.BOTTOM_RIGHT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.BOTTOM_RIGHT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
-                    </div>
                   </Card>
                 ) : (
-                  <div 
-                    className={`p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}
-                    style={{ width: `${256}px`, height: `${256}px` }} // Base dimensions
-                  >
+                  <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}>
                     <div className="absolute top-2 right-2 flex gap-1">
                       <Button size="sm" variant="ghost" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity" 
                         onClick={() => editItem(item)}>
@@ -740,38 +557,16 @@ const MoodBoard = () => {
                       </p>
                     )}
                     
-                    <Badge className="absolute bottom-2 left-2 bg-opacity-70">Memory</Badge>
+                    <Badge className="absolute bottom-2 right-2" variant="outline">
+                      {item.type === 'memory' ? 'Memory' : 'Love Note'}
+                    </Badge>
                     
-                    {/* Rotation handle for memory/love note */}
+                    {/* Rotation handle */}
                     <div 
-                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-alias transition-opacity"
+                      className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
                       onMouseDown={(e) => startRotate(e, item.id)}
-                      title="Rotate"
                     >
                       <RotateCcw className="w-3 h-3 text-gray-600" />
-                    </div>
-                    
-                    {/* Resize handles for memory/love note */}
-                    <div 
-                      className={`absolute top-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_LEFT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_LEFT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
-                    </div>
-                    <div 
-                      className={`absolute top-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_RIGHT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_RIGHT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
-                    </div>
-                    <div 
-                      className={`absolute bottom-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.BOTTOM_RIGHT)} transition-opacity`}
-                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.BOTTOM_RIGHT)}
-                      title="Resize"
-                    >
-                      <Plus className="w-3 h-3 text-gray-600" />
                     </div>
                   </div>
                 )}
@@ -779,222 +574,231 @@ const MoodBoard = () => {
             ))}
           </div>
         </div>
+
+        {/* Floating Action Button */}
+        <div className="absolute bottom-6 right-6 z-50">
+          <Popover open={isFabOpen} onOpenChange={setIsFabOpen}>
+            <PopoverTrigger asChild>
+              <Button 
+                size="icon" 
+                className="h-14 w-14 rounded-full shadow-lg bg-pink-500 hover:bg-pink-600 text-white"
+              >
+                <Plus className="w-6 h-6" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="top" className="w-auto p-1">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-blue-100 hover:bg-blue-200 border-blue-300" 
+                  title="Add Photo"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddPhotoForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewPhoto({ content: '', image: '' });
+                  }}
+                >
+                  <Upload className="h-5 w-5 text-blue-800" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-green-100 hover:bg-green-200 border-green-300" 
+                  title="Add Memory"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddMemoryForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewMemory({ title: '', date: '', content: '', color: 'yellow' });
+                  }}
+                >
+                  <MessageSquare className="h-5 w-5 text-green-800" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-full h-12 w-12 bg-pink-100 hover:bg-pink-200 border-pink-300" 
+                  title="Add Love Note"
+                  onClick={() => {
+                    setIsFabOpen(false);
+                    setShowAddLoveNoteForm(true);
+                    setIsEditingItem(false);
+                    setEditingItem(null);
+                    setNewLoveNote({ title: '', content: '', color: 'pink' });
+                  }}
+                >
+                  <StickyNote className="h-5 w-5 text-pink-800" />
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
-      
-      {/* Add Memory Dialog */}
-      <Dialog open={showAddMemoryForm} onOpenChange={setShowAddMemoryForm}>
+
+      {/* Add/Edit Memory Form Dialog */}
+      <Dialog open={showAddMemoryForm} onOpenChange={(open) => {
+        setShowAddMemoryForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>{isEditingItem ? "Edit Memory" : "Add New Memory"}</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Memory" : "Add a Memory"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="memory-title">Title</Label>
-              <Input
-                id="memory-title"
+          <div className="space-y-4">
+            <div>
+              <Label className="block text-sm font-medium mb-1">Title</Label>
+              <Input 
+                placeholder="Our First Date" 
                 value={newMemory.title}
                 onChange={(e) => setNewMemory({...newMemory, title: e.target.value})}
-                placeholder="Write a title for this memory..."
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="memory-date">Date</Label>
-              <Input
-                id="memory-date"
-                type="date"
+            <div>
+              <Label className="block text-sm font-medium mb-1">Date (Optional)</Label>
+              <Input 
+                type="date" 
                 value={newMemory.date}
                 onChange={(e) => setNewMemory({...newMemory, date: e.target.value})}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="memory-content">Memory</Label>
-              <Textarea
-                id="memory-content"
+            <div>
+              <Label className="block text-sm font-medium mb-1">Memory</Label>
+              <Textarea 
+                placeholder="Write your memory here..." 
+                className="min-h-[100px]"
                 value={newMemory.content}
                 onChange={(e) => setNewMemory({...newMemory, content: e.target.value})}
-                placeholder="Write about this special memory..."
-                rows={5}
               />
             </div>
-            <div className="grid gap-2">
-              <Label>Color</Label>
-              <RadioGroup
-                value={newMemory.color}
+            <div>
+              <Label className="block text-sm font-medium mb-1">Sticky Note Color</Label>
+              <RadioGroup 
+                value={newMemory.color} 
                 onValueChange={(value) => setNewMemory({...newMemory, color: value})}
-                className="flex gap-2 flex-wrap"
+                className="flex gap-3"
               >
-                {stickyNoteColors.map(color => (
-                  <div key={color.value} className="flex items-center space-x-1">
-                    <RadioGroupItem value={color.value} id={`color-${color.value}`} />
-                    <Label htmlFor={`color-${color.value}`} className="flex gap-2 items-center cursor-pointer">
-                      <div className={`w-4 h-4 rounded-full ${color.class}`}></div>
-                      <span className="capitalize">{color.value}</span>
-                    </Label>
+                {stickyNoteColors.map((color) => (
+                  <div key={color.value} className="flex items-center space-x-2">
+                    <RadioGroupItem 
+                      value={color.value} 
+                      id={`color-${color.value}-memory`} 
+                      className={color.class}
+                    />
+                    <Label htmlFor={`color-${color.value}-memory`} className="capitalize">{color.value}</Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
+            <Button onClick={addOrUpdateMemory}>{isEditingItem ? "Update Memory" : "Add Memory"}</Button>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
-            <Button onClick={addOrUpdateMemory}>{isEditingItem ? "Update" : "Add"} Memory</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
-      
-      {/* Add Love Note Dialog */}
-      <Dialog open={showAddLoveNoteForm} onOpenChange={setShowAddLoveNoteForm}>
+
+      {/* Add/Edit Love Note Form Dialog */}
+      <Dialog open={showAddLoveNoteForm} onOpenChange={(open) => {
+        setShowAddLoveNoteForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>{isEditingItem ? "Edit Love Note" : "Add Love Note"}</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Love Note" : "Add a Love Note"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="note-title">Title</Label>
-              <Input
-                id="note-title"
+          <div className="space-y-4">
+            <div>
+              <Label className="block text-sm font-medium mb-1">Title</Label>
+              <Input 
+                placeholder="What I Love About You" 
                 value={newLoveNote.title}
                 onChange={(e) => setNewLoveNote({...newLoveNote, title: e.target.value})}
-                placeholder="Write a title for this note..."
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="note-content">Message</Label>
-              <Textarea
-                id="note-content"
+            <div>
+              <Label className="block text-sm font-medium mb-1">Note</Label>
+              <Textarea 
+                placeholder="Write your love note here..." 
+                className="min-h-[100px]"
                 value={newLoveNote.content}
                 onChange={(e) => setNewLoveNote({...newLoveNote, content: e.target.value})}
-                placeholder="Write a sweet message..."
-                rows={5}
               />
             </div>
-            <div className="grid gap-2">
-              <Label>Color</Label>
-              <RadioGroup
-                value={newLoveNote.color}
+            <div>
+              <Label className="block text-sm font-medium mb-1">Sticky Note Color</Label>
+              <RadioGroup 
+                value={newLoveNote.color} 
                 onValueChange={(value) => setNewLoveNote({...newLoveNote, color: value})}
-                className="flex gap-2 flex-wrap"
+                className="flex gap-3"
               >
-                {stickyNoteColors.map(color => (
-                  <div key={color.value} className="flex items-center space-x-1">
-                    <RadioGroupItem value={color.value} id={`note-color-${color.value}`} />
-                    <Label htmlFor={`note-color-${color.value}`} className="flex gap-2 items-center cursor-pointer">
-                      <div className={`w-4 h-4 rounded-full ${color.class}`}></div>
-                      <span className="capitalize">{color.value}</span>
-                    </Label>
+                {stickyNoteColors.map((color) => (
+                  <div key={color.value} className="flex items-center space-x-2">
+                    <RadioGroupItem 
+                      value={color.value} 
+                      id={`color-${color.value}-note`} 
+                      className={color.class}
+                    />
+                    <Label htmlFor={`color-${color.value}-note`} className="capitalize">{color.value}</Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
+            <Button onClick={addOrUpdateLoveNote}>{isEditingItem ? "Update Love Note" : "Add Love Note"}</Button>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
-            <Button onClick={addOrUpdateLoveNote}>{isEditingItem ? "Update" : "Add"} Love Note</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
-      
-      {/* Add Photo Dialog */}
-      <Dialog open={showAddPhotoForm} onOpenChange={setShowAddPhotoForm}>
+
+      {/* Add/Edit Photo Form Dialog */}
+      <Dialog open={showAddPhotoForm} onOpenChange={(open) => {
+        setShowAddPhotoForm(open);
+        if (!open) handleDialogClose();
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>{isEditingItem ? "Edit Photo" : "Add Photo"}</DialogTitle>
+            <DialogTitle>{isEditingItem ? "Edit Photo" : "Add a Photo"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            {newPhoto.image ? (
-              <div className="relative w-full aspect-[3/2] overflow-hidden rounded-md mb-4">
-                <img src={newPhoto.image} alt="Preview" className="w-full h-full object-cover" />
-                <Button 
-                  variant="destructive" 
-                  size="sm"
-                  className="absolute top-2 right-2"
-                  onClick={() => setNewPhoto({...newPhoto, image: ''})}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div 
-                className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-500">Click to upload an image</p>
-                <input 
-                  ref={fileInputRef}
+          <div className="space-y-4">
+            <div>
+              <Label className="block text-sm font-medium mb-1">Upload Photo</Label>
+              <div className="grid gap-2">
+                <Input 
                   type="file" 
                   accept="image/*" 
-                  className="hidden"
+                  ref={fileInputRef}
                   onChange={handleImageUpload}
                 />
+                {(isEditingItem ? editingItem?.image : newPhoto.image) && (
+                  <div className="relative h-40 mt-2 rounded-md overflow-hidden">
+                    <img 
+                      src={isEditingItem && editingItem?.image ? editingItem.image : newPhoto.image} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
               </div>
-            )}
-            <div className="grid gap-2">
-              <Label htmlFor="photo-caption">Caption</Label>
-              <Input
-                id="photo-caption"
-                value={newPhoto.content}
-                onChange={(e) => setNewPhoto({...newPhoto, content: e.target.value})}
-                placeholder="Write a caption for this photo..."
+            </div>
+            <div>
+              <Label className="block text-sm font-medium mb-1">Caption</Label>
+              <Input 
+                placeholder="Add a caption for your photo" 
+                value={isEditingItem && editingItem?.content ? editingItem.content : newPhoto.content}
+                onChange={(e) => isEditingItem && editingItem 
+                  ? setEditingItem({...editingItem, content: e.target.value})
+                  : setNewPhoto({...newPhoto, content: e.target.value})
+                }
               />
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
-            <Button onClick={addOrUpdatePhoto} disabled={!newPhoto.image || !newPhoto.content}>
-              {isEditingItem ? "Update" : "Add"} Photo
+            <Button 
+              onClick={addOrUpdatePhoto} 
+              disabled={(isEditingItem ? !(editingItem?.image && editingItem?.content) : !(newPhoto.image && newPhoto.content))}
+            >
+              {isEditingItem ? "Update Photo" : "Add Photo"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
-      
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Popover open={isFabOpen} onOpenChange={setIsFabOpen}>
-          <PopoverTrigger asChild>
-            <Button size="lg" className="rounded-full w-14 h-14 shadow-lg">
-              <Plus className="h-6 w-6" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent side="top" className="w-64">
-            <div className="grid gap-3">
-              <Button 
-                className="justify-start" 
-                variant="ghost"
-                onClick={() => {
-                  setIsFabOpen(false);
-                  setShowAddMemoryForm(true);
-                }}
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Add Memory
-              </Button>
-              <Button 
-                className="justify-start" 
-                variant="ghost"
-                onClick={() => {
-                  setIsFabOpen(false);
-                  setShowAddLoveNoteForm(true);
-                }}
-              >
-                <Heart className="mr-2 h-5 w-5" />
-                Add Love Note
-              </Button>
-              <Button 
-                className="justify-start" 
-                variant="ghost"
-                onClick={() => {
-                  setIsFabOpen(false);
-                  setShowAddPhotoForm(true);
-                }}
-              >
-                <Image className="mr-2 h-5 w-5" />
-                Add Photo
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
     </PageLayout>
   );
 };
