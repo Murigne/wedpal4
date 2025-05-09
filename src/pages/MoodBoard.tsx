@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote, RotateCcw } from 'lucide-react';
+import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -48,13 +48,19 @@ const MoodBoard = () => {
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
 
+  // Expanded board size for infinite scrolling
+  const boardSize = {
+    width: 10000,
+    height: 10000
+  };
+
   const [moodBoardItems, setMoodBoardItems] = useState<MoodBoardItem[]>([
     {
       id: '1',
       type: 'image',
       content: 'Our first vacation together',
       image: 'https://placehold.co/600x400',
-      position: { x: 0, y: 0 },
+      position: { x: boardSize.width/2 - 500, y: boardSize.height/2 - 300 },
       rotation: 0
     },
     {
@@ -64,7 +70,7 @@ const MoodBoard = () => {
       title: 'Our First Date',
       date: '2023-06-15',
       color: 'yellow',
-      position: { x: 350, y: 50 },
+      position: { x: boardSize.width/2 - 150, y: boardSize.height/2 - 250 },
       rotation: -3
     },
     {
@@ -73,7 +79,7 @@ const MoodBoard = () => {
       content: "Your kindness and compassion for others always inspires me to be a better person. I love how you see the best in everyone and everything.",
       title: 'What I Love About You',
       color: 'pink',
-      position: { x: 700, y: 100 },
+      position: { x: boardSize.width/2 + 200, y: boardSize.height/2 - 200 },
       rotation: 2
     },
     {
@@ -81,7 +87,7 @@ const MoodBoard = () => {
       type: 'image',
       content: 'The day we got engaged',
       image: 'https://placehold.co/600x400',
-      position: { x: 0, y: 450 },
+      position: { x: boardSize.width/2 - 500, y: boardSize.height/2 + 150 },
       rotation: -2
     },
   ]);
@@ -116,6 +122,15 @@ const MoodBoard = () => {
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Center the view on initial load
+  React.useEffect(() => {
+    if (dragAreaRef.current) {
+      // Center the scroll area to the middle of the board
+      dragAreaRef.current.scrollLeft = boardSize.width / 2 - window.innerWidth / 2;
+      dragAreaRef.current.scrollTop = boardSize.height / 2 - window.innerHeight / 2;
+    }
+  }, []);
+
   // Drag to scroll functionality
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start drag if not on a card
@@ -141,40 +156,6 @@ const MoodBoard = () => {
 
   const handleMouseUp = () => {
     setIsDragging(false);
-  };
-
-  // Rotation handling
-  const startRotate = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const item = moodBoardItems.find(item => item.id === id);
-      if (!item || !item.position) return;
-      
-      const itemRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      const itemCenterX = itemRect.left + itemRect.width / 2;
-      const itemCenterY = itemRect.top + itemRect.height / 2;
-      
-      // Calculate angle between center and current mouse position
-      const angle = Math.atan2(
-        moveEvent.clientY - itemCenterY,
-        moveEvent.clientX - itemCenterX
-      ) * (180 / Math.PI);
-      
-      setMoodBoardItems(items => 
-        items.map(item => 
-          item.id === id ? { ...item, rotation: angle } : item
-        )
-      );
-    };
-    
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
   };
 
   // Handle image upload
@@ -284,7 +265,10 @@ const MoodBoard = () => {
           description: "Your memory has been updated on the mood board"
         });
       } else {
-        // Add new item
+        // Add new item - place near the center of current view
+        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
+        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
+        
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -294,7 +278,10 @@ const MoodBoard = () => {
             title: newMemory.title,
             date: newMemory.date,
             color: newMemory.color,
-            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            position: { 
+              x: centerX - 150 + Math.random() * 300,
+              y: centerY - 150 + Math.random() * 300
+            },
             rotation: Math.random() * 6 - 3
           }
         ]);
@@ -335,7 +322,10 @@ const MoodBoard = () => {
           description: "Your love note has been updated on the mood board"
         });
       } else {
-        // Add new item
+        // Add new item - place near the center of current view
+        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
+        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
+        
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -344,7 +334,10 @@ const MoodBoard = () => {
             content: newLoveNote.content,
             title: newLoveNote.title,
             color: newLoveNote.color,
-            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            position: { 
+              x: centerX - 150 + Math.random() * 300,
+              y: centerY - 150 + Math.random() * 300
+            },
             rotation: Math.random() * 6 - 3
           }
         ]);
@@ -384,7 +377,10 @@ const MoodBoard = () => {
           description: "Your photo has been updated on the mood board"
         });
       } else {
-        // Add new item
+        // Add new item - place near the center of current view
+        const centerX = dragAreaRef.current ? dragAreaRef.current.scrollLeft + dragAreaRef.current.clientWidth / 2 : boardSize.width / 2;
+        const centerY = dragAreaRef.current ? dragAreaRef.current.scrollTop + dragAreaRef.current.clientHeight / 2 : boardSize.height / 2;
+        
         setMoodBoardItems([
           ...moodBoardItems,
           {
@@ -392,7 +388,10 @@ const MoodBoard = () => {
             type: 'image',
             content: newPhoto.content,
             image: newPhoto.image,
-            position: { x: Math.random() * 300, y: Math.random() * 300 },
+            position: { 
+              x: centerX - 150 + Math.random() * 300,
+              y: centerY - 150 + Math.random() * 300
+            },
             rotation: Math.random() * 6 - 3
           }
         ]);
@@ -424,31 +423,11 @@ const MoodBoard = () => {
 
   const handleDragEnd = (id: string, position: { x: number, y: number }) => {
     // Ensure position is within the bounds of the mood board
-    if (moodBoardRef.current) {
-      const boardRect = moodBoardRef.current.getBoundingClientRect();
-      const item = moodBoardItems.find(item => item.id === id);
-      
-      if (item) {
-        // Estimate item size (this would ideally be dynamic based on the actual item)
-        const itemWidth = item.type === 'image' ? 256 : 256; // Card width
-        const itemHeight = item.type === 'image' ? 200 : 256; // Approximate height
-        
-        // Calculate bounds
-        const maxX = boardRect.width - itemWidth;
-        const maxY = boardRect.height - itemHeight;
-        
-        // Constrain position
-        const constrainedX = Math.max(0, Math.min(position.x, maxX));
-        const constrainedY = Math.max(0, Math.min(position.y, maxY));
-        
-        // Update position in state
-        setMoodBoardItems(
-          moodBoardItems.map(item => 
-            item.id === id ? { ...item, position: { x: constrainedX, y: constrainedY } } : item
-          )
-        );
-      }
-    }
+    setMoodBoardItems(
+      moodBoardItems.map(item => 
+        item.id === id ? { ...item, position } : item
+      )
+    );
   };
 
   const getStickyNoteClass = (color: string = 'yellow') => {
@@ -481,7 +460,7 @@ const MoodBoard = () => {
           className="h-full w-full overflow-auto no-scrollbar"
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
-          <div className="min-w-full min-h-full w-[2000px] h-[1500px] relative">
+          <div className="relative" style={{ width: `${boardSize.width}px`, height: `${boardSize.height}px` }}>
             {/* Draggable Items */}
             {moodBoardItems.map((item) => (
               <motion.div
@@ -501,12 +480,11 @@ const MoodBoard = () => {
                   };
                   handleDragEnd(item.id, position);
                 }}
-                dragConstraints={moodBoardRef}
                 style={{ rotate: item.rotation || 0 }}
               >
                 {item.type === 'image' ? (
                   <Card className="w-64 overflow-hidden shadow-lg relative group">
-                    <div className="h-40 overflow-hidden">
+                    <div className="h-40 overflow-hidden drag-handle" style={{ cursor: 'grab' }}>
                       <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                     </div>
                     <CardContent className="p-3">
@@ -517,20 +495,11 @@ const MoodBoard = () => {
                         onClick={() => editItem(item)}>
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                        <Heart className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" 
+                        onClick={() => deleteItem(item.id)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </CardFooter>
-                    {/* Rotation handle */}
-                    <div 
-                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
-                      onMouseDown={(e) => startRotate(e, item.id)}
-                    >
-                      <RotateCcw className="w-3 h-3 text-gray-600" />
-                    </div>
                   </Card>
                 ) : (
                   <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}>
@@ -539,7 +508,8 @@ const MoodBoard = () => {
                         onClick={() => editItem(item)}>
                         <Edit className="w-3 h-3" />
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500" onClick={() => deleteItem(item.id)}>
+                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" 
+                        onClick={() => deleteItem(item.id)}>
                         <Trash2 className="w-3 h-3" />
                       </Button>
                     </div>
@@ -560,14 +530,6 @@ const MoodBoard = () => {
                     <Badge className="absolute bottom-2 right-2" variant="outline">
                       {item.type === 'memory' ? 'Memory' : 'Love Note'}
                     </Badge>
-                    
-                    {/* Rotation handle */}
-                    <div 
-                      className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
-                      onMouseDown={(e) => startRotate(e, item.id)}
-                    >
-                      <RotateCcw className="w-3 h-3 text-gray-600" />
-                    </div>
                   </div>
                 )}
               </motion.div>
