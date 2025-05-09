@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ChatMessage from '../ChatMessage';
+import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '../AuthProvider';
 import SparkleAnimation from '../SparkleAnimation';
 import { useChatOnboardingState } from './useChatOnboardingState';
@@ -151,12 +151,19 @@ const ChatOnboardingContainer: React.FC = () => {
         moveToNextQuestion();
       }, 8000);
     } else if (currentStep === QUESTIONS.length - 1) {
-      // Final question answered - go straight to dashboard
+      // Final question (wedding colors) answered - go straight to dashboard
       setTimeout(() => {
         setMessages(prev => [...prev, { 
           content: "Thanks for all your information! Creating your personalized dashboard...", 
           sender: 'ai' 
         }]);
+        
+        toast({
+          title: "Welcome to your wedding dashboard!",
+          description: "We've created your personalized wedding experience.",
+          duration: 3000,
+        });
+        
         createAccount();
       }, 500);
     } else {

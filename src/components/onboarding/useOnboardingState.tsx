@@ -96,41 +96,6 @@ export const useOnboardingState = () => {
         }
         return undefined;
       }
-    },
-    {
-      message: (formData) => `Now, let's create your account. What email would you like to use?`,
-      field: "email",
-      placeholder: "you@example.com",
-      icon: <Mail className="h-4 w-4 text-wedding-pink" />,
-      validation: (value) => {
-        if (!value) {
-          return "Email is required";
-        }
-        
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-          return "Please enter a valid email";
-        }
-        
-        return undefined;
-      }
-    },
-    {
-      message: "Almost done! Create a password for your account.",
-      field: "password",
-      placeholder: "Create a secure password",
-      icon: <Lock className="h-4 w-4 text-wedding-pink" />,
-      validation: (value) => {
-        if (!value) {
-          return "Password is required";
-        }
-        
-        if (value.length < 8) {
-          return "Password must be at least 8 characters";
-        }
-        
-        return undefined;
-      }
     }
   ];
   
