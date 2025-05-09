@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Image, Upload, Heart, Plus, X, MessageSquare, Edit, Trash2, StickyNote, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ interface MoodBoardItem {
   color?: string;
   position?: { x: number; y: number };
   rotation?: number;
+  scale?: number;
 }
 
 interface EditingItem extends Omit<MoodBoardItem, 'id'> {
@@ -47,6 +48,10 @@ const MoodBoard = () => {
   const [scrollPos, setScrollPos] = useState({ x: 0, y: 0 });
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<EditingItem | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
+  const [resizeStartScale, setResizeStartScale] = useState(1);
+  const [resizingItemId, setResizingItemId] = useState<string | null>(null);
 
   const [moodBoardItems, setMoodBoardItems] = useState<MoodBoardItem[]>([
     {
@@ -55,7 +60,8 @@ const MoodBoard = () => {
       content: 'Our first vacation together',
       image: 'https://placehold.co/600x400',
       position: { x: 0, y: 0 },
-      rotation: 0
+      rotation: 0,
+      scale: 1
     },
     {
       id: '2',
@@ -65,7 +71,8 @@ const MoodBoard = () => {
       date: '2023-06-15',
       color: 'yellow',
       position: { x: 350, y: 50 },
-      rotation: -3
+      rotation: -3,
+      scale: 1
     },
     {
       id: '3',
@@ -74,7 +81,8 @@ const MoodBoard = () => {
       title: 'What I Love About You',
       color: 'pink',
       position: { x: 700, y: 100 },
-      rotation: 2
+      rotation: 2,
+      scale: 1
     },
     {
       id: '4',
@@ -82,7 +90,8 @@ const MoodBoard = () => {
       content: 'The day we got engaged',
       image: 'https://placehold.co/600x400',
       position: { x: 0, y: 450 },
-      rotation: -2
+      rotation: -2,
+      scale: 1
     },
   ]);
 
@@ -116,6 +125,12 @@ const MoodBoard = () => {
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Expanded board size
+  const boardSize = {
+    width: 10000,
+    height: 10000
+  };
+
   // Drag to scroll functionality
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start drag if not on a card
@@ -147,28 +162,86 @@ const MoodBoard = () => {
   const startRotate = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     
+    const item = moodBoardItems.find(item => item.id === id);
+    if (!item || !item.position) return;
+    
+    // Get the center of the item for rotation calculation
+    const itemElement = (e.currentTarget as HTMLElement).closest('.mood-board-item');
+    if (!itemElement) return;
+    
+    const itemRect = itemElement.getBoundingClientRect();
+    const itemCenterX = itemRect.left + itemRect.width / 2;
+    const itemCenterY = itemRect.top + itemRect.height / 2;
+    
+    // Calculate initial angle
+    const initialAngle = Math.atan2(
+      e.clientY - itemCenterY,
+      e.clientX - itemCenterX
+    ) * (180 / Math.PI);
+    
+    const initialRotation = item.rotation || 0;
+    
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const item = moodBoardItems.find(item => item.id === id);
-      if (!item || !item.position) return;
-      
-      const itemRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      const itemCenterX = itemRect.left + itemRect.width / 2;
-      const itemCenterY = itemRect.top + itemRect.height / 2;
-      
-      // Calculate angle between center and current mouse position
-      const angle = Math.atan2(
+      // Calculate new angle
+      const newAngle = Math.atan2(
         moveEvent.clientY - itemCenterY,
         moveEvent.clientX - itemCenterX
       ) * (180 / Math.PI);
       
+      // Calculate rotation difference
+      const angleDiff = newAngle - initialAngle;
+      
+      // Update item rotation
       setMoodBoardItems(items => 
         items.map(item => 
-          item.id === id ? { ...item, rotation: angle } : item
+          item.id === id ? { ...item, rotation: initialRotation + angleDiff } : item
         )
       );
     };
     
     const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Resize handling
+  const startResize = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    
+    const item = moodBoardItems.find(item => item.id === id);
+    if (!item) return;
+    
+    setIsResizing(true);
+    setResizingItemId(id);
+    setResizeStartPos({ x: e.clientX, y: e.clientY });
+    setResizeStartScale(item.scale || 1);
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      // Calculate distance moved from start position
+      const dx = moveEvent.clientX - resizeStartPos.x;
+      const dy = moveEvent.clientY - resizeStartPos.y;
+      
+      // Use the greater of dx or dy to maintain aspect ratio
+      // Convert to scale factor (0.005 controls sensitivity of resize)
+      const scaleFactor = 1 + Math.max(Math.abs(dx), Math.abs(dy)) * 0.005 * (dx > 0 || dy > 0 ? 1 : -1);
+      
+      // Apply new scale, with min/max limits
+      const newScale = Math.max(0.5, Math.min(2.5, resizeStartScale * scaleFactor));
+      
+      setMoodBoardItems(items => 
+        items.map(item => 
+          item.id === id ? { ...item, scale: newScale } : item
+        )
+      );
+    };
+    
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      setResizingItemId(null);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -295,7 +368,8 @@ const MoodBoard = () => {
             date: newMemory.date,
             color: newMemory.color,
             position: { x: Math.random() * 300, y: Math.random() * 300 },
-            rotation: Math.random() * 6 - 3
+            rotation: Math.random() * 6 - 3,
+            scale: 1
           }
         ]);
         toast({
@@ -345,7 +419,8 @@ const MoodBoard = () => {
             title: newLoveNote.title,
             color: newLoveNote.color,
             position: { x: Math.random() * 300, y: Math.random() * 300 },
-            rotation: Math.random() * 6 - 3
+            rotation: Math.random() * 6 - 3,
+            scale: 1
           }
         ]);
         toast({
@@ -393,7 +468,8 @@ const MoodBoard = () => {
             content: newPhoto.content,
             image: newPhoto.image,
             position: { x: Math.random() * 300, y: Math.random() * 300 },
-            rotation: Math.random() * 6 - 3
+            rotation: Math.random() * 6 - 3,
+            scale: 1
           }
         ]);
         toast({
@@ -423,32 +499,11 @@ const MoodBoard = () => {
   };
 
   const handleDragEnd = (id: string, position: { x: number, y: number }) => {
-    // Ensure position is within the bounds of the mood board
-    if (moodBoardRef.current) {
-      const boardRect = moodBoardRef.current.getBoundingClientRect();
-      const item = moodBoardItems.find(item => item.id === id);
-      
-      if (item) {
-        // Estimate item size (this would ideally be dynamic based on the actual item)
-        const itemWidth = item.type === 'image' ? 256 : 256; // Card width
-        const itemHeight = item.type === 'image' ? 200 : 256; // Approximate height
-        
-        // Calculate bounds
-        const maxX = boardRect.width - itemWidth;
-        const maxY = boardRect.height - itemHeight;
-        
-        // Constrain position
-        const constrainedX = Math.max(0, Math.min(position.x, maxX));
-        const constrainedY = Math.max(0, Math.min(position.y, maxY));
-        
-        // Update position in state
-        setMoodBoardItems(
-          moodBoardItems.map(item => 
-            item.id === id ? { ...item, position: { x: constrainedX, y: constrainedY } } : item
-          )
-        );
-      }
-    }
+    setMoodBoardItems(
+      moodBoardItems.map(item => 
+        item.id === id ? { ...item, position } : item
+      )
+    );
   };
 
   const getStickyNoteClass = (color: string = 'yellow') => {
@@ -469,8 +524,8 @@ const MoodBoard = () => {
     >
       <div 
         ref={moodBoardRef}
-        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden cursor-grab" 
-        style={{ minHeight: '500px' }}
+        className="h-[calc(100vh-180px)] md:max-h-[695px] relative bg-gray-50/50 rounded-lg border border-dashed border-gray-300 overflow-hidden" 
+        style={{ minHeight: '500px', cursor: isDragging ? 'grabbing' : 'grab' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -479,9 +534,14 @@ const MoodBoard = () => {
         <div 
           ref={dragAreaRef}
           className="h-full w-full overflow-auto no-scrollbar"
-          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
-          <div className="min-w-full min-h-full w-[2000px] h-[1500px] relative">
+          <div 
+            className="relative"
+            style={{
+              width: `${boardSize.width}px`,
+              height: `${boardSize.height}px`
+            }}
+          >
             {/* Draggable Items */}
             {moodBoardItems.map((item) => (
               <motion.div
@@ -490,7 +550,12 @@ const MoodBoard = () => {
                 initial={{ 
                   x: item.position?.x || 0, 
                   y: item.position?.y || 0,
-                  rotate: item.rotation || 0
+                  rotate: item.rotation || 0,
+                  scale: item.scale || 1
+                }}
+                animate={{
+                  rotate: item.rotation || 0,
+                  scale: item.scale || 1
                 }}
                 drag
                 dragMomentum={false}
@@ -501,12 +566,22 @@ const MoodBoard = () => {
                   };
                   handleDragEnd(item.id, position);
                 }}
-                dragConstraints={moodBoardRef}
-                style={{ rotate: item.rotation || 0 }}
+                style={{ 
+                  transformOrigin: 'center', 
+                  rotate: item.rotation || 0, 
+                  scale: item.scale || 1,
+                  zIndex: resizingItemId === item.id ? 10 : 1
+                }}
               >
                 {item.type === 'image' ? (
-                  <Card className="w-64 overflow-hidden shadow-lg relative group">
-                    <div className="h-40 overflow-hidden">
+                  <Card 
+                    className="overflow-hidden shadow-lg relative group"
+                    style={{ width: `${256}px` }} // Base width
+                  >
+                    <div 
+                      className="overflow-hidden" 
+                      style={{ height: `${160}px` }} // Base height for image container
+                    >
                       <img src={item.image} alt={item.content} className="w-full h-full object-cover" />
                     </div>
                     <CardContent className="p-3">
@@ -524,16 +599,30 @@ const MoodBoard = () => {
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </CardFooter>
+                    
                     {/* Rotation handle */}
                     <div 
-                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
+                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-crosshair transition-opacity"
                       onMouseDown={(e) => startRotate(e, item.id)}
+                      title="Rotate"
                     >
                       <RotateCcw className="w-3 h-3 text-gray-600" />
                     </div>
+                    
+                    {/* Resize handle */}
+                    <div 
+                      className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-nwse-resize transition-opacity"
+                      onMouseDown={(e) => startResize(e, item.id)}
+                      title="Resize"
+                    >
+                      <Plus className="w-3 h-3 text-gray-600" />
+                    </div>
                   </Card>
                 ) : (
-                  <div className={`w-64 h-64 p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}>
+                  <div 
+                    className={`p-4 rounded-sm ${getStickyNoteClass(item.color)} relative group`}
+                    style={{ width: `${256}px`, height: `${256}px` }} // Base dimensions
+                  >
                     <div className="absolute top-2 right-2 flex gap-1">
                       <Button size="sm" variant="ghost" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity" 
                         onClick={() => editItem(item)}>
@@ -563,10 +652,20 @@ const MoodBoard = () => {
                     
                     {/* Rotation handle */}
                     <div 
-                      className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-pointer transition-opacity"
+                      className="absolute bottom-2 left-2 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-crosshair transition-opacity"
                       onMouseDown={(e) => startRotate(e, item.id)}
+                      title="Rotate"
                     >
                       <RotateCcw className="w-3 h-3 text-gray-600" />
+                    </div>
+                    
+                    {/* Resize handle */}
+                    <div 
+                      className="absolute bottom-2 right-8 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-nwse-resize transition-opacity"
+                      onMouseDown={(e) => startResize(e, item.id)}
+                      title="Resize"
+                    >
+                      <Plus className="w-3 h-3 text-gray-600" />
                     </div>
                   </div>
                 )}

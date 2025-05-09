@@ -83,7 +83,7 @@ const AIAssistant = () => {
           partnerName={dashboardData.partnerName}
         />
         
-        <main className={`w-full px-6 md:px-6 py-8 flex-grow overflow-auto ml-[60px]`}>
+        <main className="w-full px-6 md:px-6 py-8 flex-grow overflow-auto ml-[60px]">
           <div className="mb-8 text-white max-w-[1600px] mx-auto">
             <h1 className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2">
               <Bot className="w-8 h-8" />
@@ -95,7 +95,7 @@ const AIAssistant = () => {
           </div>
           
           <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-7">
               <Card className="overflow-hidden min-h-[70vh] flex flex-col">
                 <div className="flex-grow p-4 overflow-y-auto">
                   <div className="flex flex-col gap-4">
@@ -143,7 +143,7 @@ const AIAssistant = () => {
               </Card>
             </div>
             
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-5">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget="$5,000-15,000"
