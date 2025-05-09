@@ -2,9 +2,10 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
+import WeddingTemplates from '@/components/WeddingTemplates';
 import QuickActions from '@/components/dashboard/QuickActions';
-import ActivitySummary from '@/components/dashboard/ActivitySummary';
-import LastUpdateBanner from '@/components/dashboard/LastUpdateBanner';
+import UpcomingTasks from '@/components/dashboard/UpcomingTasks';
+import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
 
 interface DashboardMainContentProps {
   sidebarExpanded: boolean;
@@ -18,12 +19,6 @@ interface DashboardMainContentProps {
     seasonal: string;
   };
   weddingColors: string[];
-  lastUpdate?: {
-    user: string;
-    action: string;
-    timestamp: string;
-    screen: string;
-  };
 }
 
 const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
@@ -32,8 +27,7 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
   weddingPlans,
   preferredBudget,
   userPreferences,
-  weddingColors,
-  lastUpdate
+  weddingColors
 }) => {
   return (
     <div className={cn(
@@ -41,17 +35,24 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
       sidebarExpanded ? "pr-0" : ""
     )}>
       <div className="lg:col-span-9 space-y-5">
-        {lastUpdate && <LastUpdateBanner lastUpdate={lastUpdate} />}
-        
-        <ActivitySummary 
+        <RecommendedWeddingPlans 
           weddingPlans={weddingPlans}
           preferredBudget={preferredBudget}
+        />
+        
+        <WeddingTemplates
+          userBudget={preferredBudget}
+          userPreferences={userPreferences}
+          userColors={weddingColors}
         />
       </div>
       
       <div className="lg:col-span-3 space-y-5">
         <WeddingProgressTracker tasks={tasks} className="w-full" />
+        
         <QuickActions />
+        
+        <UpcomingTasks tasks={tasks} />
       </div>
     </div>
   );

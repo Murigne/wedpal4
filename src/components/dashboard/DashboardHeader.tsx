@@ -5,8 +5,6 @@ import { UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WedPalLogo from '@/components/WedPalLogo';
 import ProfileMenu from './ProfileMenu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DashboardHeaderProps {
   userName: string;
@@ -20,7 +18,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onInvitePartner
 }) => {
   const navigate = useNavigate();
-  const isPartnerConnected = !!partnerName && partnerName !== "Partner";
 
   const handleInvitePartnerClick = () => {
     if (onInvitePartner) {
@@ -37,34 +34,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
           
           <div className="flex items-center gap-6">
-            {isPartnerConnected ? (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-9 w-9 border-2 border-white/50">
-                        <AvatarFallback className="bg-wedding-pink text-white">
-                          {partnerName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-white font-medium">{partnerName}</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Your partner is connected</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <Button 
-                variant="outline" 
-                className="bg-white/30 hover:bg-white/40 text-white border-white/30"
-                onClick={handleInvitePartnerClick}
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Invite your partner
-              </Button>
-            )}
+            <Button 
+              variant="outline" 
+              className="bg-white/30 hover:bg-white/40 text-white border-white/30"
+              onClick={handleInvitePartnerClick}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Invite your partner
+            </Button>
             
             <ProfileMenu userName={userName} partnerName={partnerName} />
           </div>

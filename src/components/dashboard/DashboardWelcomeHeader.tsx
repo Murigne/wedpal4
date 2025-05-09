@@ -1,11 +1,9 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRound, Activity } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { calculateDaysUntil } from '@/utils/dateUtils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DashboardWelcomeHeaderProps {
   userName: string;
@@ -15,7 +13,6 @@ interface DashboardWelcomeHeaderProps {
   weddingHashtag: string;
   user: any;
   onInvitePartner: () => void;
-  partnerActiveScreen?: string;
 }
 
 const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
@@ -25,11 +22,9 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
   formattedWeddingDate,
   weddingHashtag,
   user,
-  onInvitePartner,
-  partnerActiveScreen
+  onInvitePartner
 }) => {
   const navigate = useNavigate();
-  const isPartnerConnected = !!partnerName && partnerName !== "Partner";
 
   const handleSignUpClick = () => {
     navigate('/signup', { 
@@ -45,33 +40,9 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
 
   return (
     <div className="mb-8 text-white max-w-[1600px] mx-auto">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl md:text-4xl font-semibold mb-2">
-          Welcome back, {userName} & {partnerName}!
-        </h1>
-        
-        {partnerActiveScreen && isPartnerConnected && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full">
-                  <Activity className="h-4 w-4 text-green-400 animate-pulse" />
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-wedding-pink text-white text-xs">
-                      {partnerName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">{partnerName} is viewing {partnerActiveScreen}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Your partner is currently active</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </div>
-      
+      <h1 className="text-3xl md:text-4xl font-semibold mb-2">
+        Welcome back, {userName} & {partnerName}!
+      </h1>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-white/80 w-full">
         <p>
           Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
