@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Eye, EyeOff, Store } from 'lucide-react';
 import WedPalLogo from '@/components/WedPalLogo';
@@ -14,6 +16,7 @@ const VendorLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const [userType, setUserType] = useState<'couple' | 'vendor'>('vendor');
   
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +44,14 @@ const VendorLogin: React.FC = () => {
     }
   };
 
+  const handleUserTypeChange = (value: string) => {
+    if (value === 'couple') {
+      navigate('/login');
+    } else {
+      setUserType('vendor');
+    }
+  };
+
   const handleSignupClick = () => {
     navigate('/vendor-signup');
   };
@@ -50,7 +61,21 @@ const VendorLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex flex-col items-center justify-center p-4">
+      <div className="bg-gray-200/80 backdrop-blur-sm rounded-full mb-6 p-1">
+        <Tabs
+          defaultValue="vendor"
+          value={userType}
+          onValueChange={handleUserTypeChange}
+          className="w-64"
+        >
+          <TabsList className="w-full grid grid-cols-2">
+            <TabsTrigger value="couple">Couple</TabsTrigger>
+            <TabsTrigger value="vendor">Vendor</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-2">

@@ -70,6 +70,15 @@ const AIAssistant = () => {
       guests: "100-200",
       features: ["Grand venue", "Premium catering", "Live orchestra"],
       highlight: false
+    },
+    {
+      title: "Fairytale",
+      description: "Magical and enchanting celebration",
+      price: "$15,000-30,000",
+      timeline: "6-9 months",
+      guests: "75-150",
+      features: ["Castle or garden venue", "Fairy lights", "Horse-drawn carriage", "Themed decor"],
+      highlight: false
     }
   ];
   

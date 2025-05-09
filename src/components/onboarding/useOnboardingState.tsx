@@ -1,124 +1,144 @@
 
-import { useState, useEffect } from 'react';
-import { Heart, Calendar, Coins, Palette, Users } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, User, Mail, Lock } from 'lucide-react';
+
+export interface QuestionType {
+  message: string | ((formData: any) => string);
+  field: string | string[];
+  placeholder: string | string[];
+  icon: JSX.Element;
+  validation?: (value: any) => string | undefined;
+}
 
 export interface FormData {
   partner1Name: string;
   partner2Name: string;
   weddingDate: string;
-  budget: string;
-  theme: string;
-  guestCount: string;
+  weddingColors: string[];
+  email: string;
+  password: string;
 }
 
 export interface ValidationErrors {
   partner1Name?: string;
   partner2Name?: string;
   weddingDate?: string;
-  budget?: string;
-  theme?: string;
-  guestCount?: string;
-}
-
-interface Question {
-  id: string;
-  message: string;
-  field: string | string[];
-  icon: JSX.Element;
-  placeholder: string;
-  validation?: (value: string) => string | undefined;
+  weddingColors?: string;
+  email?: string;
+  password?: string;
 }
 
 export const useOnboardingState = () => {
-  const QUESTIONS: Question[] = [
-    {
-      id: 'welcome',
-      message: "Hi there! 💕 I'm your AI wedding planner. Let's start planning your dream wedding together! What are your names?",
-      field: ['partner1Name', 'partner2Name'],
-      icon: <Heart className="w-5 h-5 text-wedding-pink-dark" />,
-      placeholder: "Partner 1's name & Partner 2's name",
-      validation: (value: string) => value.length < 2 ? "Name must be at least 2 characters" : undefined
-    },
-    {
-      id: 'date',
-      message: "That's wonderful! When are you thinking of having your special day?",
-      field: 'weddingDate',
-      icon: <Calendar className="w-5 h-5 text-wedding-pink-dark" />,
-      placeholder: "MM/DD/YYYY",
-      validation: (value: string) => {
-        if (!value) return "Date is required";
-        const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-        if (!dateRegex.test(value)) return "Please use MM/DD/YYYY format";
-        
-        const date = new Date(value);
-        const today = new Date();
-        if (isNaN(date.getTime())) return "Please enter a valid date";
-        if (date < today) return "Wedding date cannot be in the past";
-        
-        return undefined;
-      }
-    },
-    {
-      id: 'budget',
-      message: "Great! Now, what budget range are you considering for your wedding?",
-      field: 'budget',
-      icon: <Coins className="w-5 h-5 text-wedding-pink-dark" />,
-      placeholder: "e.g., $10,000 - $20,000",
-      validation: (value: string) => {
-        if (!value) return "Budget is required";
-        return undefined;
-      }
-    },
-    {
-      id: 'theme',
-      message: "What theme or style are you envisioning for your wedding? (Colors, indoor/outdoor, etc.)",
-      field: 'theme',
-      icon: <Palette className="w-5 h-5 text-wedding-pink-dark" />,
-      placeholder: "e.g., Rustic outdoor with sage green & blush",
-      validation: (value: string) => {
-        if (!value) return "Theme is required";
-        if (value.length < 3) return "Please provide more details about your theme";
-        return undefined;
-      }
-    },
-    {
-      id: 'guests',
-      message: "How many guests are you planning to invite?",
-      field: 'guestCount',
-      icon: <Users className="w-5 h-5 text-wedding-pink-dark" />,
-      placeholder: "e.g., 50, 100, 150+",
-      validation: (value: string) => {
-        if (!value) return "Guest count is required";
-        return undefined;
-      }
-    }
-  ];
-
   const [currentStep, setCurrentStep] = useState(0);
+  
   const [formData, setFormData] = useState<FormData>({
     partner1Name: '',
     partner2Name: '',
     weddingDate: '',
-    budget: '',
-    theme: '',
-    guestCount: '',
+    weddingColors: [],
+    email: '',
+    password: ''
   });
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-  const [messages, setMessages] = useState<Array<{ content: string; sender: 'ai' | 'user' }>>([]);
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([{ content: QUESTIONS[0].message, sender: 'ai' }]);
+  
+  const [messages, setMessages] = useState<{content: string, sender: 'user' | 'ai'}[]>([]);
+  
+  const QUESTIONS: QuestionType[] = [
+    {
+      message: "Hi there! What are your names?",
+      field: ["partner1Name", "partner2Name"],
+      placeholder: ["Your name", "Your partner's name"],
+      icon: <User className="h-4 w-4 text-wedding-pink" />,
+      validation: (value) => {
+        if (!value || value.trim().length < 2) {
+          return "Name should be at least 2 characters";
+        }
+        return undefined;
+      }
+    },
+    {
+      message: (formData) => `Wonderful! ${formData.partner1Name} and ${formData.partner2Name}, when is your wedding date?`,
+      field: "weddingDate",
+      placeholder: "DD/MM/YYYY",
+      icon: <Calendar className="h-4 w-4 text-wedding-pink" />,
+      validation: (value) => {
+        if (!value) {
+          return "Wedding date is required";
+        }
+        
+        const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+        if (!dateRegex.test(value)) {
+          return "Please use format DD/MM/YYYY";
+        }
+        
+        const [, day, month, year] = dateRegex.exec(value) || [];
+        const dateObj = new Date(`${year}-${month}-${day}`);
+        
+        if (isNaN(dateObj.getTime())) {
+          return "Invalid date";
+        }
+        
+        const today = new Date();
+        if (dateObj < today) {
+          return "Wedding date should be in the future";
+        }
+        
+        return undefined;
+      }
+    },
+    {
+      message: (formData) => `Great! Your wedding is set for ${formData.weddingDate}. What colors would you like for your wedding theme?`,
+      field: "weddingColors",
+      placeholder: "E.g., Pink, Gold, White",
+      icon: <User className="h-4 w-4 text-wedding-pink" />,
+      validation: (value) => {
+        if (!value || value.length === 0) {
+          return "Please select at least one color";
+        }
+        return undefined;
+      }
+    },
+    {
+      message: (formData) => `Now, let's create your account. What email would you like to use?`,
+      field: "email",
+      placeholder: "you@example.com",
+      icon: <Mail className="h-4 w-4 text-wedding-pink" />,
+      validation: (value) => {
+        if (!value) {
+          return "Email is required";
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          return "Please enter a valid email";
+        }
+        
+        return undefined;
+      }
+    },
+    {
+      message: "Almost done! Create a password for your account.",
+      field: "password",
+      placeholder: "Create a secure password",
+      icon: <Lock className="h-4 w-4 text-wedding-pink" />,
+      validation: (value) => {
+        if (!value) {
+          return "Password is required";
+        }
+        
+        if (value.length < 8) {
+          return "Password must be at least 8 characters";
+        }
+        
+        return undefined;
+      }
     }
-  }, [messages.length, QUESTIONS]);
-
+  ];
+  
   return {
-    currentStep,
-    setCurrentStep,
     formData,
     setFormData,
-    validationErrors,
-    setValidationErrors,
+    currentStep,
+    setCurrentStep,
     messages,
     setMessages,
     QUESTIONS
