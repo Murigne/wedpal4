@@ -4,16 +4,18 @@ import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useToast } from '@/hooks/use-toast';
+
 const VendorMarketplace = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [favoriteVendors, setFavoriteVendors] = useState<number[]>([]);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const dashboardData = useDashboardData();
-  const vendorCategories = ["Venues", "Photography", "Catering", "Flowers", "Attire", "Beauty", "Music", "Decor", "Cake"];
+  
+  // Added "MCs" and "Rings" to the vendor categories
+  const vendorCategories = ["Venues", "Photography", "Catering", "Flowers", "Attire", "Beauty", "Music", "Decor", "Cake", "MCs", "Rings"];
+  
   const mockVendors = [{
     id: 1,
     name: "Elegant Gardens Venue",
@@ -86,6 +88,42 @@ const VendorMarketplace = () => {
     image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2089&auto=format&fit=crop",
     price: "$$",
     description: "Custom wedding cakes and dessert tables to match your theme"
+  }, {
+    id: 9,
+    name: "Elite Wedding MCs",
+    category: "MCs",
+    rating: 4.8,
+    reviewCount: 56,
+    image: "https://images.unsplash.com/photo-1556125574-d7f27ec36a06?q=80&w=2070&auto=format&fit=crop",
+    price: "$$",
+    description: "Professional hosts and entertainers for your wedding reception"
+  }, {
+    id: 10,
+    name: "Golden Bands Jewelry",
+    category: "Rings",
+    rating: 4.9,
+    reviewCount: 112,
+    image: "https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?q=80&w=2070&auto=format&fit=crop",
+    price: "$$$",
+    description: "Custom designed wedding bands and engagement rings"
+  }, {
+    id: 11,
+    name: "Diamond Dreams",
+    category: "Rings",
+    rating: 4.7,
+    reviewCount: 98,
+    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=2070&auto=format&fit=crop",
+    price: "$$$",
+    description: "Luxury diamond rings and bands for your special day"
+  }, {
+    id: 12,
+    name: "Wedding Hosts Pro",
+    category: "MCs",
+    rating: 4.6,
+    reviewCount: 45,
+    image: "https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=2070&auto=format&fit=crop",
+    price: "$$",
+    description: "Engaging and charismatic masters of ceremonies for weddings"
   }];
   
   const handleToggleFavorite = (vendorId: number) => {
@@ -213,4 +251,5 @@ const VendorMarketplace = () => {
       </div>
     </DashboardLayout>;
 };
+
 export default VendorMarketplace;

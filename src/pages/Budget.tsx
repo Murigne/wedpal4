@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Wallet, Plus, Edit, Trash2, ChartBar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BudgetCategory {
   id: string;
@@ -70,10 +78,12 @@ const Budget = () => {
     total: 0,
   });
 
+  // Vendor categories for dropdown
+  const vendorCategories = ["Venues", "Photography", "Catering", "Flowers", "Attire", "Beauty", "Music", "Decor", "Cake", "MCs", "Rings"];
+
   // Function to determine progress bar color based on percentage
   const getBudgetProgressColor = (percentage: number) => {
     if (percentage >= 100) return '#ea384c'; // Red for over budget
-    if (percentage >= 70) return '#FFC107';  // Yellow for approaching limit
     return '#4CAF50';                        // Green for under budget
   };
 
@@ -90,6 +100,10 @@ const Budget = () => {
     { id: 6, name: "Dream Dress Boutique", category: "Attire", price: 2500 },
     { id: 7, name: "Enchanted Decor", category: "Decor", price: 2500 },
     { id: 8, name: "Sweet Celebrations Cake", category: "Cake", price: 800 },
+    { id: 9, name: "Elite Wedding MCs", category: "MCs", price: 2000 },
+    { id: 10, name: "Golden Bands Jewelry", category: "Rings", price: 5000 },
+    { id: 11, name: "Diamond Dreams", category: "Rings", price: 7000 },
+    { id: 12, name: "Wedding Hosts Pro", category: "MCs", price: 1800 },
   ];
 
   // Helper to filter vendors based on category name
@@ -114,17 +128,28 @@ const Budget = () => {
 
   // Handle adding a new budget category
   const handleAddCategory = () => {
+    if (!categoryForm.name || !categoryForm.total) {
+      toast({
+        title: "Missing information",
+        description: "Please select a category and enter a budget amount"
+      });
+      return;
+    }
+    
+    // Prevent spending more than the allocated budget
+    const spentAmount = Math.min(categoryForm.spent, categoryForm.total);
+    
     const newCategory: BudgetCategory = {
       id: Date.now().toString(),
       name: categoryForm.name,
       allocation: (categoryForm.total / budget.total) * 100,
-      spent: categoryForm.spent,
+      spent: spentAmount,
       total: categoryForm.total,
       vendor: categoryForm.vendor
     };
 
     const newCategories = [...budget.categories, newCategory];
-    const newSpent = budget.spent + categoryForm.spent;
+    const newSpent = budget.spent + spentAmount;
     
     setBudget({
       ...budget,
@@ -145,18 +170,24 @@ const Budget = () => {
   const handleEditCategory = () => {
     if (!categoryForm.id) return;
     
+    // Prevent spending more than the allocated budget
+    const spentAmount = Math.min(categoryForm.spent, categoryForm.total);
+    
+    const oldCategory = budget.categories.find(cat => cat.id === categoryForm.id);
+    const spentDifference = spentAmount - (oldCategory?.spent || 0);
+    
     const newCategories = budget.categories.map(cat => 
       cat.id === categoryForm.id ? {
         ...cat,
         name: categoryForm.name,
-        spent: categoryForm.spent,
+        spent: spentAmount,
         total: categoryForm.total,
         allocation: (categoryForm.total / budget.total) * 100,
         vendor: categoryForm.vendor
       } : cat
     );
     
-    const newSpent = newCategories.reduce((sum, cat) => sum + cat.spent, 0);
+    const newSpent = budget.spent + spentDifference;
     
     setBudget({
       ...budget,
@@ -228,6 +259,10 @@ const Budget = () => {
     ];
     return colors[index % colors.length];
   };
+  
+  // Sort categories by spent percentage for the breakdown chart
+  const sortedCategories = [...budget.categories]
+    .sort((a, b) => (b.spent / b.total) - (a.spent / a.total));
 
   return (
     <PageLayout 
@@ -247,7 +282,7 @@ const Budget = () => {
                   Edit
                 </Button>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 pb-4"> {/* Reduced padding bottom */}
                 <div className="grid grid-cols-3 gap-2 mb-2">
                   <div>
                     <span className="text-sm text-muted-foreground block">Total Budget</span>
@@ -283,14 +318,14 @@ const Budget = () => {
             </Card>
             
             {/* Budget Breakdown - Horizontal Bar Chart - Increased height */}
-            <Card className="md:max-h-[420px] flex-grow">
+            <Card className="md:max-h-[520px] flex-grow"> {/* Increased height */}
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
               <CardContent className="pb-4 flex-1 overflow-hidden">
-                <ScrollArea className="h-full max-h-[300px] w-[95%] mx-auto">
+                <ScrollArea className="h-full max-h-[400px] w-[95%] mx-auto"> {/* Increased height */}
                   <div className="space-y-4">
-                    {budget.categories.map((category, index) => (
+                    {sortedCategories.map((category, index) => (
                       <div key={category.id} className="space-y-1">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">{category.name}</span>
@@ -418,7 +453,7 @@ const Budget = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Category Dialog */}
+      {/* Add Category Dialog - Modified to use Select for category name */}
       <Dialog open={isAddCategoryOpen} onOpenChange={setIsAddCategoryOpen}>
         <DialogContent>
           <DialogHeader>
@@ -430,11 +465,21 @@ const Budget = () => {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="category-name">Category Name</Label>
-              <Input
-                id="category-name"
+              <Select
                 value={categoryForm.name}
-                onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
-              />
+                onValueChange={(value) => setCategoryForm({...categoryForm, name: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {vendorCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="category-total">Budgeted Amount (GHS)</Label>
@@ -451,11 +496,20 @@ const Budget = () => {
                 id="category-spent"
                 type="number"
                 value={categoryForm.spent}
-                onChange={(e) => setCategoryForm({...categoryForm, spent: Number(e.target.value)})}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  // Prevent spent amount from exceeding total budget
+                  const limitedValue = Math.min(value, categoryForm.total);
+                  setCategoryForm({...categoryForm, spent: limitedValue});
+                }}
+                max={categoryForm.total}
               />
+              {categoryForm.spent > 0 && categoryForm.spent === categoryForm.total && (
+                <p className="text-xs text-amber-500">You've reached your budget limit for this category.</p>
+              )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="category-vendor">Vendor</Label>
+              <Label htmlFor="category-vendor">Vendor (Optional)</Label>
               <div className="flex gap-2">
                 <Input
                   id="category-vendor"
@@ -474,7 +528,7 @@ const Budget = () => {
                     } else {
                       toast({
                         title: "Enter category first",
-                        description: "Please enter a category name to see relevant vendors",
+                        description: "Please select a category to see relevant vendors",
                         variant: "destructive"
                       });
                     }
@@ -494,7 +548,7 @@ const Budget = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Category Dialog */}
+      {/* Edit Category Dialog - Similar modifications as Add Category Dialog */}
       <Dialog open={isEditCategoryOpen} onOpenChange={setIsEditCategoryOpen}>
         <DialogContent>
           <DialogHeader>
@@ -506,11 +560,21 @@ const Budget = () => {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="edit-category-name">Category Name</Label>
-              <Input
-                id="edit-category-name"
+              <Select
                 value={categoryForm.name}
-                onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
-              />
+                onValueChange={(value) => setCategoryForm({...categoryForm, name: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {vendorCategories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-category-total">Budgeted Amount (GHS)</Label>
@@ -527,11 +591,20 @@ const Budget = () => {
                 id="edit-category-spent"
                 type="number"
                 value={categoryForm.spent}
-                onChange={(e) => setCategoryForm({...categoryForm, spent: Number(e.target.value)})}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  // Prevent spent amount from exceeding total budget
+                  const limitedValue = Math.min(value, categoryForm.total);
+                  setCategoryForm({...categoryForm, spent: limitedValue});
+                }}
+                max={categoryForm.total}
               />
+              {categoryForm.spent > 0 && categoryForm.spent === categoryForm.total && (
+                <p className="text-xs text-amber-500">You've reached your budget limit for this category.</p>
+              )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-category-vendor">Vendor</Label>
+              <Label htmlFor="edit-category-vendor">Vendor (Optional)</Label>
               <div className="flex gap-2">
                 <Input
                   id="edit-category-vendor"

@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
 import WeddingTemplates from '@/components/WeddingTemplates';
 import QuickActions from '@/components/dashboard/QuickActions';
-import UpcomingTasks from '@/components/dashboard/UpcomingTasks';
 import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import SuccessStories from '@/components/dashboard/SuccessStories';
 
 interface DashboardMainContentProps {
   sidebarExpanded: boolean;
@@ -40,19 +40,14 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
           preferredBudget={preferredBudget}
         />
         
-        <WeddingTemplates
-          userBudget={preferredBudget}
-          userPreferences={userPreferences}
-          userColors={weddingColors}
-        />
+        <SuccessStories />
       </div>
       
       <div className="lg:col-span-3 space-y-5">
-        <WeddingProgressTracker tasks={tasks} className="w-full" />
-        
+        {/* Swapped these two components as requested */}
         <QuickActions />
         
-        <UpcomingTasks tasks={tasks} />
+        <WeddingProgressTracker tasks={tasks} className="w-full" />
       </div>
     </div>
   );
