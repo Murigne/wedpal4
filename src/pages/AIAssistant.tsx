@@ -95,7 +95,7 @@ const AIAssistant = () => {
           </div>
           
           <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-4">
               <Card className="overflow-hidden min-h-[70vh] flex flex-col">
                 <div className="flex-grow p-4 overflow-y-auto">
                   <div className="flex flex-col gap-4">
@@ -143,7 +143,7 @@ const AIAssistant = () => {
               </Card>
             </div>
             
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-8">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget="$5,000-15,000"
