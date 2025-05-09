@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useOnboardingState } from './useOnboardingState';
+import { useOnboardingState, QuestionType } from './useOnboardingState';
 import OnboardingChat from './OnboardingChat';
 import OnboardingForm from './OnboardingForm';
 import OnboardingHeader from './OnboardingHeader';
@@ -37,7 +37,11 @@ const OnboardingContainer: React.FC = () => {
 
   useEffect(() => {
     if (messages.length === 0) {
-      setMessages([{ content: QUESTIONS[0].message, sender: 'ai' }]);
+      const firstMessage = typeof QUESTIONS[0].message === 'function' 
+        ? QUESTIONS[0].message({}) 
+        : QUESTIONS[0].message;
+        
+      setMessages([{ content: firstMessage, sender: 'ai' }]);
     }
   }, [messages.length, QUESTIONS, setMessages]);
 
@@ -57,7 +61,7 @@ const OnboardingContainer: React.FC = () => {
         <OnboardingForm 
           currentStep={currentStep}
           formData={formData}
-          validationErrors={validationErrors}
+          validationErrors={validationErrors as Record<string, string>}
           setFormData={setFormData}
           handleSubmit={handleFormSubmit}
           QUESTIONS={QUESTIONS}

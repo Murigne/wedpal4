@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import ChatMessage from '../ChatMessage';
 
 interface OnboardingChatProps {
-  messages: Array<{ content: string; sender: 'ai' | 'user' }>;
+  messages: Array<{ content: string | ((formData: any) => string); sender: 'ai' | 'user' }>;
 }
 
 const OnboardingChat: React.FC<OnboardingChatProps> = ({ messages }) => {
@@ -23,7 +23,7 @@ const OnboardingChat: React.FC<OnboardingChatProps> = ({ messages }) => {
         {messages.map((msg, idx) => (
           <ChatMessage
             key={idx}
-            content={msg.content}
+            content={typeof msg.content === 'string' ? msg.content : msg.content({} /* Pass empty object as fallback */)}
             sender={msg.sender}
           />
         ))}

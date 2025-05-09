@@ -2,24 +2,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { FormData, ValidationErrors } from './useOnboardingState';
-
-interface Question {
-  id: string;
-  message: string;
-  field: string | string[];
-  icon: JSX.Element;
-  placeholder: string;
-  validation?: (value: string) => string | undefined;
-}
+import { FormData, QuestionType } from './useOnboardingState';
 
 interface OnboardingFormProps {
   currentStep: number;
   formData: FormData;
-  validationErrors: Record<string, string>; // Changed from ValidationErrors
+  validationErrors: Record<string, string | undefined>;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (e: React.FormEvent) => void;
-  QUESTIONS: Question[];
+  QUESTIONS: QuestionType[];
 }
 
 const OnboardingForm: React.FC<OnboardingFormProps> = ({ 
@@ -90,7 +81,7 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
             name={QUESTIONS[currentStep].field as string}
             value={formData[QUESTIONS[currentStep].field as keyof FormData]}
             onChange={handleInputChange}
-            placeholder={QUESTIONS[currentStep].placeholder}
+            placeholder={Array.isArray(QUESTIONS[currentStep].placeholder) ? QUESTIONS[currentStep].placeholder[0] : QUESTIONS[currentStep].placeholder}
             required
             className={`wedding-input pl-10 w-full ${validationErrors[QUESTIONS[currentStep].field as string] ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
