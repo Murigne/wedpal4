@@ -740,5 +740,263 @@ const MoodBoard = () => {
                       </p>
                     )}
                     
-                    <Badge className="
-"
+                    <Badge className="absolute bottom-2 left-2 bg-opacity-70">Memory</Badge>
+                    
+                    {/* Rotation handle for memory/love note */}
+                    <div 
+                      className="absolute bottom-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 cursor-alias transition-opacity"
+                      onMouseDown={(e) => startRotate(e, item.id)}
+                      title="Rotate"
+                    >
+                      <RotateCcw className="w-3 h-3 text-gray-600" />
+                    </div>
+                    
+                    {/* Resize handles for memory/love note */}
+                    <div 
+                      className={`absolute top-0 left-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_LEFT)} transition-opacity`}
+                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_LEFT)}
+                      title="Resize"
+                    >
+                      <Plus className="w-3 h-3 text-gray-600" />
+                    </div>
+                    <div 
+                      className={`absolute top-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.TOP_RIGHT)} transition-opacity`}
+                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.TOP_RIGHT)}
+                      title="Resize"
+                    >
+                      <Plus className="w-3 h-3 text-gray-600" />
+                    </div>
+                    <div 
+                      className={`absolute bottom-0 right-0 w-6 h-6 rounded-full bg-white/90 shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-90 ${getResizeHandleCursor(RESIZE_HANDLES.BOTTOM_RIGHT)} transition-opacity`}
+                      onMouseDown={(e) => startResize(e, item.id, RESIZE_HANDLES.BOTTOM_RIGHT)}
+                      title="Resize"
+                    >
+                      <Plus className="w-3 h-3 text-gray-600" />
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Add Memory Dialog */}
+      <Dialog open={showAddMemoryForm} onOpenChange={setShowAddMemoryForm}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{isEditingItem ? "Edit Memory" : "Add New Memory"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="memory-title">Title</Label>
+              <Input
+                id="memory-title"
+                value={newMemory.title}
+                onChange={(e) => setNewMemory({...newMemory, title: e.target.value})}
+                placeholder="Write a title for this memory..."
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="memory-date">Date</Label>
+              <Input
+                id="memory-date"
+                type="date"
+                value={newMemory.date}
+                onChange={(e) => setNewMemory({...newMemory, date: e.target.value})}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="memory-content">Memory</Label>
+              <Textarea
+                id="memory-content"
+                value={newMemory.content}
+                onChange={(e) => setNewMemory({...newMemory, content: e.target.value})}
+                placeholder="Write about this special memory..."
+                rows={5}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Color</Label>
+              <RadioGroup
+                value={newMemory.color}
+                onValueChange={(value) => setNewMemory({...newMemory, color: value})}
+                className="flex gap-2 flex-wrap"
+              >
+                {stickyNoteColors.map(color => (
+                  <div key={color.value} className="flex items-center space-x-1">
+                    <RadioGroupItem value={color.value} id={`color-${color.value}`} />
+                    <Label htmlFor={`color-${color.value}`} className="flex gap-2 items-center cursor-pointer">
+                      <div className={`w-4 h-4 rounded-full ${color.class}`}></div>
+                      <span className="capitalize">{color.value}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
+            <Button onClick={addOrUpdateMemory}>{isEditingItem ? "Update" : "Add"} Memory</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add Love Note Dialog */}
+      <Dialog open={showAddLoveNoteForm} onOpenChange={setShowAddLoveNoteForm}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{isEditingItem ? "Edit Love Note" : "Add Love Note"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="note-title">Title</Label>
+              <Input
+                id="note-title"
+                value={newLoveNote.title}
+                onChange={(e) => setNewLoveNote({...newLoveNote, title: e.target.value})}
+                placeholder="Write a title for this note..."
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="note-content">Message</Label>
+              <Textarea
+                id="note-content"
+                value={newLoveNote.content}
+                onChange={(e) => setNewLoveNote({...newLoveNote, content: e.target.value})}
+                placeholder="Write a sweet message..."
+                rows={5}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Color</Label>
+              <RadioGroup
+                value={newLoveNote.color}
+                onValueChange={(value) => setNewLoveNote({...newLoveNote, color: value})}
+                className="flex gap-2 flex-wrap"
+              >
+                {stickyNoteColors.map(color => (
+                  <div key={color.value} className="flex items-center space-x-1">
+                    <RadioGroupItem value={color.value} id={`note-color-${color.value}`} />
+                    <Label htmlFor={`note-color-${color.value}`} className="flex gap-2 items-center cursor-pointer">
+                      <div className={`w-4 h-4 rounded-full ${color.class}`}></div>
+                      <span className="capitalize">{color.value}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
+            <Button onClick={addOrUpdateLoveNote}>{isEditingItem ? "Update" : "Add"} Love Note</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add Photo Dialog */}
+      <Dialog open={showAddPhotoForm} onOpenChange={setShowAddPhotoForm}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{isEditingItem ? "Edit Photo" : "Add Photo"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {newPhoto.image ? (
+              <div className="relative w-full aspect-[3/2] overflow-hidden rounded-md mb-4">
+                <img src={newPhoto.image} alt="Preview" className="w-full h-full object-cover" />
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={() => setNewPhoto({...newPhoto, image: ''})}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div 
+                className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-500">Click to upload an image</p>
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </div>
+            )}
+            <div className="grid gap-2">
+              <Label htmlFor="photo-caption">Caption</Label>
+              <Input
+                id="photo-caption"
+                value={newPhoto.content}
+                onChange={(e) => setNewPhoto({...newPhoto, content: e.target.value})}
+                placeholder="Write a caption for this photo..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleDialogClose}>Cancel</Button>
+            <Button onClick={addOrUpdatePhoto} disabled={!newPhoto.image || !newPhoto.content}>
+              {isEditingItem ? "Update" : "Add"} Photo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Popover open={isFabOpen} onOpenChange={setIsFabOpen}>
+          <PopoverTrigger asChild>
+            <Button size="lg" className="rounded-full w-14 h-14 shadow-lg">
+              <Plus className="h-6 w-6" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent side="top" className="w-64">
+            <div className="grid gap-3">
+              <Button 
+                className="justify-start" 
+                variant="ghost"
+                onClick={() => {
+                  setIsFabOpen(false);
+                  setShowAddMemoryForm(true);
+                }}
+              >
+                <MessageSquare className="mr-2 h-5 w-5" />
+                Add Memory
+              </Button>
+              <Button 
+                className="justify-start" 
+                variant="ghost"
+                onClick={() => {
+                  setIsFabOpen(false);
+                  setShowAddLoveNoteForm(true);
+                }}
+              >
+                <Heart className="mr-2 h-5 w-5" />
+                Add Love Note
+              </Button>
+              <Button 
+                className="justify-start" 
+                variant="ghost"
+                onClick={() => {
+                  setIsFabOpen(false);
+                  setShowAddPhotoForm(true);
+                }}
+              >
+                <Image className="mr-2 h-5 w-5" />
+                Add Photo
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </PageLayout>
+  );
+};
+
+export default MoodBoard;
