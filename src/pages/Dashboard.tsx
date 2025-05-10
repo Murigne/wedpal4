@@ -29,12 +29,12 @@ const Dashboard = () => {
     remaining: 15500
   };
   
-  // Recent user activities
+  // Recent user activities with user names
   const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM" },
-    { action: "Confirmed photographer booking", date: "May 8, 2025" },
-    { action: "Created new guest list", date: "May 5, 2025" },
+    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: user?.displayName || dashboardData.userName || "You" },
+    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: user?.displayName || dashboardData.userName || "You" },
+    { action: "Confirmed photographer booking", date: "May 8, 2025", userName: dashboardData.partnerName || "Partner" },
+    { action: "Created new guest list", date: "May 5, 2025", userName: user?.displayName || dashboardData.userName || "You" },
   ];
 
   // Tasks data

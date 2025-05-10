@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -134,7 +133,8 @@ const LandingSearchBox = () => {
     setIsTransitioning(true);
     
     if (currentQuestion.id === 'colors') {
-      // Apply colors to the UI
+      // Apply colors to the UI but don't change the current screen's colors
+      // Store the selected colors for later use in the dashboard
       document.documentElement.style.setProperty('--wedding-color-primary', selectedColors[0] || '#FFC0CB');
       if (selectedColors.length > 1) {
         document.documentElement.style.setProperty('--wedding-color-secondary', selectedColors[1]);
@@ -143,16 +143,7 @@ const LandingSearchBox = () => {
         document.documentElement.style.setProperty('--wedding-color-tertiary', selectedColors[2]);
       }
       
-      const gradientColors = selectedColors.length >= 2 
-        ? selectedColors 
-        : [...selectedColors, ...(selectedColors.length === 1 ? [adjustColor(selectedColors[0], -30)] : ['#e73c7e', '#23a6d5'])];
-      
-      const root = document.documentElement;
-      const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
-      root.style.setProperty('--dynamic-gradient', gradientStyle);
-      document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
-      
-      // Navigate to dashboard after the colors question
+      // Navigate to dashboard after the colors question without changing current screen
       console.log("Colors question answered, navigating to dashboard");
       setTimeout(() => {
         navigate('/dashboard', { 
