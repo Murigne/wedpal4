@@ -98,7 +98,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Guest Stats Section with larger donut hole */}
+          {/* Guest Stats Section with LARGER donut hole */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -119,7 +119,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                           data={guestData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={50}
+                          innerRadius={55}  {/* INCREASED inner radius for larger donut hole */}
                           outerRadius={70}
                           paddingAngle={4}
                           dataKey="value"
