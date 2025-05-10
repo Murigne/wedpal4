@@ -117,7 +117,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
           </Card>
 
           {/* Guest Stats Section with fixed chart display */}
-          <Card className="min-h-[320px]">
+          <Card className="min-h-[0px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
                 <Users className="w-5 h-5 mr-2" />
