@@ -39,7 +39,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   }, {
     name: 'Declined',
     value: guestStats.declined,
-    color: '#00ffd6'
+    color: '#a0dcb5'
   }];
 
   const chartConfig = {
@@ -53,7 +53,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
     },
     declined: {
       label: 'Declined',
-      color: '#00ffd6'
+      color: '#a0dcb5'
     }
   };
 
