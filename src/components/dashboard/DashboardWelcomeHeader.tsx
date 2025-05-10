@@ -67,14 +67,6 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
           </div>
         )}
       </div>
-      
-      {weddingHashtag && (
-        <p className="sm:ml-4 mt-3">
-          <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-white font-medium">
-            {weddingHashtag}
-          </span>
-        </p>
-      )}
     </div>
   );
 };
