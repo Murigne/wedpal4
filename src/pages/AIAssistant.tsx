@@ -6,8 +6,9 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import AIRecommendedWeddingPlans from '@/components/ai/AIRecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { useAuth } from '@/components/AuthProvider';
 
 const AIAssistant = () => {
   const [message, setMessage] = useState('');
@@ -17,6 +18,7 @@ const AIAssistant = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const dashboardData = useDashboardData();
+  const { user } = useAuth();
   
   const handleSendMessage = () => {
     if (message.trim() === '') return;
@@ -41,46 +43,6 @@ const AIAssistant = () => {
       handleSendMessage();
     }
   };
-  
-  // Sample wedding plans data for the sidebar
-  const weddingPlans = [
-    {
-      title: "Classic Romance",
-      description: "A timeless wedding theme",
-      price: "$5,000-15,000",
-      timeline: "3-6 months",
-      guests: "50-100",
-      features: ["Indoor ceremony", "Traditional decor", "Sit-down dinner"],
-      highlight: true
-    },
-    {
-      title: "Intimate & Cozy",
-      description: "Small and meaningful celebration",
-      price: "$3,000-8,000",
-      timeline: "2-4 months",
-      guests: "20-50",
-      features: ["Backyard setting", "Family-style dinner", "Personalized vows"],
-      highlight: false
-    },
-    {
-      title: "Royal Delight",
-      description: "Luxurious and elegant affair",
-      price: "$20,000-40,000",
-      timeline: "6-12 months",
-      guests: "100-200",
-      features: ["Grand venue", "Premium catering", "Live orchestra"],
-      highlight: false
-    },
-    {
-      title: "Fairytale",
-      description: "Magical and enchanting celebration",
-      price: "$15,000-30,000",
-      timeline: "6-9 months",
-      guests: "75-150",
-      features: ["Castle or garden venue", "Fairy lights", "Horse-drawn carriage", "Themed decor"],
-      highlight: false
-    }
-  ];
   
   return (
     <div className="min-h-screen">
@@ -153,10 +115,7 @@ const AIAssistant = () => {
             </div>
             
             <div className="lg:col-span-8">
-              <RecommendedWeddingPlans 
-                weddingPlans={weddingPlans}
-                preferredBudget="$5,000-15,000"
-              />
+              <AIRecommendedWeddingPlans budgetRange="$5,000-15,000" />
             </div>
           </div>
         </main>
