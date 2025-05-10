@@ -316,14 +316,14 @@ const Budget = () => {
               </CardContent>
             </Card>
             
-            {/* Budget Breakdown - Horizontal Bar Chart - Increased height */}
-            <Card className="md:max-h-[520px] flex-grow"> {/* Increased height */}
+            {/* Budget Breakdown - Horizontal Bar Chart with fixed height and scrolling */}
+            <Card className="flex-1 flex flex-col h-[calc(100vh-350px)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
-              <CardContent className="pb-4 flex-1 overflow-hidden">
-                <ScrollArea className="h-full max-h-[400px] w-[95%] mx-auto"> {/* Increased height */}
-                  <div className="space-y-4">
+              <CardContent className="p-0 px-6 pb-6 flex-1 overflow-hidden">
+                <ScrollArea className="h-full w-full pr-1">
+                  <div className="space-y-4 pr-4 pb-4">
                     {sortedCategories.map((category, index) => (
                       <div key={category.id} className="space-y-1">
                         <div className="flex justify-between items-center mb-1">
@@ -348,7 +348,7 @@ const Budget = () => {
           </div>
         </div>
         
-        {/* Updated Budget Categories with fixed height that matches parent height */}
+        {/* Budget Categories (Keeping this part unchanged) */}
         <div className="md:col-span-7">
           <Card className="h-[calc(100vh-180px)] max-h-[680px]">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
