@@ -134,7 +134,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                   <div style={{ width: '100%', height: '100%', minHeight: '190px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer width="100%" height={190}>
-                        <PieChart margin={{ top: 30, right: 0, bottom: 10, left: 0 }}>
+                        <PieChart margin={{ top: 30, right: 0, bottom: 0, left: 0 }}>
                           <Pie 
                             data={guestData} 
                             cx="50%" 
