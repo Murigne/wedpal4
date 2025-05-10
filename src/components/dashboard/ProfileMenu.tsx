@@ -35,15 +35,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName }) => {
     }
   };
 
-  const handleEditProfile = () => {
-    navigate('/edit-wedding-details');
-  };
-
   const handleAccountSettings = () => {
-    toast({
-      title: "Account Settings",
-      description: "This feature is coming soon!",
-    });
+    navigate('/account-settings');
   };
 
   // Get initials for both partners
@@ -63,10 +56,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ userName, partnerName }) => {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleEditProfile}>
-          <User className="mr-2 h-4 w-4" />
-          <span>Edit Wedding Details</span>
-        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleAccountSettings}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Account Settings</span>

@@ -23,7 +23,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   guestStats,
   budgetSummary
 }) => {
-  // Guest distribution data for pie chart
+  // Guest distribution data for pie chart with theme-consistent colors
   const guestData = [
     { name: 'Confirmed', value: guestStats.confirmed, color: '#10B981' },
     { name: 'Pending', value: guestStats.pending, color: '#F59E0B' },
@@ -98,7 +98,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Guest Stats Section */}
+          {/* Guest Stats Section with larger donut hole */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -119,8 +119,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                           data={guestData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={40}
-                          outerRadius={60}
+                          innerRadius={45}
+                          outerRadius={65}
                           paddingAngle={4}
                           dataKey="value"
                           strokeWidth={0}
@@ -159,7 +159,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Recent Activities Section - Updated with dark blue color and user icon */}
+          {/* Recent Activities Section - Updated with user icon for everyone and partner name in dark pink */}
           {recentActivities.length > 0 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
@@ -173,10 +173,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
                       </div>
-                      <span className="text-blue-800 font-medium flex items-center gap-1">
-                        {activity.userName.includes("Partner") && 
-                          <UserRound className="h-3 w-3" />
-                        }
+                      <span className={`font-medium flex items-center gap-1 ${activity.userName.includes("Partner") ? "text-pink-600" : "text-blue-800"}`}>
+                        <UserRound className="h-3 w-3" />
                         {activity.userName}
                       </span>
                     </li>

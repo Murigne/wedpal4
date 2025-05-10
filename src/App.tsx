@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +24,7 @@ import Timeline from "./pages/Timeline";
 import Gifts from "./pages/Gifts";
 import MoodBoard from "./pages/MoodBoard";
 import Theme from "./pages/Theme";
+import AccountSettings from "./pages/AccountSettings";
 import { useState, useEffect } from "react";
 
 // Protected route component with vendor check
@@ -95,6 +97,11 @@ const AppRoutes = () => {
       <Route path="/edit-wedding-details" element={
         <ProtectedRoute vendorOnly={false}>
           <EditWeddingDetails />
+        </ProtectedRoute>
+      } />
+      <Route path="/account-settings" element={
+        <ProtectedRoute vendorOnly={false}>
+          <AccountSettings />
         </ProtectedRoute>
       } />
       <Route path="/vendor-signup" element={<VendorSignup />} />

@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { Palette, Check, RefreshCw, Heart } from 'lucide-react';
+import { Palette, Check, RefreshCw, Heart, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
+import { useDashboardData } from '@/hooks/useDashboardData';
 import PageLayout from '@/components/dashboard/PageLayout';
 
 interface ThemeOption {
@@ -19,7 +21,22 @@ interface ThemeOption {
 }
 
 const Theme = () => {
+  const navigate = useNavigate();
+  const { weddingColors } = useDashboardData();
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
+  
+  // Gradient animation background colors
+  const gradientBackgroundColors = [
+    "#ee7752", "#e73c7e", "#23a6d5", "#23d5ab"
+  ];
+  
+  // Base color palettes for wedding themes
+  const colorPalettes = [
+    { name: "Classic Romance", colors: ["#D8315B", "#FFFAFF", "#1B998B", "#2E294E"] },
+    { name: "Spring Pastels", colors: ["#FDE2E4", "#FAD2E1", "#E2CFC4", "#F7F7F7"] },
+    { name: "Summer Vibrant", colors: ["#FF7F50", "#FFD700", "#7FFF00", "#40E0D0"] },
+    { name: "Fall Warmth", colors: ["#582F0E", "#7F4F24", "#936639", "#A68A64"] }
+  ];
   
   const themeOptions: ThemeOption[] = [
     {
@@ -82,6 +99,10 @@ const Theme = () => {
     if (activeFilters.season && theme.season !== activeFilters.season) return false;
     return true;
   });
+  
+  const handleGoBack = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <PageLayout 
@@ -89,6 +110,82 @@ const Theme = () => {
       description="Choose the perfect color palette and style for your special day"
       icon={<Palette className="w-8 h-8" />}
     >
+      <div className="mb-6">
+        <Button 
+          variant="ghost" 
+          className="gap-2" 
+          onClick={handleGoBack}
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        </Button>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-6 mb-6">
+        {/* Current Theme Colors */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Current Theme Colors</CardTitle>
+            <CardDescription>These are the colors currently used in your wedding theme</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="text-sm font-medium mb-2">Your Preferred Wedding Colors</h3>
+              <div className="flex gap-2">
+                {weddingColors && weddingColors.length > 0 ? (
+                  weddingColors.map((color, index) => (
+                    <div 
+                      key={index} 
+                      className="h-10 w-10 rounded-full border border-gray-200 shadow-sm" 
+                      style={{ backgroundColor: color }}
+                    />
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No preferred colors selected yet</p>
+                )}
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium mb-2">Gradient Animation Background Colors</h3>
+              <div className="flex gap-2">
+                {gradientBackgroundColors.map((color, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <div 
+                      className="h-10 w-10 rounded-full border border-gray-200 shadow-sm" 
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-xs mt-1">{color}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 p-4 rounded-lg animated-gradient h-16 flex items-center justify-center text-white font-medium">
+                Animated Gradient Preview
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium mb-2">Onboarding Color Palettes</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {colorPalettes.map((palette, paletteIndex) => (
+                  <div key={paletteIndex} className="bg-gray-50 p-3 rounded-lg">
+                    <h4 className="text-xs font-medium mb-2">{palette.name}</h4>
+                    <div className="flex gap-1">
+                      {palette.colors.map((color, colorIndex) => (
+                        <div 
+                          key={colorIndex} 
+                          className="h-6 w-6 rounded-full border border-gray-200" 
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div className="md:col-span-4 space-y-6">
           <Card>
