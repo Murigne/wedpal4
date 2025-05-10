@@ -3,10 +3,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckSquare, Users, Palette, DollarSign } from 'lucide-react';
+import { CheckSquare, Users, DollarSign } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
+import ThemeColorSelector from './ThemeColorSelector';
 
-const QuickActions: React.FC = () => {
+interface QuickActionsProps {
+  weddingColors?: string[];
+}
+
+const QuickActions: React.FC<QuickActionsProps> = ({ weddingColors }) => {
   const navigate = useNavigate();
+  const { setThemeColors } = useTheme();
   
   const handleChecklistClick = () => {
     navigate('/timeline');
@@ -20,9 +27,8 @@ const QuickActions: React.FC = () => {
     navigate('/budget');
   };
   
-  const handleThemeClick = () => {
-    // We're leaving this as is for now
-    navigate('/theme');
+  const handleThemeColorChange = (colors: [string, string]) => {
+    setThemeColors(colors);
   };
 
   return (
@@ -55,14 +61,11 @@ const QuickActions: React.FC = () => {
           <DollarSign className="h-6 w-6 mb-1" />
           <span className="text-xs">Budget</span>
         </Button>
-        <Button 
-          variant="outline" 
-          className="flex flex-col items-center justify-center h-20 bg-white/70 hover:bg-white/90"
-          onClick={handleThemeClick}
-        >
-          <Palette className="h-6 w-6 mb-1" />
-          <span className="text-xs">Theme</span>
-        </Button>
+        
+        <ThemeColorSelector 
+          weddingColors={weddingColors} 
+          onColorChange={handleThemeColorChange} 
+        />
       </CardContent>
     </Card>
   );

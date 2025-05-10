@@ -31,10 +31,10 @@ const Dashboard = () => {
   
   // Recent user activities
   const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM" },
-    { action: "Confirmed photographer booking", date: "May 8, 2025" },
-    { action: "Created new guest list", date: "May 5, 2025" },
+    { action: "Added 3 new guests", date: "Today, 2:30 PM", user: "You" },
+    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", user: "You" },
+    { action: "Confirmed photographer booking", date: "May 8, 2025", user: "Partner" },
+    { action: "Created new guest list", date: "May 5, 2025", user: "You" },
   ];
 
   // Tasks data

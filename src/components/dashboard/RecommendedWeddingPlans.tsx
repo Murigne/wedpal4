@@ -8,7 +8,7 @@ import { GuestStats } from '@/types/guest';
 
 interface DashboardSummaryProps {
   preferredBudget: string;
-  recentActivities?: { action: string; date: string }[];
+  recentActivities?: { action: string; date: string; user?: string }[];
   guestStats: GuestStats;
   budgetSummary: {
     total: number;
@@ -168,9 +168,14 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               <CardContent>
                 <ul className="space-y-2">
                   {recentActivities.map((activity, index) => (
-                    <li key={index} className="text-sm border-b border-gray-100 pb-2 last:border-0">
-                      <span className="font-medium">{activity.action}</span>
-                      <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
+                    <li key={index} className="text-sm border-b border-gray-100 pb-2 last:border-0 flex justify-between items-center">
+                      <div>
+                        <span className="font-medium">{activity.action}</span>
+                        <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
+                      </div>
+                      {activity.user && (
+                        <span className="text-xs text-gray-600 font-medium">{activity.user}</span>
+                      )}
                     </li>
                   ))}
                 </ul>
