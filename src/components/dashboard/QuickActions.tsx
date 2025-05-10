@@ -33,35 +33,35 @@ const QuickActions: React.FC = () => {
       <CardContent className="grid grid-cols-2 gap-3">
         <Button 
           variant="outline" 
-          className="flex flex-col items-center justify-center h-20 bg-white/70 hover:bg-white/90"
+          className="flex flex-col items-center justify-center h-28 bg-white/70 hover:bg-white/90"
           onClick={handleChecklistClick}
         >
-          <CheckSquare className="h-6 w-6 mb-1" />
-          <span className="text-xs">Checklist</span>
+          <CheckSquare className="h-7 w-7 mb-2" />
+          <span className="text-sm">Checklist</span>
         </Button>
         <Button 
           variant="outline" 
-          className="flex flex-col items-center justify-center h-20 bg-white/70 hover:bg-white/90"
+          className="flex flex-col items-center justify-center h-28 bg-white/70 hover:bg-white/90"
           onClick={handleGuestsClick}
         >
-          <Users className="h-6 w-6 mb-1" />
-          <span className="text-xs">Guests</span>
+          <Users className="h-7 w-7 mb-2" />
+          <span className="text-sm">Guests</span>
         </Button>
         <Button 
           variant="outline" 
-          className="flex flex-col items-center justify-center h-20 bg-white/70 hover:bg-white/90"
+          className="flex flex-col items-center justify-center h-28 bg-white/70 hover:bg-white/90"
           onClick={handleBudgetClick}
         >
-          <DollarSign className="h-6 w-6 mb-1" />
-          <span className="text-xs">Budget</span>
+          <DollarSign className="h-7 w-7 mb-2" />
+          <span className="text-sm">Budget</span>
         </Button>
         <Button 
           variant="outline" 
-          className="flex flex-col items-center justify-center h-20 bg-white/70 hover:bg-white/90"
+          className="flex flex-col items-center justify-center h-28 bg-white/70 hover:bg-white/90"
           onClick={handleThemeClick}
         >
-          <Palette className="h-6 w-6 mb-1" />
-          <span className="text-xs">Theme</span>
+          <Palette className="h-7 w-7 mb-2" />
+          <span className="text-sm">Theme</span>
         </Button>
       </CardContent>
     </Card>

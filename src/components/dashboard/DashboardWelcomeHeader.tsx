@@ -46,7 +46,11 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-white/80 w-full">
         <p>
           Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
-          {weddingDate && <span> · Only {calculateDaysUntil(weddingDate)} days to go!</span>}
+          {weddingDate && (
+            <span> · Only {calculateDaysUntil(weddingDate)} days to go! 
+              <span className="ml-2 text-gold font-semibold">#ForeverTogether</span>
+            </span>
+          )}
         </p>
         
         {/* Action button for non-logged in users - remove duplicate button */}

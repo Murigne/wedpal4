@@ -27,7 +27,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
     : 0;
 
   return (
-    <Card className={cn("border-wedding-pink/20", className)}>
+    <Card className={cn("border-wedding-pink/20 min-h-[554px]", className)}>
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <div>
@@ -46,12 +46,12 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
           className="h-3 mb-6 bg-wedding-pink/20"
         />
         
-        <div className="space-y-3">
+        <div className="space-y-4 h-[420px] overflow-y-auto pr-2">
           {tasks.map(task => (
             <div 
               key={task.id}
               className={cn(
-                "flex items-center justify-between p-3 rounded-lg transition-colors",
+                "flex items-center justify-between p-4 rounded-lg transition-colors",
                 task.completed 
                   ? "bg-wedding-pink/10" 
                   : "bg-white/50 hover:bg-wedding-pink/5"
@@ -64,7 +64,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
                   <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 )}
                 <span className={cn(
-                  "line-clamp-2",
+                  "line-clamp-2 text-base",
                   task.completed && "line-through text-muted-foreground"
                 )}>
                   {task.title}

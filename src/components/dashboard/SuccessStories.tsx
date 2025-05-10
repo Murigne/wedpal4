@@ -118,7 +118,7 @@ const SuccessStories: React.FC = () => {
   }, [successStories.length]);
   
   return (
-    <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
+    <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90 min-h-[350px]">
       <CardHeader>
         <CardTitle className="flex items-center">
           <Users className="mr-2 h-5 w-5" />
@@ -129,12 +129,12 @@ const SuccessStories: React.FC = () => {
         <div 
           ref={containerRef} 
           className="flex space-x-4 overflow-x-hidden pb-4"
-          style={{ scrollBehavior: 'smooth' }}
+          style={{ scrollBehavior: 'smooth', height: '270px' }}
         >
           {successStories.map((story) => (
             <div 
               key={story.id}
-              className="min-w-[280px] flex-none rounded-lg overflow-hidden shadow-md bg-white transition-all duration-500 hover:shadow-lg"
+              className="min-w-[280px] flex-none rounded-lg overflow-hidden shadow-md bg-white transition-all duration-500 hover:shadow-lg h-full"
             >
               <div className="h-40 overflow-hidden">
                 <img 
@@ -143,7 +143,7 @@ const SuccessStories: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-4">
+              <div className="p-4 flex flex-col justify-between h-[calc(100%-10rem)]">
                 <h3 className="font-medium text-lg">{story.coupleName}</h3>
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
                   <span>{story.date}</span>

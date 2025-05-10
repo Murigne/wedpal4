@@ -49,7 +49,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Budget Summary Section */}
-          <Card>
+          <Card className="min-h-[320px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
                 <DollarSign className="w-5 h-5 mr-2" />
@@ -59,39 +59,39 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 Budget range: {preferredBudget}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col justify-between h-[calc(100%-5rem)]">
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="text-xl font-bold text-blue-600">
                       ${budgetSummary.total.toLocaleString()}
                     </div>
-                    <p className="text-xs text-blue-600">Total Budget</p>
+                    <p className="text-sm text-blue-600">Total Budget</p>
                   </div>
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <div className="text-xl font-bold text-green-600">
                       ${budgetSummary.spent.toLocaleString()}
                     </div>
-                    <p className="text-xs text-green-600">Spent</p>
+                    <p className="text-sm text-green-600">Spent</p>
                   </div>
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-purple-600">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <div className="text-xl font-bold text-purple-600">
                       ${budgetSummary.remaining.toLocaleString()}
                     </div>
-                    <p className="text-xs text-purple-600">Remaining</p>
+                    <p className="text-sm text-purple-600">Remaining</p>
                   </div>
                 </div>
                 
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 rounded-full h-3 mt-8">
                   <div 
-                    className="bg-wedding-pink h-2.5 rounded-full" 
+                    className="bg-wedding-pink h-3 rounded-full" 
                     style={{ 
                       width: `${Math.min(100, (budgetSummary.spent / budgetSummary.total) * 100)}%` 
                     }}
                   ></div>
                 </div>
                 
-                <div className="text-sm text-right">
+                <div className="text-sm text-right mt-2">
                   {Math.round((budgetSummary.spent / budgetSummary.total) * 100)}% of budget used
                 </div>
               </div>
@@ -99,7 +99,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
           </Card>
 
           {/* Guest Stats Section with larger donut hole */}
-          <Card>
+          <Card className="min-h-[320px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
                 <Users className="w-5 h-5 mr-2" />
@@ -109,10 +109,10 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 Total guests: {guestStats.total}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
+            <CardContent className="h-[calc(100%-5rem)]">
+              <div className="flex items-center justify-between h-full">
                 <div className="w-1/2 flex justify-center">
-                  <div className="relative" style={{ width: '140px', height: '140px' }}>
+                  <div className="relative h-[180px]" style={{ width: '180px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer>
                         <PieChart>
@@ -120,9 +120,11 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                             data={guestData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={55}
-                            outerRadius={70}
+                            innerRadius={60}
+                            outerRadius={80}
                             paddingAngle={4}
+                            startAngle={90}
+                            endAngle={450}
                             dataKey="value"
                             strokeWidth={0}
                           >
@@ -148,10 +150,10 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 
                 <div className="w-1/2 flex flex-col justify-center">
                   {guestData.map((entry, index) => (
-                    <div key={index} className="flex items-center mb-3">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: entry.color }}></div>
-                      <div className="text-sm font-medium">{entry.name}</div>
-                      <div className="ml-auto font-bold">{entry.value}</div>
+                    <div key={index} className="flex items-center mb-4">
+                      <div className="w-4 h-4 rounded-full mr-3" style={{ backgroundColor: entry.color }}></div>
+                      <div className="text-base font-medium">{entry.name}</div>
+                      <div className="ml-auto font-bold text-lg">{entry.value}</div>
                     </div>
                   ))}
                 </div>
@@ -159,16 +161,16 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Recent Activities Section - Updated with user icon for everyone and partner name in dark pink */}
+          {/* Recent Activities Section */}
           {recentActivities.length > 0 && (
-            <Card className="md:col-span-2">
+            <Card className="md:col-span-2 min-h-[260px]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Recent Activities</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {recentActivities.map((activity, index) => (
-                    <li key={index} className="text-sm border-b border-gray-100 pb-2 last:border-0 flex justify-between">
+                    <li key={index} className="text-sm border-b border-gray-100 pb-3 last:border-0 flex justify-between">
                       <div>
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
