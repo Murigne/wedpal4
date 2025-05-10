@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
@@ -22,19 +23,11 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   guestStats,
   budgetSummary
 }) => {
-  // Make sure guestStats exists and has valid properties
-  const safeGuestStats = {
-    confirmed: guestStats?.confirmed || 0,
-    pending: guestStats?.pending || 0, 
-    declined: guestStats?.declined || 0,
-    total: guestStats?.total || 0
-  };
-  
-  // Guest distribution data for pie chart with improved colors matching screenshot
+  // Guest distribution data for pie chart with theme-consistent colors
   const guestData = [
-    { name: 'Confirmed', value: safeGuestStats.confirmed, color: '#10B981' }, // Green color
-    { name: 'Pending', value: safeGuestStats.pending, color: '#F59E0B' },    // Amber color
-    { name: 'Declined', value: safeGuestStats.declined, color: '#EF4444' },  // Red color
+    { name: 'Confirmed', value: guestStats.confirmed, color: '#10B981' },
+    { name: 'Pending', value: guestStats.pending, color: '#F59E0B' },
+    { name: 'Declined', value: guestStats.declined, color: '#EF4444' },
   ];
 
   const chartConfig = {
@@ -71,19 +64,19 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">
-                      ${budgetSummary?.total?.toLocaleString() || "0"}
+                      ${budgetSummary.total.toLocaleString()}
                     </div>
                     <p className="text-xs text-blue-600">Total Budget</p>
                   </div>
                   <div className="bg-green-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
-                      ${budgetSummary?.spent?.toLocaleString() || "0"}
+                      ${budgetSummary.spent.toLocaleString()}
                     </div>
                     <p className="text-xs text-green-600">Spent</p>
                   </div>
                   <div className="bg-purple-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-purple-600">
-                      ${budgetSummary?.remaining?.toLocaleString() || "0"}
+                      ${budgetSummary.remaining.toLocaleString()}
                     </div>
                     <p className="text-xs text-purple-600">Remaining</p>
                   </div>
@@ -93,22 +86,19 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                   <div 
                     className="bg-wedding-pink h-2.5 rounded-full" 
                     style={{ 
-                      width: `${budgetSummary && budgetSummary.total > 0 ? 
-                        Math.min(100, (budgetSummary.spent / budgetSummary.total) * 100) : 0}%` 
+                      width: `${Math.min(100, (budgetSummary.spent / budgetSummary.total) * 100)}%` 
                     }}
                   ></div>
                 </div>
                 
                 <div className="text-sm text-right">
-                  {budgetSummary && budgetSummary.total > 0 ? 
-                    `${Math.round((budgetSummary.spent / budgetSummary.total) * 100)}% of budget used` : 
-                    "0% of budget used"}
+                  {Math.round((budgetSummary.spent / budgetSummary.total) * 100)}% of budget used
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Guest Stats Section - Updated donut chart configuration */}
+          {/* Guest Stats Section with larger donut hole */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -116,13 +106,13 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 Guest Responses
               </CardTitle>
               <CardDescription>
-                Total guests: {safeGuestStats.total}
+                Total guests: {guestStats.total}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="w-1/2 flex justify-center">
-                  <div className="relative h-[140px] w-[140px]">
+                  <div className="relative" style={{ width: '140px', height: '140px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer>
                         <PieChart>
@@ -130,10 +120,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                             data={guestData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={40}
+                            innerRadius={55}
                             outerRadius={70}
-                            startAngle={90}
-                            endAngle={-270}
                             paddingAngle={4}
                             dataKey="value"
                             strokeWidth={0}
@@ -171,8 +159,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Recent Activities Section */}
-          {recentActivities && recentActivities.length > 0 && (
+          {/* Recent Activities Section - Updated with user icon for everyone and partner name in dark pink */}
+          {recentActivities.length > 0 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Recent Activities</CardTitle>

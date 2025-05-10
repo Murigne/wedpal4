@@ -9,6 +9,7 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import AIRecommendedWeddingPlans from '@/components/ai/AIRecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useAuth } from '@/components/AuthProvider';
+import { GuestStats } from '@/types/guest';
 
 const AIAssistant = () => {
   const [message, setMessage] = useState('');
@@ -19,27 +20,6 @@ const AIAssistant = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const dashboardData = useDashboardData();
   const { user } = useAuth();
-  
-  // Sample guest statistics data for AIRecommendedWeddingPlans
-  const guestStats = {
-    total: 120,
-    confirmed: 45,
-    pending: 65,
-    declined: 10
-  };
-  
-  // Sample budget summary data
-  const budgetSummary = {
-    total: 25000,
-    spent: 9500,
-    remaining: 15500
-  };
-  
-  // Sample recent activities
-  const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: dashboardData.userName || "You" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: dashboardData.userName || "You" }
-  ];
   
   const handleSendMessage = () => {
     if (message.trim() === '') return;
@@ -63,6 +43,21 @@ const AIAssistant = () => {
     if (e.key === 'Enter') {
       handleSendMessage();
     }
+  };
+  
+  // Sample data for guest stats to prevent the "confirmed" error
+  const guestStats: GuestStats = {
+    total: 100,
+    confirmed: 45,
+    pending: 40,
+    declined: 15
+  };
+
+  // Sample budget summary data
+  const budgetSummary = {
+    total: 25000,
+    spent: 10000,
+    remaining: 15000
   };
   
   return (
@@ -136,9 +131,7 @@ const AIAssistant = () => {
             </div>
             
             <div className="lg:col-span-8">
-              <AIRecommendedWeddingPlans 
-                budgetRange={dashboardData.preferredBudget || "$5,000-15,000"} 
-              />
+              <AIRecommendedWeddingPlans budgetRange="GHS 5,000-15,000" />
             </div>
           </div>
         </main>
