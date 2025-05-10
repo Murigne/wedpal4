@@ -123,7 +123,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardHeader>
             <CardContent className="h-[calc(100%-5rem)]">
               <div className="flex items-center justify-between h-full">
-                <div className="w-1/2 flex justify-center">
+                <div className="w-1/2 flex justify-center py-[10px]">
                   <div style={{
                   width: '180px'
                 }} className="relative h-[180px] mt-[10px] my-0">
