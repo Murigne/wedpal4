@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
@@ -31,11 +30,11 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
     total: guestStats?.total || 0
   };
   
-  // Guest distribution data for pie chart with theme-consistent colors
+  // Guest distribution data for pie chart with improved colors matching screenshot
   const guestData = [
-    { name: 'Confirmed', value: safeGuestStats.confirmed, color: '#10B981' },
-    { name: 'Pending', value: safeGuestStats.pending, color: '#F59E0B' },
-    { name: 'Declined', value: safeGuestStats.declined, color: '#EF4444' },
+    { name: 'Confirmed', value: safeGuestStats.confirmed, color: '#10B981' }, // Green color
+    { name: 'Pending', value: safeGuestStats.pending, color: '#F59E0B' },    // Amber color
+    { name: 'Declined', value: safeGuestStats.declined, color: '#EF4444' },  // Red color
   ];
 
   const chartConfig = {
@@ -109,7 +108,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Guest Stats Section with larger donut hole */}
+          {/* Guest Stats Section - Updated donut chart configuration */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -131,8 +130,10 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                             data={guestData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={55}
+                            innerRadius={40}
                             outerRadius={70}
+                            startAngle={90}
+                            endAngle={-270}
                             paddingAngle={4}
                             dataKey="value"
                             strokeWidth={0}
@@ -170,7 +171,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Recent Activities Section - Updated with user icon for everyone and partner name in dark pink */}
+          {/* Recent Activities Section */}
           {recentActivities && recentActivities.length > 0 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
