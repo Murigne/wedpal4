@@ -27,7 +27,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
     : 0;
 
   return (
-    <Card className={cn("border-wedding-pink/20 min-h-[554px]", className)}>
+    <Card className={cn("border-wedding-pink/20 min-h-[710px]", className)}>
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <div>
