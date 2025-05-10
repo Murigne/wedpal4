@@ -20,7 +20,7 @@ interface DashboardMainContentProps {
   };
   weddingColors: string[];
   guestStats: GuestStats;
-  recentActivities: { action: string; date: string; user?: string }[];
+  recentActivities: { action: string; date: string }[];
   budgetSummary: {
     total: number;
     spent: number;
@@ -56,7 +56,7 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
       
       <div className="lg:col-span-3 space-y-5">
         {/* Swapped these two components as requested */}
-        <QuickActions weddingColors={weddingColors} />
+        <QuickActions />
         
         <WeddingProgressTracker tasks={tasks} className="w-full" />
       </div>
