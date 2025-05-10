@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
@@ -128,34 +129,37 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row items-center justify-between h-full">
+                {/* Fixed: Added explicit width and height to ensure chart renders properly */}
                 <div className="w-full md:w-1/2 h-44 flex items-center justify-center">
-                  <ChartContainer config={chartConfig}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                        <Pie 
-                          data={guestData} 
-                          cx="50%" 
-                          cy="50%" 
-                          innerRadius={60} 
-                          outerRadius={70} 
-                          paddingAngle={4} 
-                          startAngle={90} 
-                          endAngle={-270} 
-                          dataKey="value" 
-                          strokeWidth={0}
-                        >
-                          {guestData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <ChartTooltip 
-                          content={<ChartTooltipContent 
-                            formatter={(value, name) => [`${value} guests`, name]} 
-                          />} 
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
+                  <div style={{ width: '100%', height: '100%', minHeight: '176px' }}>
+                    <ChartContainer config={chartConfig}>
+                      <ResponsiveContainer width="100%" height={176}>
+                        <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                          <Pie 
+                            data={guestData} 
+                            cx="50%" 
+                            cy="50%" 
+                            innerRadius={60} 
+                            outerRadius={70} 
+                            paddingAngle={4} 
+                            startAngle={90} 
+                            endAngle={-270} 
+                            dataKey="value" 
+                            strokeWidth={0}
+                          >
+                            {guestData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <ChartTooltip 
+                            content={<ChartTooltipContent 
+                              formatter={(value, name) => [`${value} guests`, name]} 
+                            />} 
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
+                  </div>
                 </div>
                 
                 <div className="w-full md:w-1/2 flex flex-col justify-center mt-4 md:mt-0">
