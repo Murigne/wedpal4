@@ -46,7 +46,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
           className="h-3 mb-6 bg-wedding-pink/20"
         />
         
-        <div className="space-y-4 h-[420px] overflow-y-auto pr-2">
+        <div className="space-y-4 h-[536px] overflow-y-auto pr-2">
           {tasks.map(task => (
             <div 
               key={task.id}
