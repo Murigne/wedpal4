@@ -133,7 +133,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer width="100%" height={176}>
                         <PieChart margin={{
-                        top: 30,
+                        top: 20,
                         right: 0,
                         bottom: 0,
                         left: 0
