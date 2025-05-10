@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Wallet, Plus, Edit, Trash2, ChartBar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -349,9 +348,10 @@ const Budget = () => {
           </div>
         </div>
         
+        {/* Updated Budget Categories with fixed height that matches parent height */}
         <div className="md:col-span-7">
-          <Card className="h-full md:max-h-[695px]">
-            <CardHeader className="flex flex-row items-center justify-between">
+          <Card className="h-[calc(100vh-180px)] max-h-[767px]">
+            <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle>Budget Categories</CardTitle>
               <Button onClick={() => {
                 setCategoryForm({name: '', allocation: 0, spent: 0, total: 0});
@@ -361,10 +361,11 @@ const Budget = () => {
                 Add Category
               </Button>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[calc(100vh-320px)] max-h-[600px]">
-                <div className="space-y-4">
-                  {budget.categories.slice(0, 4).map((category) => (
+            <CardContent className="p-4 pb-6">
+              {/* ScrollArea with calculated height that respects the CardHeader */}
+              <ScrollArea className="h-[calc(100vh-180px-80px)] max-h-[687px] pr-1">
+                <div className="space-y-4 pr-4">
+                  {budget.categories.map((category) => (
                     <div key={category.id} className="p-4 border rounded-lg">
                       <div className="flex justify-between items-start mb-4">
                         <div>
