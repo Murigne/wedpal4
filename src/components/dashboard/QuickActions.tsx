@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckSquare, Users, Palette, DollarSign } from 'lucide-react';
+import { CheckSquare, Users, Bot, DollarSign } from 'lucide-react';
 
 const QuickActions: React.FC = () => {
   const navigate = useNavigate();
@@ -20,9 +20,8 @@ const QuickActions: React.FC = () => {
     navigate('/budget');
   };
   
-  const handleThemeClick = () => {
-    // We're leaving this as is for now
-    navigate('/theme');
+  const handleAIAssistantClick = () => {
+    navigate('/ai-assistant');
   };
 
   return (
@@ -58,10 +57,10 @@ const QuickActions: React.FC = () => {
         <Button 
           variant="outline" 
           className="flex flex-col items-center justify-center h-28 bg-white/70 hover:bg-white/90"
-          onClick={handleThemeClick}
+          onClick={handleAIAssistantClick}
         >
-          <Palette className="h-7 w-7 mb-2" />
-          <span className="text-sm">Theme</span>
+          <Bot className="h-7 w-7 mb-2" />
+          <span className="text-sm">AI Naa</span>
         </Button>
       </CardContent>
     </Card>

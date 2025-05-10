@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Save, Settings } from 'lucide-react';
+import { ArrowLeft, Save, Settings, Hash } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import { useDashboardData } from '@/hooks/useDashboardData';
@@ -14,10 +14,11 @@ import PageLayout from '@/components/dashboard/PageLayout';
 const AccountSettings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { userName, partnerName, updateUserAndPartnerNames } = useDashboardData();
+  const { userName, partnerName, weddingHashtag, updateUserAndPartnerNames, updateWeddingHashtag } = useDashboardData();
   
   const [newUserName, setNewUserName] = useState(userName || '');
   const [newPartnerName, setNewPartnerName] = useState(partnerName || '');
+  const [newWeddingHashtag, setNewWeddingHashtag] = useState(weddingHashtag || '');
   const [isSaving, setIsSaving] = useState(false);
   
   const handleSave = async () => {
@@ -33,15 +34,20 @@ const AccountSettings = () => {
     setIsSaving(true);
     
     try {
-      // This function should be implemented in useDashboardData
+      // Update names
       await updateUserAndPartnerNames(newUserName.trim(), newPartnerName.trim());
+      
+      // Update hashtag if it exists in the hook
+      if (updateWeddingHashtag) {
+        await updateWeddingHashtag(newWeddingHashtag.trim());
+      }
       
       toast({
         title: "Success",
         description: "Your account settings have been updated",
       });
     } catch (error) {
-      console.error('Error updating names:', error);
+      console.error('Error updating settings:', error);
       toast({
         title: "Error",
         description: "Failed to update your account settings",
@@ -98,6 +104,21 @@ const AccountSettings = () => {
                   onChange={(e) => setNewPartnerName(e.target.value)}
                   placeholder="Enter your partner's name"
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="weddingHashtag" className="flex items-center gap-2">
+                  <Hash className="h-4 w-4" /> Wedding Hashtag
+                </Label>
+                <Input 
+                  id="weddingHashtag"
+                  value={newWeddingHashtag}
+                  onChange={(e) => setNewWeddingHashtag(e.target.value)}
+                  placeholder="Enter your wedding hashtag"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Your hashtag will be displayed on your dashboard and can be used for social media.
+                </p>
               </div>
             </CardContent>
             <CardFooter className="justify-end">
