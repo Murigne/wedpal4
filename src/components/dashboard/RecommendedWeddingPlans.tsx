@@ -35,7 +35,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   }, {
     name: 'Pending',
     value: guestStats.pending,
-    color: '#ff00ba'
+    color: '#9333ea'
   }, {
     name: 'Declined',
     value: guestStats.declined,
@@ -49,7 +49,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
     },
     pending: {
       label: 'Pending',
-      color: '#ff00ba'
+      color: '#9333ea'
     },
     declined: {
       label: 'Declined',
