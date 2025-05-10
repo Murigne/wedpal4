@@ -115,7 +115,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Guest Stats Section with fixed chart display */}
+          {/* Guest Stats Section - FIXED */}
           <Card className="min-h-[320px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
@@ -127,42 +127,48 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row items-center justify-between h-full">
-                <div className="w-full md:w-1/2 h-44 flex items-center justify-center">
+              {/* This is the key fix - proper container height and chart configuration */}
+              <div className="flex flex-row items-center justify-between h-64">
+                {/* Chart container with explicit height */}
+                <div className="w-1/2 h-60" style={{ position: 'relative' }}>
                   <ChartContainer config={chartConfig}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                        <Pie 
-                          data={guestData} 
-                          cx="50%" 
-                          cy="50%" 
-                          innerRadius={40} 
-                          outerRadius={70} 
-                          paddingAngle={4} 
-                          startAngle={90} 
-                          endAngle={-270} 
-                          dataKey="value" 
+                        <Pie
+                          data={guestData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={45}
+                          outerRadius={70}
+                          paddingAngle={2}
+                          startAngle={0}
+                          endAngle={360}
                           strokeWidth={0}
                         >
                           {guestData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
-                        <ChartTooltip 
-                          content={<ChartTooltipContent 
-                            formatter={(value, name) => [`${value} guests`, name]} 
-                          />} 
+                        <ChartTooltip
+                          content={
+                            <ChartTooltipContent
+                              formatter={(value, name) => [`${value} guests`, name]}
+                            />
+                          }
                         />
                       </PieChart>
                     </ResponsiveContainer>
                   </ChartContainer>
                 </div>
                 
-                <div className="w-full md:w-1/2 flex flex-col justify-center mt-4 md:mt-0">
+                {/* Legend section */}
+                <div className="w-1/2 flex flex-col justify-center pl-4">
                   {guestData.map((entry, index) => (
                     <div key={index} className="flex items-center mb-4 last:mb-0">
-                      <div 
-                        className="w-4 h-4 rounded-full mr-3" 
+                      <div
+                        className="w-4 h-4 rounded-full mr-3"
                         style={{ backgroundColor: entry.color }}
                       ></div>
                       <div className="text-base font-medium">{entry.name}</div>
