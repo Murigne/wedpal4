@@ -363,7 +363,7 @@ const Budget = () => {
             </CardHeader>
             <CardContent className="p-4 pb-6">
               {/* ScrollArea with calculated height that respects the CardHeader */}
-              <ScrollArea className="h-[calc(100vh-180px-80px)] max-h-[687px] pr-1">
+              <ScrollArea className="h-[calc(100vh-180px-80px)] max-h-[570px] pr-1">
                 <div className="space-y-4 pr-4">
                   {budget.categories.map((category) => (
                     <div key={category.id} className="p-4 border rounded-lg">
