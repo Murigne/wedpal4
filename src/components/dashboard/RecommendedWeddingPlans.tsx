@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { DollarSign, Users } from 'lucide-react';
+import { DollarSign, Users, UserRound } from 'lucide-react';
 import { GuestStats } from '@/types/guest';
 
 interface DashboardSummaryProps {
@@ -159,7 +159,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             </CardContent>
           </Card>
 
-          {/* Recent Activities Section - Updated to show user names */}
+          {/* Recent Activities Section - Updated with dark blue color and user icon */}
           {recentActivities.length > 0 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
@@ -173,7 +173,12 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
                       </div>
-                      <span className="text-xs text-wedding-pink font-medium">{activity.userName}</span>
+                      <span className="text-blue-800 font-medium flex items-center gap-1">
+                        {activity.userName.includes("Partner") && 
+                          <UserRound className="h-3 w-3" />
+                        }
+                        {activity.userName}
+                      </span>
                     </li>
                   ))}
                 </ul>

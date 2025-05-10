@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -29,12 +28,12 @@ const Dashboard = () => {
     remaining: 15500
   };
   
-  // Recent user activities with user names
+  // Recent user activities with partner names
   const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: user?.email?.split('@')[0] || dashboardData.userName || "You" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: user?.email?.split('@')[0] || dashboardData.userName || "You" },
+    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: dashboardData.userName || "You" },
+    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: dashboardData.userName || "You" },
     { action: "Confirmed photographer booking", date: "May 8, 2025", userName: dashboardData.partnerName || "Partner" },
-    { action: "Created new guest list", date: "May 5, 2025", userName: user?.email?.split('@')[0] || dashboardData.userName || "You" },
+    { action: "Created new guest list", date: "May 5, 2025", userName: dashboardData.userName || "You" },
   ];
 
   // Tasks data
