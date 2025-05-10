@@ -9,6 +9,7 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardSummary from '@/components/dashboard/RecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { GuestStats } from '@/types/guest';
+import { useAuth } from '@/components/AuthProvider';
 
 const AIAssistant = () => {
   const [message, setMessage] = useState('');
@@ -18,6 +19,7 @@ const AIAssistant = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const dashboardData = useDashboardData();
+  const { user } = useAuth();
   
   const handleSendMessage = () => {
     if (message.trim() === '') return;
@@ -60,10 +62,10 @@ const AIAssistant = () => {
   
   // Recent user activities
   const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM" },
-    { action: "Confirmed photographer booking", date: "May 8, 2025" },
-    { action: "Created new guest list", date: "May 5, 2025" },
+    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: dashboardData.userName || "You" },
+    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: dashboardData.userName || "You" },
+    { action: "Confirmed photographer booking", date: "May 8, 2025", userName: dashboardData.partnerName || "Partner" },
+    { action: "Created new guest list", date: "May 5, 2025", userName: dashboardData.userName || "You" },
   ];
   
   return (
