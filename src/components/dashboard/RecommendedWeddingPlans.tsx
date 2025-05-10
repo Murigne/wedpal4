@@ -123,8 +123,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="w-1/2 flex justify-center">
-                  <div className="relative">
-                    <ChartContainer width={140} height={140} config={chartConfig}>
+                  <div className="relative h-[140px] w-[140px]">
+                    <ChartContainer config={chartConfig}>
                       <ResponsiveContainer>
                         <PieChart>
                           <Pie
