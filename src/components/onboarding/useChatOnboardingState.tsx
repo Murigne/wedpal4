@@ -39,7 +39,7 @@ export const useChatOnboardingState = () => {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Keep only 4 questions in the onboarding flow
+  // Keep only 3 questions in the onboarding flow
   const QUESTIONS: QuestionType[] = [
     {
       message: "Hi there! I'm your wedding planning assistant. What are your names?",

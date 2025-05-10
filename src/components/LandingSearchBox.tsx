@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ArrowLeft, SendHorizonal } from 'lucide-react';
@@ -20,10 +21,6 @@ const questions = [
   { id: 'partnerName', question: "What's your partner's name?", type: 'text' },
   { id: 'date', question: "When are you planning to get married?", type: 'date' },
   { id: 'colors', question: "What are your wedding colours? (Select up to 3)", type: 'color' },
-  { id: 'budget', question: "What's your estimated budget? Don't worry, no amount is too small : )", type: 'number', prefix: 'GHS' },
-  { id: 'venue', question: "Do you prefer an indoor or outdoor wedding?", type: 'radio', options: ['Indoor', 'Outdoor', 'Both'] },
-  { id: 'guests', question: "How many guests are you expecting?", type: 'number' },
-  { id: 'vendors', question: "Do you need vendor recommendations?", type: 'radio', options: ['Yes', 'No', 'Not sure yet'] },
 ];
 
 const colorOptions = [
@@ -56,8 +53,6 @@ const LandingSearchBox = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [customColor, setCustomColor] = useState('');
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [selectedHashtag, setSelectedHashtag] = useState('');
-  const [customHashtag, setCustomHashtag] = useState('');
   const form = useForm();
   const navigate = useNavigate();
 
@@ -104,19 +99,6 @@ const LandingSearchBox = () => {
     setInputValue(value);
   };
 
-  const formatNumberWithCommas = (value: string): string => {
-    const numericValue = value.replace(/[^\d]/g, '');
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
-  const handleNumberInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/[^\d]/g, '');
-    if (/^\d*$/.test(rawValue)) {
-      const formattedValue = formatNumberWithCommas(rawValue);
-      setInputValue(formattedValue);
-    }
-  };
-
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement | HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (currentQuestion.type === 'date' && selectedDate) {
@@ -124,10 +106,6 @@ const LandingSearchBox = () => {
         e.preventDefault();
       }
     }
-  };
-
-  const handleHashtagSelection = (hashtag: string) => {
-    setSelectedHashtag(hashtag);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,10 +122,7 @@ const LandingSearchBox = () => {
     } else if (currentQuestion.type === 'color') {
       if (selectedColors.length === 0) return;
       userResponse = selectedColors;
-    } else if (currentQuestion.type === 'number') {
-      if (!inputValue.trim() || isNaN(Number(inputValue.replace(/,/g, '')))) return;
-      userResponse = Number(inputValue.replace(/,/g, ''));
-    } else if (currentQuestion.type === 'text' || currentQuestion.type === 'radio') {
+    } else if (currentQuestion.type === 'text') {
       if (!inputValue.trim()) return;
     }
     
@@ -176,15 +151,10 @@ const LandingSearchBox = () => {
       const gradientStyle = `linear-gradient(-45deg, ${gradientColors.join(', ')})`;
       root.style.setProperty('--dynamic-gradient', gradientStyle);
       document.querySelector('.animated-gradient')?.classList.add('dynamic-gradient');
-    }
-    
-    setTimeout(() => {
-      setInputValue('');
-      setSelectedDate(undefined);
       
-      if (currentQuestionIndex === questions.length - 1) {
-        // Navigate directly to dashboard after final question
-        console.log("Final question answered, navigating to dashboard");
+      // Navigate to dashboard after the colors question
+      console.log("Colors question answered, navigating to dashboard");
+      setTimeout(() => {
         navigate('/dashboard', { 
           state: { 
             formData: {...answers, [currentQuestion.id]: userResponse},
@@ -192,8 +162,13 @@ const LandingSearchBox = () => {
             isNewUser: true // Flag to indicate this is a new user coming from onboarding
           } 
         });
-        return;
-      }
+      }, 300);
+      return;
+    }
+    
+    setTimeout(() => {
+      setInputValue('');
+      setSelectedDate(undefined);
       
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
       setIsTransitioning(false);
@@ -217,11 +192,6 @@ const LandingSearchBox = () => {
         setSelectedColors(answers[currentQuestion.id] || []);
       } else if (currentQuestion.type === 'radio') {
         setInputValue(answers[currentQuestion.id] || '');
-      } else if (currentQuestion.type === 'number') {
-        const value = answers[currentQuestion.id] || '';
-        setInputValue(value ? formatNumberWithCommas(String(value)) : '');
-      } else if (currentQuestion.type === 'hashtag') {
-        setSelectedHashtag(answers[currentQuestion.id] || '');
       } else {
         setInputValue(String(answers[currentQuestion.id] || ''));
       }
@@ -229,7 +199,6 @@ const LandingSearchBox = () => {
       setInputValue('');
       setSelectedDate(undefined);
       setSelectedColors([]);
-      setSelectedHashtag('');
     }
   }, [currentQuestionIndex, answers]);
 
@@ -281,33 +250,6 @@ const LandingSearchBox = () => {
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder="Type your answer here..."
                     className="w-full pl-4 pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300"
-                    autoFocus
-                    onKeyDown={handleKeyDown}
-                  />
-                  <Button 
-                    type="submit"
-                    size="sm"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full h-9 w-9"
-                    disabled={isTransitioning}
-                  >
-                    <SendHorizonal className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-
-              {currentQuestion.type === 'number' && (
-                <div className="relative">
-                  {currentQuestion.id === 'budget' && inputValue && (
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                      <span className="text-gray-500">GHS </span>
-                    </div>
-                  )}
-                  <Input
-                    type="text"
-                    value={inputValue}
-                    onChange={handleNumberInputChange}
-                    placeholder="Enter a number..."
-                    className={`w-full ${currentQuestion.id === 'budget' && inputValue ? 'pl-16' : 'pl-4'} pr-14 py-5 text-base rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-300`}
                     autoFocus
                     onKeyDown={handleKeyDown}
                   />
@@ -421,32 +363,6 @@ const LandingSearchBox = () => {
                       type="submit"
                       className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
                       disabled={selectedColors.length === 0 || isTransitioning}
-                    >
-                      Next <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {currentQuestion.type === 'radio' && currentQuestion.options && (
-                <div className="space-y-4">
-                  <RadioGroup 
-                    value={inputValue} 
-                    onValueChange={handleRadioChange}
-                    className="flex flex-col space-y-3"
-                  >
-                    {currentQuestion.options.map((option) => (
-                      <div key={option} className="flex items-center space-x-3 rounded-lg border border-gray-200 p-4 cursor-pointer hover:bg-gray-50">
-                        <RadioGroupItem value={option} id={option} />
-                        <Label htmlFor={option} className="cursor-pointer flex-1">{option}</Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                  <div className="flex justify-end">
-                    <Button 
-                      type="submit"
-                      className="bg-pink-500 hover:bg-pink-600 text-white rounded-full"
-                      disabled={!inputValue || isTransitioning}
                     >
                       Next <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
