@@ -8,7 +8,7 @@ import { calculateDaysUntil } from '@/utils/dateUtils';
 interface DashboardWelcomeHeaderProps {
   userName: string;
   partnerName: string;
-  weddingDate: string;
+  weddingDate: string; // Updated to string type
   formattedWeddingDate: string;
   weddingHashtag: string;
   user: any;
