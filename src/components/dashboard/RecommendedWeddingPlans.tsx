@@ -113,26 +113,26 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               <div className="flex items-center justify-between">
                 <div className="w-1/2 flex justify-center">
                   <div className="relative">
-                    <ResponsiveContainer width={140} height={140}>
-                      <PieChart>
-                        <Pie
-                          data={guestData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={45}
-                          outerRadius={65}
-                          paddingAngle={4}
-                          dataKey="value"
-                          strokeWidth={0}
-                        >
-                          {guestData.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={entry.color} 
-                            />
-                          ))}
-                        </Pie>
-                        <ChartContainer config={chartConfig}>
+                    <ChartContainer width={140} height={140} config={chartConfig}>
+                      <ResponsiveContainer>
+                        <PieChart>
+                          <Pie
+                            data={guestData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={55}  /* INCREASED inner radius for larger donut hole */
+                            outerRadius={70}
+                            paddingAngle={4}
+                            dataKey="value"
+                            strokeWidth={0}
+                          >
+                            {guestData.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.color} 
+                              />
+                            ))}
+                          </Pie>
                           <ChartTooltip
                             content={
                               <ChartTooltipContent 
@@ -140,9 +140,9 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                               />
                             }
                           />
-                        </ChartContainer>
-                      </PieChart>
-                    </ResponsiveContainer>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </ChartContainer>
                   </div>
                 </div>
                 
