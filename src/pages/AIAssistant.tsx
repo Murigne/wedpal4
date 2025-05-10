@@ -8,6 +8,7 @@ import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { GuestStats } from '@/types/guest';
 
 const AIAssistant = () => {
   const [message, setMessage] = useState('');
@@ -81,6 +82,24 @@ const AIAssistant = () => {
       highlight: false
     }
   ];
+
+  // Sample guest stats data required by RecommendedWeddingPlans component
+  const guestStats: GuestStats = {
+    total: 0,
+    confirmed: 0,
+    pending: 0,
+    declined: 0
+  };
+  
+  // Sample budget summary data required by RecommendedWeddingPlans component
+  const budgetSummary = {
+    total: 15000,
+    spent: 0,
+    remaining: 15000
+  };
+  
+  // Sample activities (empty for now)
+  const recentActivities = [];
   
   return (
     <div className="min-h-screen">
@@ -156,6 +175,9 @@ const AIAssistant = () => {
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget="$5,000-15,000"
+                guestStats={guestStats}
+                budgetSummary={budgetSummary}
+                recentActivities={recentActivities}
               />
             </div>
           </div>
