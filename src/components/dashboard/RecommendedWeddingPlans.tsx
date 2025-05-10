@@ -70,7 +70,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Budget Summary Section */}
-          <Card className="min-h-[320px]">
+          <Card className="min-h-[0px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center">
                 <DollarSign className="w-5 h-5 mr-2" />
