@@ -134,7 +134,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                       <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                         <Pie 
                           data={guestData} 
-                          cx="40%" 
+                          cx="50%" 
                           cy="50%" 
                           innerRadius={60} 
                           outerRadius={70} 
