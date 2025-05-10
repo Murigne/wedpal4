@@ -31,29 +31,29 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   const guestData = [{
     name: 'Confirmed',
     value: guestStats.confirmed,
-    color: '#10B981'
+    color: '#a400ff'
   }, {
     name: 'Pending',
     value: guestStats.pending,
-    color: '#F59E0B'
+    color: '#e800ff'
   }, {
     name: 'Declined',
     value: guestStats.declined,
-    color: '#EF4444'
+    color: '#00ffd6'
   }];
 
   const chartConfig = {
     confirmed: {
       label: 'Confirmed',
-      color: '#10B981'
+      color: '##a400ff'
     },
     pending: {
       label: 'Pending',
-      color: '#F59E0B'
+      color: '#e800ff'
     },
     declined: {
       label: 'Declined',
-      color: '#EF4444'
+      color: '#00ffd6'
     }
   };
 
