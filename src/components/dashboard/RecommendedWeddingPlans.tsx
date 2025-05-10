@@ -23,11 +23,19 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   guestStats,
   budgetSummary
 }) => {
+  // Make sure guestStats exists and has valid properties
+  const safeGuestStats = {
+    confirmed: guestStats?.confirmed || 0,
+    pending: guestStats?.pending || 0, 
+    declined: guestStats?.declined || 0,
+    total: guestStats?.total || 0
+  };
+  
   // Guest distribution data for pie chart with theme-consistent colors
   const guestData = [
-    { name: 'Confirmed', value: guestStats.confirmed, color: '#10B981' },
-    { name: 'Pending', value: guestStats.pending, color: '#F59E0B' },
-    { name: 'Declined', value: guestStats.declined, color: '#EF4444' },
+    { name: 'Confirmed', value: safeGuestStats.confirmed, color: '#10B981' },
+    { name: 'Pending', value: safeGuestStats.pending, color: '#F59E0B' },
+    { name: 'Declined', value: safeGuestStats.declined, color: '#EF4444' },
   ];
 
   const chartConfig = {
@@ -64,19 +72,19 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">
-                      ${budgetSummary.total.toLocaleString()}
+                      ${budgetSummary?.total?.toLocaleString() || "0"}
                     </div>
                     <p className="text-xs text-blue-600">Total Budget</p>
                   </div>
                   <div className="bg-green-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
-                      ${budgetSummary.spent.toLocaleString()}
+                      ${budgetSummary?.spent?.toLocaleString() || "0"}
                     </div>
                     <p className="text-xs text-green-600">Spent</p>
                   </div>
                   <div className="bg-purple-50 p-3 rounded-lg">
                     <div className="text-lg font-bold text-purple-600">
-                      ${budgetSummary.remaining.toLocaleString()}
+                      ${budgetSummary?.remaining?.toLocaleString() || "0"}
                     </div>
                     <p className="text-xs text-purple-600">Remaining</p>
                   </div>
@@ -86,13 +94,16 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                   <div 
                     className="bg-wedding-pink h-2.5 rounded-full" 
                     style={{ 
-                      width: `${Math.min(100, (budgetSummary.spent / budgetSummary.total) * 100)}%` 
+                      width: `${budgetSummary && budgetSummary.total > 0 ? 
+                        Math.min(100, (budgetSummary.spent / budgetSummary.total) * 100) : 0}%` 
                     }}
                   ></div>
                 </div>
                 
                 <div className="text-sm text-right">
-                  {Math.round((budgetSummary.spent / budgetSummary.total) * 100)}% of budget used
+                  {budgetSummary && budgetSummary.total > 0 ? 
+                    `${Math.round((budgetSummary.spent / budgetSummary.total) * 100)}% of budget used` : 
+                    "0% of budget used"}
                 </div>
               </div>
             </CardContent>
@@ -106,7 +117,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 Guest Responses
               </CardTitle>
               <CardDescription>
-                Total guests: {guestStats.total}
+                Total guests: {safeGuestStats.total}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -120,7 +131,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                             data={guestData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={55}  /* INCREASED inner radius for larger donut hole */
+                            innerRadius={55}
                             outerRadius={70}
                             paddingAngle={4}
                             dataKey="value"
@@ -160,7 +171,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
           </Card>
 
           {/* Recent Activities Section - Updated with user icon for everyone and partner name in dark pink */}
-          {recentActivities.length > 0 && (
+          {recentActivities && recentActivities.length > 0 && (
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Recent Activities</CardTitle>

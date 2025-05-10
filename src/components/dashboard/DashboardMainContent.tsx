@@ -46,9 +46,9 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
       <div className="lg:col-span-9 space-y-5">
         <DashboardSummary 
           preferredBudget={preferredBudget}
-          guestStats={guestStats}
-          recentActivities={recentActivities}
-          budgetSummary={budgetSummary}
+          guestStats={guestStats || { total: 0, confirmed: 0, pending: 0, declined: 0 }}
+          recentActivities={recentActivities || []}
+          budgetSummary={budgetSummary || { total: 0, spent: 0, remaining: 0 }}
         />
         
         <SuccessStories />
