@@ -6,9 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import DashboardSummary from '@/components/dashboard/RecommendedWeddingPlans';
+import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import { GuestStats } from '@/types/guest';
 import { useAuth } from '@/components/AuthProvider';
 
 const AIAssistant = () => {
@@ -44,29 +43,6 @@ const AIAssistant = () => {
       handleSendMessage();
     }
   };
-  
-  // Guest statistics data for the sidebar
-  const guestStats: GuestStats = {
-    total: 120,
-    confirmed: 45,
-    pending: 65,
-    declined: 10
-  };
-  
-  // Budget summary data
-  const budgetSummary = {
-    total: 25000,
-    spent: 9500,
-    remaining: 15500
-  };
-  
-  // Recent user activities
-  const recentActivities = [
-    { action: "Added 3 new guests", date: "Today, 2:30 PM", userName: dashboardData.userName || "You" },
-    { action: "Updated venue budget", date: "Yesterday, 4:15 PM", userName: dashboardData.userName || "You" },
-    { action: "Confirmed photographer booking", date: "May 8, 2025", userName: dashboardData.partnerName || "Partner" },
-    { action: "Created new guest list", date: "May 5, 2025", userName: dashboardData.userName || "You" },
-  ];
   
   return (
     <div className="min-h-screen">
@@ -139,12 +115,7 @@ const AIAssistant = () => {
             </div>
             
             <div className="lg:col-span-8">
-              <DashboardSummary 
-                preferredBudget="$5,000-15,000"
-                guestStats={guestStats}
-                recentActivities={recentActivities}
-                budgetSummary={budgetSummary}
-              />
+              <RecommendedWeddingPlans preferredBudget="$5,000-15,000" />
             </div>
           </div>
         </main>
