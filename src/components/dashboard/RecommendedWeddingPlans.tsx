@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { DollarSign, Users, UserRound } from 'lucide-react';
 import { GuestStats } from '@/types/guest';
+
 interface DashboardSummaryProps {
   preferredBudget: string;
   recentActivities?: {
@@ -18,6 +20,7 @@ interface DashboardSummaryProps {
     remaining: number;
   };
 }
+
 const DashboardSummary: React.FC<DashboardSummaryProps> = ({
   preferredBudget,
   recentActivities = [],
@@ -38,6 +41,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
     value: guestStats.declined,
     color: '#EF4444'
   }];
+
   const chartConfig = {
     confirmed: {
       label: 'Confirmed',
@@ -52,7 +56,9 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
       color: '#EF4444'
     }
   };
-  return <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
+
+  return (
+    <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center">
           Dashboard Summary
@@ -99,8 +105,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 
                 <div className="w-full bg-gray-200 rounded-full h-3 mt-8">
                   <div className="bg-wedding-pink h-3 rounded-full" style={{
-                  width: `${Math.min(100, budgetSummary.spent / budgetSummary.total * 100)}%`
-                }}></div>
+                    width: `${Math.min(100, budgetSummary.spent / budgetSummary.total * 100)}%`
+                  }}></div>
                 </div>
                 
                 <div className="text-sm text-right mt-2">
@@ -125,23 +131,31 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               <div className="flex flex-col md:flex-row items-center justify-between h-full">
                 {/* Fixed: Added explicit width and height to ensure chart renders properly */}
                 <div className="w-full md:w-1/2 h-100 flex items-center justify-center">
-                  <div style={{
-                  width: '100%',
-                  height: '100%',
-                  minHeight: '176px'
-                }} className="py-[45px]">
+                  <div style={{ width: '100%', height: '100%', minHeight: '176px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer width="100%" height={176}>
-                        <PieChart margin={{
-                        top: 20,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                      }}>
-                          <Pie data={guestData} cx="50%" cy="50%" innerRadius={60} outerRadius={70} paddingAngle={4} startAngle={90} endAngle={-270} dataKey="value" strokeWidth={0}>
-                            {guestData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                        <PieChart margin={{ top: 30, right: 0, bottom: 0, left: 0 }}>
+                          <Pie 
+                            data={guestData} 
+                            cx="50%" 
+                            cy="50%" 
+                            innerRadius={60} 
+                            outerRadius={70} 
+                            paddingAngle={4} 
+                            startAngle={90} 
+                            endAngle={-270} 
+                            dataKey="value" 
+                            strokeWidth={0}
+                          >
+                            {guestData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
                           </Pie>
-                          <ChartTooltip content={<ChartTooltipContent formatter={(value, name) => [`${value} guests`, name]} />} />
+                          <ChartTooltip 
+                            content={<ChartTooltipContent 
+                              formatter={(value, name) => [`${value} guests`, name]} 
+                            />} 
+                          />
                         </PieChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -149,26 +163,31 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                 </div>
                 
                 <div className="w-full md:w-1/2 flex flex-col justify-center mt-4 md:mt-0">
-                  {guestData.map((entry, index) => <div key={index} className="flex items-center mb-4 last:mb-0">
-                      <div className="w-4 h-4 rounded-full mr-3" style={{
-                    backgroundColor: entry.color
-                  }}></div>
+                  {guestData.map((entry, index) => (
+                    <div key={index} className="flex items-center mb-4 last:mb-0">
+                      <div 
+                        className="w-4 h-4 rounded-full mr-3" 
+                        style={{ backgroundColor: entry.color }}
+                      ></div>
                       <div className="text-base font-medium">{entry.name}</div>
                       <div className="ml-auto font-bold text-lg">{entry.value}</div>
-                    </div>)}
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Recent Activities Section */}
-          {recentActivities.length > 0 && <Card className="md:col-span-2 min-h-[260px]">
+          {recentActivities.length > 0 && (
+            <Card className="md:col-span-2 min-h-[260px]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Recent Activities</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {recentActivities.map((activity, index) => <li key={index} className="text-sm border-b border-gray-100 pb-3 last:border-0 flex justify-between">
+                  {recentActivities.map((activity, index) => (
+                    <li key={index} className="text-sm border-b border-gray-100 pb-3 last:border-0 flex justify-between">
                       <div>
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
@@ -177,12 +196,16 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                         <UserRound className="h-3 w-3" />
                         {activity.userName}
                       </span>
-                    </li>)}
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
-            </Card>}
+            </Card>
+          )}
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
+
 export default DashboardSummary;
