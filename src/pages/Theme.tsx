@@ -1,146 +1,107 @@
 
-import React, { useState, useEffect } from 'react';
-import { Palette, ArrowLeft, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Palette, Check, RefreshCw, Heart, ArrowLeft } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import PageLayout from '@/components/dashboard/PageLayout';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { toast } from '@/components/ui/use-toast';
+
+interface ThemeOption {
+  id: string;
+  name: string;
+  colors: string[];
+  style: 'classic' | 'modern' | 'rustic' | 'bohemian';
+  season: 'spring' | 'summer' | 'fall' | 'winter';
+  image: string;
+}
 
 const Theme = () => {
   const navigate = useNavigate();
   const { weddingColors } = useDashboardData();
-  const [showColorDialog, setShowColorDialog] = useState(false);
-  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
-  const [activeColorIndex, setActiveColorIndex] = useState<number | null>(null);
-  const [temporaryColors, setTemporaryColors] = useState<string[]>([]);
-  const [isPreferredColorsActive, setIsPreferredColorsActive] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   
-  // Default gradient animation background colors (not editable)
-  const defaultGradientColors = [
+  // Gradient animation background colors
+  const gradientBackgroundColors = [
     "#ee7752", "#e73c7e", "#23a6d5", "#23d5ab"
   ];
-
-  const [gradientBackgroundColors, setGradientBackgroundColors] = useState<string[]>(defaultGradientColors);
   
-  // Base color palettes for color selection
+  // Base color palettes for wedding themes
   const colorPalettes = [
     { name: "Classic Romance", colors: ["#D8315B", "#FFFAFF", "#1B998B", "#2E294E"] },
     { name: "Spring Pastels", colors: ["#FDE2E4", "#FAD2E1", "#E2CFC4", "#F7F7F7"] },
     { name: "Summer Vibrant", colors: ["#FF7F50", "#FFD700", "#7FFF00", "#40E0D0"] },
     { name: "Fall Warmth", colors: ["#582F0E", "#7F4F24", "#936639", "#A68A64"] }
   ];
+  
+  const themeOptions: ThemeOption[] = [
+    {
+      id: '1',
+      name: 'Elegant Blush',
+      colors: ['#FDE2E4', '#FAD2E1', '#E2CFC4', '#F7F7F7', '#C9CCD5'],
+      style: 'classic',
+      season: 'spring',
+      image: 'https://placehold.co/600x400',
+    },
+    {
+      id: '2',
+      name: 'Tropical Paradise',
+      colors: ['#264653', '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51'],
+      style: 'modern',
+      season: 'summer',
+      image: 'https://placehold.co/600x400',
+    },
+    {
+      id: '3',
+      name: 'Rustic Autumn',
+      colors: ['#582F0E', '#7F4F24', '#936639', '#A68A64', '#B6AD90'],
+      style: 'rustic',
+      season: 'fall',
+      image: 'https://placehold.co/600x400',
+    },
+    {
+      id: '4',
+      name: 'Winter Wonderland',
+      colors: ['#CAF0F8', '#90E0EF', '#00B4D8', '#0077B6', '#03045E'],
+      style: 'modern',
+      season: 'winter',
+      image: 'https://placehold.co/600x400',
+    },
+    {
+      id: '5',
+      name: 'Bohemian Garden',
+      colors: ['#FF7F50', '#FFD700', '#7FFF00', '#40E0D0', '#9370DB'],
+      style: 'bohemian',
+      season: 'summer',
+      image: 'https://placehold.co/600x400',
+    },
+    {
+      id: '6',
+      name: 'Classic Romance',
+      colors: ['#D8315B', '#FFFAFF', '#1B998B', '#2E294E', '#0E0E52'],
+      style: 'classic',
+      season: 'spring',
+      image: 'https://placehold.co/600x400',
+    },
+  ];
 
-  // All colors flattened for the color picker
-  const allPaletteColors = colorPalettes.flatMap(palette => palette.colors);
+  const [activeFilters, setActiveFilters] = useState({
+    style: '',
+    season: '',
+  });
 
-  useEffect(() => {
-    // Initialize temporary colors with current gradient colors
-    setTemporaryColors([...gradientBackgroundColors]);
-  }, [gradientBackgroundColors]);
+  const filteredThemes = themeOptions.filter(theme => {
+    if (activeFilters.style && theme.style !== activeFilters.style) return false;
+    if (activeFilters.season && theme.season !== activeFilters.season) return false;
+    return true;
+  });
   
   const handleGoBack = () => {
     navigate('/dashboard');
-  };
-
-  const handleColorClick = (index: number) => {
-    setSelectedColorIndex(index);
-    setShowColorDialog(true);
-  };
-
-  const handlePaletteColorSelect = (color: string) => {
-    if (selectedColorIndex !== null && weddingColors) {
-      // Only allow editing preferred wedding colors, not default gradient colors
-      const newColors = [...weddingColors];
-      newColors[selectedColorIndex] = color;
-      
-      // Save to localStorage immediately
-      localStorage.setItem('weddingColors', JSON.stringify(newColors));
-      
-      // Update in state
-      setTemporaryColors(isPreferredColorsActive ? newColors : [...defaultGradientColors]);
-    }
-    setShowColorDialog(false);
-  };
-
-  const handleCustomColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (selectedColorIndex !== null && weddingColors) {
-      // Only affects wedding colors, not gradient colors
-      const newColors = [...weddingColors];
-      newColors[selectedColorIndex] = e.target.value;
-      
-      // Update the temporary state to see changes in real-time
-      if (isPreferredColorsActive) {
-        const updatedColors = [...temporaryColors];
-        updatedColors[selectedColorIndex] = e.target.value;
-        setTemporaryColors(updatedColors);
-      }
-    }
-  };
-
-  const handleApplyTheme = () => {
-    // If preferred colors are active, use them as gradient colors
-    if (isPreferredColorsActive && weddingColors && weddingColors.length > 0) {
-      // Create a copy to ensure we have enough colors
-      const colorsToApply = [...weddingColors];
-      while (colorsToApply.length < 4) {
-        colorsToApply.push(defaultGradientColors[colorsToApply.length]);
-      }
-      
-      // Update gradient colors
-      setGradientBackgroundColors(colorsToApply.slice(0, 4));
-      
-      toast({
-        title: "Theme Applied",
-        description: "Your preferred wedding colors are now applied as the theme across all screens.",
-      });
-      
-      // Update real-time preview
-      document.documentElement.style.setProperty('--gradient-color-1', colorsToApply[0]);
-      document.documentElement.style.setProperty('--gradient-color-2', colorsToApply[1]);
-      document.documentElement.style.setProperty('--gradient-color-3', colorsToApply.length > 2 ? colorsToApply[2] : colorsToApply[0]);
-      document.documentElement.style.setProperty('--gradient-color-4', colorsToApply.length > 3 ? colorsToApply[3] : colorsToApply[1]);
-    } else {
-      // Reset to default colors
-      setGradientBackgroundColors([...defaultGradientColors]);
-      
-      toast({
-        title: "Default Theme Applied",
-        description: "The default color theme has been applied across all screens.",
-      });
-      
-      // Update real-time preview
-      document.documentElement.style.setProperty('--gradient-color-1', defaultGradientColors[0]);
-      document.documentElement.style.setProperty('--gradient-color-2', defaultGradientColors[1]);
-      document.documentElement.style.setProperty('--gradient-color-3', defaultGradientColors[2]);
-      document.documentElement.style.setProperty('--gradient-color-4', defaultGradientColors[3]);
-    }
-  };
-
-  const toggleColorSet = () => {
-    if (isPreferredColorsActive && weddingColors && weddingColors.length > 0) {
-      // Switch back to default colors
-      setIsPreferredColorsActive(false);
-      setTemporaryColors([...defaultGradientColors]);
-    } else if (weddingColors && weddingColors.length > 0) {
-      // Switch to preferred wedding colors
-      setIsPreferredColorsActive(true);
-      // Use wedding colors, fill any missing slots with default colors
-      const combined = [...weddingColors];
-      while (combined.length < 4) {
-        combined.push(defaultGradientColors[combined.length]);
-      }
-      setTemporaryColors(combined.slice(0, 4));
-    }
   };
 
   return (
@@ -164,132 +125,258 @@ const Theme = () => {
         <Card>
           <CardHeader>
             <CardTitle>Current Theme Colors</CardTitle>
-            <CardDescription>Customize the colors used across your wedding planning app</CardDescription>
+            <CardDescription>These are the colors currently used in your wedding theme</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex flex-col gap-4">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium">Your Preferred Wedding Colors</h3>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={toggleColorSet}
-                    disabled={!weddingColors || weddingColors.length === 0}
-                  >
-                    {isPreferredColorsActive ? "Use Default Colors" : "Use Wedding Colors"}
-                  </Button>
-                </div>
-                <div className="flex gap-2">
-                  {weddingColors && weddingColors.length > 0 ? (
-                    weddingColors.map((color, index) => (
-                      <div 
-                        key={`wedding-color-${index}`}
-                        className="h-10 w-10 rounded-full border border-gray-200 shadow-sm cursor-pointer"
-                        style={{ backgroundColor: color }}
-                        onClick={() => handleColorClick(index)}
-                      />
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No preferred colors selected yet</p>
-                  )}
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Gradient Animation Background Colors</h3>
-                <div className="flex gap-2">
-                  {temporaryColors.map((color, index) => (
+            <div>
+              <h3 className="text-sm font-medium mb-2">Your Preferred Wedding Colors</h3>
+              <div className="flex gap-2">
+                {weddingColors && weddingColors.length > 0 ? (
+                  weddingColors.map((color, index) => (
                     <div 
-                      key={`gradient-color-${index}`} 
-                      className={`flex flex-col items-center ${activeColorIndex === index ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
-                      onMouseEnter={() => setActiveColorIndex(index)}
-                      onMouseLeave={() => setActiveColorIndex(null)}
-                    >
-                      <div 
-                        className="h-10 w-10 rounded-full border border-gray-200 shadow-sm" 
-                        style={{ backgroundColor: color }}
-                      />
-                      <span className="text-xs mt-1">{color}</span>
+                      key={index} 
+                      className="h-10 w-10 rounded-full border border-gray-200 shadow-sm" 
+                      style={{ backgroundColor: color }}
+                    />
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No preferred colors selected yet</p>
+                )}
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium mb-2">Gradient Animation Background Colors</h3>
+              <div className="flex gap-2">
+                {gradientBackgroundColors.map((color, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <div 
+                      className="h-10 w-10 rounded-full border border-gray-200 shadow-sm" 
+                      style={{ backgroundColor: color }}
+                    />
+                    <span className="text-xs mt-1">{color}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 p-4 rounded-lg animated-gradient h-16 flex items-center justify-center text-white font-medium">
+                Animated Gradient Preview
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium mb-2">Onboarding Color Palettes</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {colorPalettes.map((palette, paletteIndex) => (
+                  <div key={paletteIndex} className="bg-gray-50 p-3 rounded-lg">
+                    <h4 className="text-xs font-medium mb-2">{palette.name}</h4>
+                    <div className="flex gap-1">
+                      {palette.colors.map((color, colorIndex) => (
+                        <div 
+                          key={colorIndex} 
+                          className="h-6 w-6 rounded-full border border-gray-200" 
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <div className="mt-3 p-4 rounded-lg h-16 flex items-center justify-center text-white font-medium"
-                  style={{
-                    background: `linear-gradient(135deg, ${temporaryColors.join(', ')})`,
-                    backgroundSize: '300% 300%',
-                    animation: 'gradient-animation 10s ease infinite'
-                  }}
-                >
-                  Animated Gradient Preview
-                </div>
-                
-                <div className="flex justify-end mt-4">
-                  <Button 
-                    onClick={handleApplyTheme}
-                    className="bg-wedding-pink hover:bg-wedding-pink-dark"
-                  >
-                    <Check className="mr-2 h-4 w-4" />
-                    Apply Theme
-                  </Button>
-                </div>
+                  </div>
+                ))}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Color Selection Dialog */}
-      <Dialog open={showColorDialog} onOpenChange={setShowColorDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Choose a Color</DialogTitle>
-            <DialogDescription>
-              Select from preset colors or enter a custom color value.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid grid-cols-8 gap-2 py-4">
-            {allPaletteColors.map((color, index) => (
-              <div
-                key={`palette-color-${index}`}
-                className="w-8 h-8 rounded-full border border-gray-200 cursor-pointer hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-                onClick={() => handlePaletteColorSelect(color)}
-              />
-            ))}
-          </div>
-          
-          <div className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="custom-color" className="text-sm font-medium">
-                Custom Color
-              </label>
-              <div className="flex gap-2 mt-1">
-                <input
-                  type="color"
-                  id="custom-color"
-                  className="w-12 h-10"
-                  value={selectedColorIndex !== null && weddingColors ? weddingColors[selectedColorIndex] : "#ffffff"}
-                  onChange={handleCustomColorChange}
-                />
-                <input
-                  type="text"
-                  className="flex-grow px-3 py-2 border rounded-md"
-                  value={selectedColorIndex !== null && weddingColors ? weddingColors[selectedColorIndex] : "#ffffff"}
-                  onChange={handleCustomColorChange}
-                />
+      
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="md:col-span-4 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme Preferences</CardTitle>
+              <CardDescription>Filter themes based on your preferences</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="text-sm font-medium mb-3">Wedding Style</h3>
+                <RadioGroup 
+                  value={activeFilters.style} 
+                  onValueChange={(value) => setActiveFilters({...activeFilters, style: value})}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="style-all" />
+                    <Label htmlFor="style-all">All Styles</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="classic" id="style-classic" />
+                    <Label htmlFor="style-classic">Classic</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="modern" id="style-modern" />
+                    <Label htmlFor="style-modern">Modern</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="rustic" id="style-rustic" />
+                    <Label htmlFor="style-rustic">Rustic</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="bohemian" id="style-bohemian" />
+                    <Label htmlFor="style-bohemian">Bohemian</Label>
+                  </div>
+                </RadioGroup>
               </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button onClick={() => handlePaletteColorSelect(selectedColorIndex !== null && weddingColors ? weddingColors[selectedColorIndex] : "#ffffff")}>
-              Apply Color
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              
+              <div>
+                <h3 className="text-sm font-medium mb-3">Season</h3>
+                <RadioGroup 
+                  value={activeFilters.season} 
+                  onValueChange={(value) => setActiveFilters({...activeFilters, season: value})}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="season-all" />
+                    <Label htmlFor="season-all">All Seasons</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="spring" id="season-spring" />
+                    <Label htmlFor="season-spring">Spring</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="summer" id="season-summer" />
+                    <Label htmlFor="season-summer">Summer</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="fall" id="season-fall" />
+                    <Label htmlFor="season-fall">Fall</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="winter" id="season-winter" />
+                    <Label htmlFor="season-winter">Winter</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
+              <Button variant="outline" className="w-full" onClick={() => setActiveFilters({ style: '', season: '' })}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Reset Filters
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Create Custom Theme</CardTitle>
+              <CardDescription>
+                Design your own unique wedding color palette
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full">
+                <Palette className="w-4 h-4 mr-2" />
+                Start Creating
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="md:col-span-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wedding Themes</CardTitle>
+              <CardDescription>
+                Browse through our curated collection of wedding themes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="grid">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="grid">Grid View</TabsTrigger>
+                  <TabsTrigger value="list">List View</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="grid" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {filteredThemes.map((theme) => (
+                    <Card key={theme.id} className={`overflow-hidden cursor-pointer hover:shadow-md transition-shadow ${selectedTheme === theme.id ? 'ring-2 ring-primary' : ''}`}
+                      onClick={() => setSelectedTheme(theme.id)}>
+                      <div className="aspect-video w-full overflow-hidden">
+                        <img src={theme.image} alt={theme.name} className="object-cover w-full h-full" />
+                      </div>
+                      <CardContent className="p-4">
+                        <h3 className="font-medium">{theme.name}</h3>
+                        <div className="flex gap-1 mt-2">
+                          {theme.colors.map((color, index) => (
+                            <div 
+                              key={index} 
+                              className="h-6 w-6 rounded-full" 
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex gap-2 mt-3">
+                          <Badge variant="outline" className="text-xs">
+                            {theme.style.charAt(0).toUpperCase() + theme.style.slice(1)}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {theme.season.charAt(0).toUpperCase() + theme.season.slice(1)}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="flex justify-between p-4 pt-0">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-gray-500"
+                        >
+                          <Heart className="h-4 w-4 mr-1" />
+                          Save
+                        </Button>
+                        
+                        {selectedTheme === theme.id && (
+                          <Badge className="bg-green-500">
+                            <Check className="h-3 w-3 mr-1" />
+                            Selected
+                          </Badge>
+                        )}
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </TabsContent>
+                
+                <TabsContent value="list">
+                  <div className="space-y-4">
+                    {filteredThemes.map((theme) => (
+                      <div key={theme.id} className="flex gap-4 border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+                        <div className="w-24 h-24 flex-shrink-0 rounded overflow-hidden">
+                          <img src={theme.image} alt={theme.name} className="object-cover w-full h-full" />
+                        </div>
+                        <div className="flex-grow">
+                          <h3 className="font-medium">{theme.name}</h3>
+                          <div className="flex gap-2 mt-1">
+                            <Badge variant="outline" className="text-xs">
+                              {theme.style.charAt(0).toUpperCase() + theme.style.slice(1)}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {theme.season.charAt(0).toUpperCase() + theme.season.slice(1)}
+                            </Badge>
+                          </div>
+                          <div className="flex gap-1 mt-2">
+                            {theme.colors.map((color, index) => (
+                              <div 
+                                key={index} 
+                                className="h-5 w-5 rounded-full" 
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <Button size="sm" variant="outline">Select</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </PageLayout>
   );
 };

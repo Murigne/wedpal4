@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
 import WeddingTemplates from '@/components/WeddingTemplates';
 import QuickActions from '@/components/dashboard/QuickActions';
-import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import DashboardSummary from '@/components/dashboard/RecommendedWeddingPlans';
 import SuccessStories from '@/components/dashboard/SuccessStories';
 import { GuestStats } from '@/types/guest';
 
@@ -44,7 +44,7 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
       sidebarExpanded ? "pr-0" : ""
     )}>
       <div className="lg:col-span-9 space-y-5">
-        <RecommendedWeddingPlans 
+        <DashboardSummary 
           preferredBudget={preferredBudget}
           guestStats={guestStats}
           recentActivities={recentActivities}

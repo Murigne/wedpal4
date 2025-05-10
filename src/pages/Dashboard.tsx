@@ -76,7 +76,7 @@ const Dashboard = () => {
       <DashboardWelcomeHeader
         userName={dashboardData.userName}
         partnerName={dashboardData.partnerName}
-        weddingDate={dashboardData.weddingDate ? dashboardData.weddingDate.toISOString() : ""}
+        weddingDate={dashboardData.weddingDate ? dashboardData.weddingDate.toString() : ""}
         formattedWeddingDate={dashboardData.formattedWeddingDate}
         weddingHashtag={dashboardData.weddingHashtag}
         user={user}
