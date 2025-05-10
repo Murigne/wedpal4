@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import DashboardSummary from '@/components/dashboard/RecommendedWeddingPlans';
+import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { GuestStats } from '@/types/guest';
 import { useAuth } from '@/components/AuthProvider';
@@ -139,7 +139,7 @@ const AIAssistant = () => {
             </div>
             
             <div className="lg:col-span-8">
-              <DashboardSummary 
+              <RecommendedWeddingPlans 
                 preferredBudget="$5,000-15,000"
                 guestStats={guestStats}
                 recentActivities={recentActivities}

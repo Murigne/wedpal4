@@ -119,8 +119,8 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                           data={guestData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={45}
-                          outerRadius={65}
+                          innerRadius={50}
+                          outerRadius={70}
                           paddingAngle={4}
                           dataKey="value"
                           strokeWidth={0}
@@ -173,7 +173,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
                       </div>
-                      <span className={`font-medium flex items-center gap-1 ${activity.userName.includes("Partner") ? "text-pink-600" : "text-blue-800"}`}>
+                      <span className={`font-medium flex items-center gap-1 ${activity.userName.includes("Partner") ? "text-pink-700" : "text-blue-800"}`}>
                         <UserRound className="h-3 w-3" />
                         {activity.userName}
                       </span>
