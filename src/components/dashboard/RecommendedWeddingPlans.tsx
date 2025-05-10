@@ -131,7 +131,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               <div className="flex flex-col md:flex-row items-center justify-between h-full">
                 {/* Fixed: Added explicit width and height to ensure chart renders properly */}
                 <div className="w-full md:w-1/2 h-44 flex items-center justify-center">
-                  <div style={{ width: '100%', height: '100%', minHeight: '176px' }}>
+                  <div style={{ width: '100%', height: '0%', minHeight: '176px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer width="100%" height={176}>
                         <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
