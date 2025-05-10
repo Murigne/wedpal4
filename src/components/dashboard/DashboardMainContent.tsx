@@ -4,13 +4,13 @@ import { cn } from '@/lib/utils';
 import WeddingProgressTracker from '@/components/WeddingProgressTracker';
 import WeddingTemplates from '@/components/WeddingTemplates';
 import QuickActions from '@/components/dashboard/QuickActions';
-import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import DashboardSummary from '@/components/dashboard/RecommendedWeddingPlans';
 import SuccessStories from '@/components/dashboard/SuccessStories';
+import { GuestStats } from '@/types/guest';
 
 interface DashboardMainContentProps {
   sidebarExpanded: boolean;
   tasks: any[];
-  weddingPlans: any[];
   preferredBudget: string;
   userPreferences: {
     indoor: boolean;
@@ -19,15 +19,24 @@ interface DashboardMainContentProps {
     seasonal: string;
   };
   weddingColors: string[];
+  guestStats: GuestStats;
+  recentActivities: { action: string; date: string }[];
+  budgetSummary: {
+    total: number;
+    spent: number;
+    remaining: number;
+  };
 }
 
 const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
   sidebarExpanded,
   tasks,
-  weddingPlans,
   preferredBudget,
   userPreferences,
-  weddingColors
+  weddingColors,
+  guestStats,
+  recentActivities,
+  budgetSummary
 }) => {
   return (
     <div className={cn(
@@ -35,9 +44,11 @@ const DashboardMainContent: React.FC<DashboardMainContentProps> = ({
       sidebarExpanded ? "pr-0" : ""
     )}>
       <div className="lg:col-span-9 space-y-5">
-        <RecommendedWeddingPlans 
-          weddingPlans={weddingPlans}
+        <DashboardSummary 
           preferredBudget={preferredBudget}
+          guestStats={guestStats}
+          recentActivities={recentActivities}
+          budgetSummary={budgetSummary}
         />
         
         <SuccessStories />

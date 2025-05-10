@@ -6,6 +6,7 @@ import DashboardWelcomeHeader from '@/components/dashboard/DashboardWelcomeHeade
 import DashboardMainContent from '@/components/dashboard/DashboardMainContent';
 import PartnerInviteDialog from '@/components/dashboard/PartnerInviteDialog';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { GuestStats } from '@/types/guest';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -13,67 +14,27 @@ const Dashboard = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
   
-  // Wedding plans data
-  const weddingPlans = [
-    {
-      title: 'Intimate & Cozy',
-      description: 'Perfect for a cozy celebration with your closest loved ones',
-      price: 'GHS 5k - 10k',
-      timeline: '3-6 months',
-      guests: '30-50 people',
-      features: [
-        'Intimate venue setting',
-        'Simplified catering menu',
-        'DJ instead of live band',
-        'Digital invitations',
-        'Minimal floral arrangements'
-      ]
-    },
-    {
-      title: 'Classic Romance',
-      description: 'The traditional wedding experience with all the essentials',
-      price: 'GHS 15k - 25k',
-      timeline: '9-12 months',
-      guests: '80-120 people',
-      features: [
-        'Traditional venue',
-        'Full catering service',
-        'Professional photography',
-        'Floral arrangements',
-        'DJ and dance floor'
-      ],
-      highlight: true
-    },
-    {
-      title: 'Royal Delight',
-      description: 'An extraordinary celebration with premium amenities',
-      price: 'GHS 30k+',
-      timeline: '12-18 months',
-      guests: '150-200+ people',
-      features: [
-        'Premium venue',
-        'Gourmet catering',
-        'Live band entertainment',
-        'Full wedding planner',
-        'Video & photography package',
-        'Custom decor & lighting'
-      ]
-    },
-    {
-      title: 'Fairytale',
-      description: 'A magical experience in a breathtaking location',
-      price: 'GHS 20k - 35k',
-      timeline: '10-14 months',
-      guests: '50-80 people',
-      features: [
-        'Exotic location venue',
-        'Travel arrangements',
-        'Welcome reception',
-        'Multiple day events',
-        'Group activities',
-        'Local cultural elements'
-      ]
-    }
+  // Guest statistics data
+  const guestStats: GuestStats = {
+    total: 120,
+    confirmed: 45,
+    pending: 65,
+    declined: 10
+  };
+  
+  // Budget summary data
+  const budgetSummary = {
+    total: 25000,
+    spent: 9500,
+    remaining: 15500
+  };
+  
+  // Recent user activities
+  const recentActivities = [
+    { action: "Added 3 new guests", date: "Today, 2:30 PM" },
+    { action: "Updated venue budget", date: "Yesterday, 4:15 PM" },
+    { action: "Confirmed photographer booking", date: "May 8, 2025" },
+    { action: "Created new guest list", date: "May 5, 2025" },
   ];
 
   // Tasks data
@@ -130,10 +91,12 @@ const Dashboard = () => {
       <DashboardMainContent
         sidebarExpanded={sidebarExpanded}
         tasks={tasks}
-        weddingPlans={weddingPlans}
         preferredBudget={dashboardData.preferredBudget}
         userPreferences={userPreferences}
         weddingColors={dashboardData.weddingColors}
+        guestStats={guestStats}
+        recentActivities={recentActivities}
+        budgetSummary={budgetSummary}
       />
     </DashboardLayout>
   );
