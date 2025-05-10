@@ -112,15 +112,15 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="w-1/2 flex justify-center">
-                  <div className="relative">
-                    <ChartContainer width={140} height={140} config={chartConfig}>
+                  <div className="relative" style={{ width: '140px', height: '140px' }}>
+                    <ChartContainer config={chartConfig}>
                       <ResponsiveContainer>
                         <PieChart>
                           <Pie
                             data={guestData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={55}  /* INCREASED inner radius for larger donut hole */
+                            innerRadius={55}
                             outerRadius={70}
                             paddingAngle={4}
                             dataKey="value"
