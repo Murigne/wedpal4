@@ -113,13 +113,14 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
               <div className="flex items-center justify-between">
                 <div className="w-1/2 flex justify-center">
                   <div className="relative">
+                    {/* Using larger inner radius (55) for bigger donut hole */}
                     <ResponsiveContainer width={140} height={140}>
                       <PieChart>
                         <Pie
                           data={guestData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={55}  {/* INCREASED inner radius for larger donut hole */}
+                          innerRadius={55}
                           outerRadius={70}
                           paddingAngle={4}
                           dataKey="value"
