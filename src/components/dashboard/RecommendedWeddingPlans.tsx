@@ -30,6 +30,12 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
     { name: 'Declined', value: guestStats.declined, color: '#EF4444' },
   ];
 
+  const chartConfig = {
+    confirmed: { label: 'Confirmed', color: '#10B981' },
+    pending: { label: 'Pending', color: '#F59E0B' },
+    declined: { label: 'Declined', color: '#EF4444' },
+  };
+
   return (
     <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
       <CardHeader className="pb-3">
@@ -126,13 +132,15 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                             />
                           ))}
                         </Pie>
-                        <ChartTooltip
-                          content={
-                            <ChartTooltipContent 
-                              formatter={(value, name) => [`${value} guests`, name]}
-                            />
-                          }
-                        />
+                        <ChartContainer config={chartConfig}>
+                          <ChartTooltip
+                            content={
+                              <ChartTooltipContent 
+                                formatter={(value, name) => [`${value} guests`, name]}
+                              />
+                            }
+                          />
+                        </ChartContainer>
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
