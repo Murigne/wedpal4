@@ -112,7 +112,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
             <CardContent className="h-[calc(100%-5rem)]">
               <div className="flex items-center justify-between h-full">
                 <div className="w-1/2 flex justify-center">
-                  <div className="relative h-[180px]" style={{ width: '180px' }}>
+                  <div className="relative h-[180px] mt-[10px]" style={{ width: '180px' }}>
                     <ChartContainer config={chartConfig}>
                       <ResponsiveContainer>
                         <PieChart>
