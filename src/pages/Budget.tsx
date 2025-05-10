@@ -350,7 +350,7 @@ const Budget = () => {
         
         {/* Updated Budget Categories with fixed height that matches parent height */}
         <div className="md:col-span-7">
-          <Card className="h-[calc(100vh-180px)] max-h-[650px]">
+          <Card className="h-[calc(100vh-180px)] max-h-[670px]">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle>Budget Categories</CardTitle>
               <Button onClick={() => {
