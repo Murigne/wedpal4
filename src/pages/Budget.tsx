@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Wallet, Plus, Edit, Trash2, ChartBar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -89,6 +90,24 @@ const Budget = () => {
   // Calculate budget percentage
   const budgetPercentage = (budget.spent / budget.total) * 100;
 
+  // Calculate remaining budget (total minus sum of all category allocations)
+  const calculateRemainingBudget = () => {
+    const allocatedBudget = budget.categories.reduce((sum, category) => sum + category.total, 0);
+    return budget.total - allocatedBudget;
+  };
+
+  // Get the maximum amount that can be allocated to a new category
+  const getMaxAllowableBudget = (categoryId?: string) => {
+    if (categoryId) {
+      // For editing, we need to exclude the current category's allocation
+      const currentCategory = budget.categories.find(cat => cat.id === categoryId);
+      const currentAllocation = currentCategory ? currentCategory.total : 0;
+      return calculateRemainingBudget() + currentAllocation;
+    }
+    // For new categories, just return the remaining budget
+    return calculateRemainingBudget();
+  };
+
   // Mock vendors from the vendor marketplace
   const mockVendors = [
     { id: 1, name: "Elegant Gardens Venue", category: "Venues", price: 10000 },
@@ -135,6 +154,17 @@ const Budget = () => {
       return;
     }
     
+    // Check if the amount exceeds the remaining budget
+    const remainingBudget = calculateRemainingBudget();
+    if (categoryForm.total > remainingBudget) {
+      toast({
+        title: "Budget limit exceeded",
+        description: `The maximum amount you can allocate is GHS ${remainingBudget.toLocaleString()}`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Prevent spending more than the allocated budget
     const spentAmount = Math.min(categoryForm.spent, categoryForm.total);
     
@@ -168,6 +198,17 @@ const Budget = () => {
   // Handle editing a budget category
   const handleEditCategory = () => {
     if (!categoryForm.id) return;
+    
+    // Check if the new amount exceeds the available budget
+    const maxAllowable = getMaxAllowableBudget(categoryForm.id);
+    if (categoryForm.total > maxAllowable) {
+      toast({
+        title: "Budget limit exceeded",
+        description: `The maximum amount you can allocate is GHS ${maxAllowable.toLocaleString()}`,
+        variant: "destructive"
+      });
+      return;
+    }
     
     // Prevent spending more than the allocated budget
     const spentAmount = Math.min(categoryForm.spent, categoryForm.total);
@@ -238,6 +279,20 @@ const Budget = () => {
 
   // Handle vendor selection for a category
   const handleSelectVendor = (vendor: typeof mockVendors[0]) => {
+    // Check if the vendor price exceeds the available budget
+    const remainingBudget = categoryForm.id ? 
+      getMaxAllowableBudget(categoryForm.id) :
+      calculateRemainingBudget();
+      
+    if (vendor.price > remainingBudget) {
+      toast({
+        title: "Vendor price exceeds budget",
+        description: `This vendor's price (GHS ${vendor.price.toLocaleString()}) exceeds your remaining budget of GHS ${remainingBudget.toLocaleString()}`,
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setCategoryForm({
       ...categoryForm,
       vendor: vendor.name,
@@ -307,11 +362,7 @@ const Budget = () => {
                     indicatorColor={getBudgetProgressColor(budgetPercentage)}
                     showValueOnBar={true}
                   />
-                  {budgetPercentage >= 100 && (
-                    <p className="text-sm text-red-500 font-medium mt-1">
-                      You have exceeded your budget
-                    </p>
-                  )}
+                  {/* Removed the "You have exceeded your budget" warning */}
                 </div>
               </CardContent>
             </Card>
@@ -489,7 +540,11 @@ const Budget = () => {
                 type="number"
                 value={categoryForm.total}
                 onChange={(e) => setCategoryForm({...categoryForm, total: Number(e.target.value)})}
+                max={calculateRemainingBudget()}
               />
+              <p className="text-xs text-muted-foreground">
+                Maximum available: GHS {calculateRemainingBudget().toLocaleString()}
+              </p>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="category-spent">Spent Amount (GHS)</Label>
@@ -584,7 +639,11 @@ const Budget = () => {
                 type="number"
                 value={categoryForm.total}
                 onChange={(e) => setCategoryForm({...categoryForm, total: Number(e.target.value)})}
+                max={getMaxAllowableBudget(categoryForm.id)}
               />
+              <p className="text-xs text-muted-foreground">
+                Maximum available: GHS {getMaxAllowableBudget(categoryForm.id).toLocaleString()}
+              </p>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-category-spent">Spent Amount (GHS)</Label>

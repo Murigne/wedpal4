@@ -14,7 +14,7 @@ import PageLayout from '@/components/dashboard/PageLayout';
 const AccountSettings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { userName, partnerName, weddingHashtag, updateUserAndPartnerNames, updateWeddingHashtag } = useDashboardData();
+  const { userName, partnerName, weddingHashtag, updateUserAndPartnerNames } = useDashboardData();
   
   const [newUserName, setNewUserName] = useState(userName || '');
   const [newPartnerName, setNewPartnerName] = useState(partnerName || '');
@@ -36,11 +36,6 @@ const AccountSettings = () => {
     try {
       // Update names
       await updateUserAndPartnerNames(newUserName.trim(), newPartnerName.trim());
-      
-      // Update hashtag if it exists in the hook
-      if (updateWeddingHashtag) {
-        await updateWeddingHashtag(newWeddingHashtag.trim());
-      }
       
       toast({
         title: "Success",
