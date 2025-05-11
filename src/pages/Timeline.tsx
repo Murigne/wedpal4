@@ -326,7 +326,7 @@ const Timeline = () => {
               </Button>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden">
-              <ScrollArea className="h-[calc(100vh-370px)] pr-4">
+              <ScrollArea className="h-[calc(100vh-410px)] pr-4">
                 <div className="relative pl-8 space-y-6 pb-4">
                   {/* Timeline line */}
                   <div className="absolute top-0 bottom-0 left-3 w-0.5 bg-gray-200" />
