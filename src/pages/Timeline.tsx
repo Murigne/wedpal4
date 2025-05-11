@@ -311,7 +311,7 @@ const Timeline = () => {
         </div>
         
         {/* Right column - timeline with proper scrolling */}
-        <div className="md:col-span-8 flex flex-col h-full">
+        <div className="md:col-span-8 flex flex-col">
           <Card className="h-full flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
