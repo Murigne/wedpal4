@@ -288,7 +288,7 @@ const Gifts = () => {
         </div>
         
         <div className="md:col-span-8">
-          <Card className="h-full flex flex-col md:max-h-[595px]">
+          <Card className="h-full flex flex-col md:max-h-[600px]">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Your Gift Registry</CardTitle>
