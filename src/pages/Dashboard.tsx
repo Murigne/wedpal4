@@ -37,14 +37,14 @@ const Dashboard = () => {
     { action: "Created new guest list", date: "May 5, 2025", userName: dashboardData.userName || "You" },
   ];
 
-  // Tasks data
+  // Tasks data updated with categories
   const tasks = [
-    { id: '1', title: 'Set your wedding date', completed: true, dueDate: 'Completed' },
-    { id: '2', title: 'Create guest list', completed: false, dueDate: '3 months before' },
-    { id: '3', title: 'Book venue', completed: false, dueDate: '10 months before' },
-    { id: '4', title: 'Book photographer', completed: false, dueDate: '8 months before' },
-    { id: '5', title: 'Choose wedding attire', completed: false, dueDate: '6 months before' },
-    { id: '6', title: 'Send invitations', completed: false, dueDate: '3 months before' }
+    { id: '1', title: 'Set your wedding date', completed: true, dueDate: 'Completed', category: 'planning' },
+    { id: '2', title: 'Create guest list', completed: false, dueDate: '3 months before', category: 'planning' },
+    { id: '3', title: 'Book venue', completed: false, dueDate: '10 months before', category: 'venue' },
+    { id: '4', title: 'Book photographer', completed: false, dueDate: '8 months before', category: 'vendors' },
+    { id: '5', title: 'Choose wedding attire', completed: false, dueDate: '6 months before', category: 'attire' },
+    { id: '6', title: 'Send invitations', completed: false, dueDate: '3 months before', category: 'planning' }
   ];
 
   // User preferences data
