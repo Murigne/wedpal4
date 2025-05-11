@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Plus, Heart, Link as LinkIcon, ExternalLink, Edit, Trash } from 'lucide-react';
+import { Gift, Plus, Heart, Link as LinkIcon, ExternalLink, Edit, Trash, Check, X, Mail, Facebook, Twitter, Instagram } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -124,6 +124,38 @@ const Gifts = () => {
       });
   };
 
+  const shareRegistry = (platform: string) => {
+    const registryUrl = "https://wedpal.com/registry/smith-johnson";
+    const message = "Check out our wedding registry!";
+    
+    let shareUrl = '';
+    
+    switch(platform) {
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(message + ' ' + registryUrl)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(registryUrl)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(registryUrl)}`;
+        break;
+      case 'email':
+        shareUrl = `mailto:?subject=${encodeURIComponent('Our Wedding Registry')}&body=${encodeURIComponent(message + ' ' + registryUrl)}`;
+        break;
+      case 'instagram':
+        // Instagram doesn't have a direct share URL, so we'll just copy to clipboard
+        navigator.clipboard.writeText(registryUrl);
+        toast({
+          title: "Link Copied",
+          description: "Registry link copied. Open Instagram to share."
+        });
+        return;
+    }
+    
+    window.open(shareUrl, '_blank');
+  };
+
   const openAddDialog = () => {
     setEditingItem(null);
     setNewGift({
@@ -204,13 +236,13 @@ const Gifts = () => {
   const getPriorityBadge = (priority: string) => {
     switch(priority) {
       case 'high': 
-        return <Badge className="bg-red-500">High</Badge>;
+        return <Badge variant="outline" className="bg-red-50 text-red-500">High</Badge>;
       case 'medium': 
-        return <Badge className="bg-yellow-500">Medium</Badge>;
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-500">Medium</Badge>;
       case 'low': 
-        return <Badge className="bg-blue-500">Low</Badge>;
+        return <Badge variant="outline" className="bg-blue-50 text-blue-500">Low</Badge>;
       default: 
-        return <Badge>Normal</Badge>;
+        return <Badge variant="outline">Normal</Badge>;
     }
   };
 
@@ -267,7 +299,7 @@ const Gifts = () => {
             </CardContent>
           </Card>
           
-          {/* Share Registry Card */}
+          {/* Share Registry Card - Updated with social media buttons */}
           <Card>
             <CardHeader>
               <CardTitle>Share Your Registry</CardTitle>
@@ -279,10 +311,53 @@ const Gifts = () => {
                   <LinkIcon className="h-4 w-4" />
                 </Button>
               </div>
-              <Button className="w-full" variant="outline">
-                <Heart className="w-4 h-4 mr-2 text-pink-500" />
-                View Public Registry
-              </Button>
+              <div className="flex justify-between mt-3">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-[#25D366] text-white hover:bg-[#128C7E]" 
+                  onClick={() => shareRegistry('whatsapp')}
+                  title="Share via WhatsApp"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/><path d="M13.5 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/><path d="M9 13.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5Z"/></svg>
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-[#1DA1F2] text-white hover:bg-[#0c85d0]" 
+                  onClick={() => shareRegistry('twitter')}
+                  title="Share via Twitter"
+                >
+                  <Twitter className="h-5 w-5" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-[#EA4335] text-white hover:bg-[#d33426]" 
+                  onClick={() => shareRegistry('email')}
+                  title="Share via Email"
+                >
+                  <Mail className="h-5 w-5" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-[#4267B2] text-white hover:bg-[#365899]" 
+                  onClick={() => shareRegistry('facebook')}
+                  title="Share via Facebook"
+                >
+                  <Facebook className="h-5 w-5" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="bg-[#E1306C] text-white hover:bg-[#c13584]" 
+                  onClick={() => shareRegistry('instagram')}
+                  title="Share via Instagram"
+                >
+                  <Instagram className="h-5 w-5" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -341,11 +416,12 @@ const Gifts = () => {
                               </a>
                             </Button>
                             <Button 
-                              size="sm" 
-                              variant={item.purchased ? "outline" : "default"}
+                              size="icon"
+                              variant="outline"
                               onClick={() => togglePurchased(item.id)}
+                              className={`w-9 h-9 ${item.purchased ? "bg-green-50 text-green-500 hover:bg-green-100 hover:text-green-600 border-green-200" : "text-gray-500 hover:bg-gray-100"}`}
                             >
-                              {item.purchased ? "Mark Unpurchased" : "Mark Purchased"}
+                              {item.purchased ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
                             </Button>
                           </div>
                         </CardFooter>
@@ -382,10 +458,12 @@ const Gifts = () => {
                               </a>
                             </Button>
                             <Button 
-                              size="sm" 
+                              size="icon"
+                              variant="outline"
                               onClick={() => togglePurchased(item.id)}
+                              className="w-9 h-9 text-gray-500 hover:bg-gray-100"
                             >
-                              Mark Purchased
+                              <Check className="w-5 h-5" />
                             </Button>
                           </div>
                         </CardFooter>
@@ -422,11 +500,12 @@ const Gifts = () => {
                               </a>
                             </Button>
                             <Button 
-                              size="sm" 
+                              size="icon"
                               variant="outline"
                               onClick={() => togglePurchased(item.id)}
+                              className="w-9 h-9 bg-green-50 text-green-500 hover:bg-green-100 hover:text-green-600 border-green-200"
                             >
-                              Mark Unpurchased
+                              <X className="w-5 h-5" />
                             </Button>
                           </div>
                         </CardFooter>
