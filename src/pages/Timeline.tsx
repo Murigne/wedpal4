@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Clock, Plus, Check, Calendar, Edit, Trash2, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -275,7 +274,7 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          {/* Progress card with modern progress bar */}
+          {/* Progress card with modern progress bar only */}
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
@@ -296,52 +295,6 @@ const Timeline = () => {
                   indicatorColor="#ec4899"
                   indicatorClassName="rounded-full"
                 />
-              </div>
-              
-              {/* Task category breakdown */}
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-2">Task Categories</h4>
-                <div className="space-y-3">
-                  {['venue', 'vendors', 'attire', 'planning'].map(category => {
-                    const categoryItems = timelineItems.filter(item => item.category === category);
-                    const categoryCompletedItems = categoryItems.filter(item => item.completed);
-                    const categoryPercentage = categoryItems.length > 0 
-                      ? Math.round((categoryCompletedItems.length / categoryItems.length) * 100) 
-                      : 0;
-                    
-                    return (
-                      <div key={category} className="space-y-1">
-                        <div className="flex justify-between text-sm">
-                          <span className="capitalize">{category}</span>
-                          <span>{categoryCompletedItems.length}/{categoryItems.length}</span>
-                        </div>
-                        <Progress 
-                          value={categoryPercentage} 
-                          className="h-2" 
-                          indicatorClassName={cn("rounded-full", getCategoryColor(category).replace('bg-', ''))}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Upcoming tasks */}
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-2">Next tasks</h4>
-                <div className="space-y-2">
-                  {sortedItems
-                    .filter(item => !item.completed)
-                    .slice(0, 3)
-                    .map(item => (
-                      <div key={item.id} className="flex justify-between items-center bg-gray-50 p-2 rounded-md text-sm">
-                        <span className="truncate flex-1">{item.title}</span>
-                        <span className="text-xs text-gray-500 whitespace-nowrap">
-                          {format(new Date(item.dueDate), 'MMM d')}
-                        </span>
-                      </div>
-                    ))}
-                </div>
               </div>
             </CardContent>
           </Card>
