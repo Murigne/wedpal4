@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Wallet, Plus, Edit, Trash2, ChartBar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -131,6 +130,18 @@ const Budget = () => {
       vendor.category.includes(categoryName) || 
       categoryName.includes(vendor.category)
     );
+  };
+
+  // Calculate total spent percentage for the breakdown chart
+  const calculateTotalSpentAmount = () => {
+    return budget.categories.reduce((sum, category) => sum + category.spent, 0);
+  };
+
+  // Calculate breakdown percentage for each category relative to total spending
+  const calculateBreakdownPercentage = (spent: number) => {
+    const totalSpent = calculateTotalSpentAmount();
+    if (totalSpent === 0) return 100; // If nothing spent, show 100% for the first category
+    return (spent / totalSpent) * 100;
   };
 
   // Handle the total budget update
@@ -314,9 +325,27 @@ const Budget = () => {
     return colors[index % colors.length];
   };
   
-  // Sort categories by spent percentage for the breakdown chart
+  // Sort categories by spent amount for the breakdown chart
   const sortedCategories = [...budget.categories]
-    .sort((a, b) => (b.spent / b.total) - (a.spent / a.total));
+    .sort((a, b) => b.spent - a.spent);  // Changed to sort by absolute spent amount
+  
+  // Calculate percentages for the breakdown chart
+  const totalSpent = calculateTotalSpentAmount();
+  const breakdownCategories = sortedCategories.map(category => ({
+    ...category,
+    // If only one category with spending, show 100%. Otherwise calculate relative percentage.
+    breakdownPercentage: totalSpent === 0 || 
+      (sortedCategories.length === 1 && sortedCategories[0].spent > 0) ? 
+      100 : calculateBreakdownPercentage(category.spent)
+  })).filter(category => category.spent > 0 || totalSpent === 0);
+  
+  // If no categories have any spending, just show the first category at 100%
+  if (breakdownCategories.length === 0 && budget.categories.length > 0) {
+    breakdownCategories.push({
+      ...budget.categories[0],
+      breakdownPercentage: 100
+    });
+  }
 
   return (
     <PageLayout 
@@ -362,7 +391,6 @@ const Budget = () => {
                     indicatorColor={getBudgetProgressColor(budgetPercentage)}
                     showValueOnBar={true}
                   />
-                  {/* Removed the "You have exceeded your budget" warning */}
                 </div>
               </CardContent>
             </Card>
@@ -375,17 +403,17 @@ const Budget = () => {
               <CardContent className="p-0 px-6 pb-6 flex-1 overflow-hidden">
                 <ScrollArea className="h-full w-full pr-1">
                   <div className="space-y-4 pr-4 pb-4">
-                    {sortedCategories.map((category, index) => (
+                    {breakdownCategories.map((category, index) => (
                       <div key={category.id} className="space-y-1">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium">{category.name}</span>
-                          <span className="text-xs font-medium">{Math.round(category.allocation)}%</span>
+                          <span className="text-xs font-medium">{Math.round(category.breakdownPercentage)}%</span>
                         </div>
                         <div className="h-5 w-full bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className={`h-full ${getBarColor(index)} rounded-full transition-all duration-500`}
                             style={{ 
-                              width: `${Math.round(category.allocation)}%`,
+                              width: `${Math.round(category.breakdownPercentage)}%`,
                               opacity: category.spent > 0 ? 1 : 0.7
                             }}
                           ></div>
