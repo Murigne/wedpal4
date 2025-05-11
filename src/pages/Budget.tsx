@@ -317,7 +317,7 @@ const Budget = () => {
             </Card>
             
             {/* Budget Breakdown - Horizontal Bar Chart with fixed height and scrolling */}
-            <Card className="flex-1 flex flex-col h-[calc(100vh-350px)]">
+            <Card className="flex-1 flex flex-col h-[calc(100vh-555px)]">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Budget Breakdown</CardTitle>
               </CardHeader>
