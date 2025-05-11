@@ -209,7 +209,7 @@ const Timeline = () => {
       icon={<Clock className="w-8 h-8" />}
     >
       {/* Main container with proper spacing */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-340px)] px-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-360px)] px-4">
         {/* Left column - fixed height with margin */}
         <div className="md:col-span-4 flex flex-col h-full">
           {/* Wedding countdown card */}
