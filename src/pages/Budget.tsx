@@ -82,7 +82,7 @@ const Budget = () => {
 
   // Function to determine progress bar color based on percentage
   const getBudgetProgressColor = (percentage: number) => {
-    if (percentage <= 100) return '#38ea76'; // Red for over budget
+    if (percentage <= 100) return '#27a453'; // Red for over budget
     return undefined;  // Use the default color defined in the Progress component
   };
 
