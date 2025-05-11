@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Clock, Plus, Check, Calendar, Edit, Trash2, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -274,37 +275,73 @@ const Timeline = () => {
             </CardContent>
           </Card>
           
-          {/* Progress card with fixed height */}
+          {/* Progress card with modern progress bar */}
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
+              <CardDescription>Your wedding planning tasks</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center h-[calc(100%-80px)]">
-              {/* Progress chart with proportional sizing */}
-              <div className="relative flex items-center justify-center w-full">
-                <div className="h-40 w-40 md:h-48 md:w-48 rounded-full border-16 border-pink-200 flex items-center justify-center relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div 
-                      className="h-32 w-32 md:h-40 md:w-40 rounded-full bg-white"
-                      style={{
-                        background: `conic-gradient(#ec4899 ${completedPercentage}%, #f3f4f6 0)`
-                      }}
-                    ></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-24 w-24 md:h-28 md:w-28 rounded-full bg-white flex items-center justify-center">
-                        <span className="text-3xl md:text-4xl font-bold text-pink-500">
-                          {completedPercentage}%
-                        </span>
+            <CardContent className="flex flex-col space-y-4">
+              {/* Modern minimalistic progress bar with percentage */}
+              <div className="space-y-4">
+                <div className="flex justify-between mb-1">
+                  <span className="text-3xl font-bold text-pink-500">{completedPercentage}%</span>
+                  <span className="text-sm text-gray-500">
+                    {timelineItems.filter(item => item.completed).length} of {timelineItems.length} tasks
+                  </span>
+                </div>
+                <Progress 
+                  value={completedPercentage} 
+                  className="h-3" 
+                  indicatorColor="#ec4899"
+                  indicatorClassName="rounded-full"
+                />
+              </div>
+              
+              {/* Task category breakdown */}
+              <div className="pt-4">
+                <h4 className="text-sm font-medium mb-2">Task Categories</h4>
+                <div className="space-y-3">
+                  {['venue', 'vendors', 'attire', 'planning'].map(category => {
+                    const categoryItems = timelineItems.filter(item => item.category === category);
+                    const categoryCompletedItems = categoryItems.filter(item => item.completed);
+                    const categoryPercentage = categoryItems.length > 0 
+                      ? Math.round((categoryCompletedItems.length / categoryItems.length) * 100) 
+                      : 0;
+                    
+                    return (
+                      <div key={category} className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="capitalize">{category}</span>
+                          <span>{categoryCompletedItems.length}/{categoryItems.length}</span>
+                        </div>
+                        <Progress 
+                          value={categoryPercentage} 
+                          className="h-2" 
+                          indicatorClassName={cn("rounded-full", getCategoryColor(category).replace('bg-', ''))}
+                        />
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">Tasks completed</p>
-                <p className="font-medium text-lg">
-                  {timelineItems.filter(item => item.completed).length} of {timelineItems.length}
-                </p>
+              
+              {/* Upcoming tasks */}
+              <div className="pt-4">
+                <h4 className="text-sm font-medium mb-2">Next tasks</h4>
+                <div className="space-y-2">
+                  {sortedItems
+                    .filter(item => !item.completed)
+                    .slice(0, 3)
+                    .map(item => (
+                      <div key={item.id} className="flex justify-between items-center bg-gray-50 p-2 rounded-md text-sm">
+                        <span className="truncate flex-1">{item.title}</span>
+                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                          {format(new Date(item.dueDate), 'MMM d')}
+                        </span>
+                      </div>
+                    ))}
+                </div>
               </div>
             </CardContent>
           </Card>
