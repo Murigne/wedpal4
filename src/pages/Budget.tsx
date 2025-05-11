@@ -83,7 +83,7 @@ const Budget = () => {
   // Function to determine progress bar color based on percentage
   const getBudgetProgressColor = (percentage: number) => {
     if (percentage >= 100) return '#ea384c'; // Red for over budget
-    return '#4CAF50';                        // Green for under budget
+    return undefined;  // Use the default color defined in the Progress component
   };
 
   // Calculate budget percentage
@@ -475,7 +475,7 @@ const Budget = () => {
                         <Progress 
                           value={(category.spent / category.total) * 100} 
                           className="h-2"
-                          indicatorColor={getBudgetProgressColor((category.spent / category.total) * 100)}
+                          indicatorColor={category.spent / category.total >= 1 ? '#ea384c' : undefined}
                         />
                       </div>
                     </div>
