@@ -311,7 +311,7 @@ const Gifts = () => {
                   </TabsList>
                 </div>
                 
-                <ScrollArea className="flex-1 h-[calc(100vh-220px)]">
+                <ScrollArea className="flex-1 h-[calc(100vh-120px)]">
                   <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
                     {filteredGiftItems.map((item) => (
                       <Card key={item.id} className={item.purchased ? "opacity-60" : ""}>
