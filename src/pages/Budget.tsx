@@ -324,7 +324,7 @@ const Budget = () => {
       description="Track and manage your wedding expenses"
       icon={<Wallet className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-100px)]">
         <div className="md:col-span-5">
           <div className="grid grid-cols-1 gap-6 h-full">
             {/* Budget Summary Card - Reduced height */}
