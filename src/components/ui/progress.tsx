@@ -27,7 +27,7 @@ const Progress = React.forwardRef<
       className={cn("h-full flex items-center justify-end pr-2 transition-all", indicatorClassName)}
       style={{ 
         transform: `translateX(-${100 - (value || 0)}%)`, 
-        backgroundColor: indicatorColor || "var(--wedding-pink, #FAD2E1)",
+        backgroundColor: indicatorColor || "#00ffee",
         width: "100%"
       }}
     >
