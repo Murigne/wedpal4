@@ -121,7 +121,7 @@ const WeddingProgressTracker: React.FC<WeddingProgressTrackerProps> = ({
           </div>
         </div>
         
-        <div className="h-[151px] overflow-y-auto pr-2 mt-6">
+        <div className="h-[148px] overflow-y-auto pr-2 mt-6">
           {/* Empty space to maintain card height */}
         </div>
       </CardContent>
