@@ -1,143 +1,138 @@
-
-import React, { useState } from 'react';
-import NavigationSidebar from '@/components/dashboard/NavigationSidebar';
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Bot, Send } from 'lucide-react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import AIRecommendedWeddingPlans from '@/components/ai/AIRecommendedWeddingPlans';
-import { useDashboardData } from '@/hooks/useDashboardData';
-import { useAuth } from '@/components/AuthProvider';
-import { GuestStats } from '@/types/guest';
+import { Heart, Clock, Users, DollarSign, CheckCircle } from 'lucide-react';
 
-const AIAssistant = () => {
-  const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([
-    { sender: 'bot', message: 'Hello! I\'m Naa, your wedding planning assistant. How can I help you today?' }
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const dashboardData = useDashboardData();
-  const { user } = useAuth();
-  
-  const handleSendMessage = () => {
-    if (message.trim() === '') return;
-    
-    // Add user message to chat history
-    setChatHistory([...chatHistory, { sender: 'user', message }]);
-    setMessage('');
-    
-    // Simulate AI response
-    setIsTyping(true);
-    setTimeout(() => {
-      setChatHistory(prev => [
-        ...prev, 
-        { sender: 'bot', message: 'I\'m here to help with your wedding planning! Ask me about venues, budgets, timelines, or any other aspect of your wedding planning journey.' }
-      ]);
-      setIsTyping(false);
-    }, 1500);
-  };
-  
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
+interface WeddingPlan {
+  title: string;
+  description: string;
+  price: string;
+  timeline: string;
+  guests: string;
+  features: string[];
+  highlight?: boolean;
+}
+
+interface AIRecommendedWeddingPlansProps {
+  budgetRange: string;
+  weddingPlans?: WeddingPlan[];
+}
+
+const AIRecommendedWeddingPlans: React.FC<AIRecommendedWeddingPlansProps> = ({ 
+  budgetRange, 
+  weddingPlans = [] 
+}) => {
+  // Default plans if none provided
+  const defaultPlans: WeddingPlan[] = [
+    {
+      title: "Classic Romance",
+      description: "A timeless wedding theme",
+      price: "GHS 5k-15k",
+      timeline: "3-6 months",
+      guests: "50-100",
+      features: ["Indoor ceremony", "Traditional decor", "Sit-down dinner"],
+      highlight: true
+    },
+    {
+      title: "Intimate & Cozy",
+      description: "Small and meaningful celebration",
+      price: "GHS 3k-8k",
+      timeline: "2-4 months",
+      guests: "20-50",
+      features: ["Backyard setting", "Family-style dinner", "Personalized vows"],
+    },
+    {
+      title: "Royal Delight",
+      description: "Luxurious and elegant affair",
+      price: "GHS 20k-40k",
+      timeline: "6-12 months",
+      guests: "100-200",
+      features: ["Grand venue", "Premium catering", "Live orchestra"],
+    },
+    {
+      title: "Fairytale",
+      description: "Magical and enchanting celebration",
+      price: "GHS 15k-30k",
+      timeline: "6-9 months",
+      guests: "75-150",
+      features: ["Castle or garden venue", "Fairy lights", "Horse-drawn carriage", "Themed decor"],
     }
-  };
+  ];
   
-  // Sample data for guest stats to prevent the "confirmed" error
-  const guestStats: GuestStats = {
-    total: 100,
-    confirmed: 45,
-    pending: 40,
-    declined: 15
-  };
-
-  // Sample budget summary data
-  const budgetSummary = {
-    total: 25000,
-    spent: 10000,
-    remaining: 15000
+  const plans = weddingPlans.length > 0 ? weddingPlans : defaultPlans;
+  
+  const getButtonColor = (index: number) => {
+    const colors = [
+      'bg-yellow-500 hover:bg-yellow-600 text-black',
+      'bg-pink-500 hover:bg-pink-600 text-white',
+      'bg-purple-500 hover:bg-purple-600 text-white',
+      'bg-blue-500 hover:bg-blue-600 text-white'
+    ];
+    return colors[index % colors.length];
   };
   
   return (
-    <div className="min-h-screen">
-      <NavigationSidebar />
-      
-      <div className="w-full animated-gradient dynamic-gradient relative flex flex-col h-screen overflow-hidden">
-        <DashboardHeader 
-          userName={dashboardData.userName}
-          partnerName={dashboardData.partnerName}
-        />
-        
-        <main className={`w-full px-6 md:px-6 py-8 flex-grow overflow-auto ml-[60px]`}>
-          <div className="mb-8 text-white max-w-[1600px] mx-auto">
-            <h1 className="text-3xl md:text-4xl font-semibold mb-2 flex items-center gap-2">
-              <Bot className="w-8 h-8" />
-              Naa AI Assistant
-            </h1>
-            <p className="text-white/80">
-              Your personal wedding planning assistant
-            </p>
-          </div>
-          
-          <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <div className="lg:col-span-4">
-              <Card className="overflow-hidden min-h-[70vh] flex flex-col">
-                <div className="flex-grow p-4 overflow-y-auto">
-                  <div className="flex flex-col gap-4">
-                    {chatHistory.map((chat, index) => (
-                      <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div 
-                          className={`max-w-[75%] p-3 rounded-xl ${
-                            chat.sender === 'user' 
-                              ? 'chat-bubble-user' 
-                              : 'chat-bubble-ai'
-                          }`}
-                        >
-                          {chat.message}
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {isTyping && (
-                      <div className="flex justify-start">
-                        <div className="typing-indicator chat-bubble-ai">
-                          <span className="dot"></span>
-                          <span className="dot"></span>
-                          <span className="dot"></span>
-                        </div>
-                      </div>
-                    )}
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-2">
+          <Heart className="w-5 h-5 text-pink-500" />
+          <CardTitle>Recommended Wedding Plans</CardTitle>
+        </div>
+        <CardDescription>
+          Based on your budget range: {budgetRange}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          {plans.map((plan, index) => (
+            <Card key={index} className={`relative ${plan.highlight ? 'ring-2 ring-yellow-400' : ''}`}>
+              <CardContent className="p-6">
+                <h3 className="font-semibold text-lg mb-2">{plan.title}</h3>
+                <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
+                
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <DollarSign className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">Budget:</span>
+                    <span>{plan.price}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="w-4 h-4 text-blue-600" />
+                    <span className="font-medium">Timeline:</span>
+                    <span>{plan.timeline}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="w-4 h-4 text-purple-600" />
+                    <span className="font-medium">Guests:</span>
+                    <span>{plan.guests}</span>
                   </div>
                 </div>
                 
-                <div className="p-4 bg-gray-50 border-t">
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="Type your message..." 
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="flex-grow"
-                    />
-                    <Button onClick={handleSendMessage}>
-                      <Send className="w-4 h-4" />
-                      <span className="sr-only">Send</span>
-                    </Button>
-                  </div>
+                <div className="mb-4">
+                  <h4 className="font-medium text-sm mb-2">What's included:</h4>
+                  <ul className="space-y-1">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-2 text-xs">
+                        <CheckCircle className="w-3 h-3 text-green-500" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </Card>
-            </div>
-            
-            <div className="lg:col-span-8">
-              <AIRecommendedWeddingPlans budgetRange="GHS 5,000-15,000" />
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
+                
+                <Button 
+                  className={`w-full ${getButtonColor(index)} ${plan.highlight ? 'font-semibold' : ''}`}
+                  variant={plan.highlight ? 'default' : 'outline'}
+                >
+                  {plan.highlight ? 'Recommended' : 'Select Plan'}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default AIAssistant;
+export default AIRecommendedWeddingPlans;
