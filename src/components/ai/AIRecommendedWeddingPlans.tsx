@@ -24,7 +24,7 @@ const RecommendedWeddingPlans: React.FC<RecommendedWeddingPlansProps> = ({
   preferredBudget 
 }) => {
   return (
-    <Card className="rounded-xl border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+    <Card className="rounded-[1.5rem] border-0 shadow-lg bg-white/95 backdrop-blur-sm">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-xl">
           <HeartHandshake className="mr-2 h-5 w-5" />

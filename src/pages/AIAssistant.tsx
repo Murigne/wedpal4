@@ -105,8 +105,8 @@ const AIAssistant = () => {
           </div>
           
           <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
-            <div className="lg:col-span-4">
-              <Card className="overflow-hidden rounded-xl min-h-[70vh] flex flex-col shadow-lg border-0">
+            <div className="lg:col-span-3">
+              <Card className="overflow-hidden rounded-[1.5rem] min-h-[70vh] flex flex-col shadow-lg border-0">
                 <div className="flex-grow p-4 overflow-y-auto">
                   <div className="flex flex-col gap-4">
                     {chatHistory.map((chat, index) => (
@@ -142,7 +142,7 @@ const AIAssistant = () => {
                     <Button 
                       onClick={handleSendMessage}
                       size="icon"
-                      className="bg-pink-500 hover:bg-pink-600 rounded-lg h-10 w-10 flex items-center justify-center"
+                      className="bg-pink-500 hover:bg-pink-600 rounded-lg h-10 w-12 flex items-center justify-center"
                     >
                       <Send className="w-4 h-4" />
                       <span className="sr-only">Send</span>
@@ -152,7 +152,7 @@ const AIAssistant = () => {
               </Card>
             </div>
             
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-9">
               <RecommendedWeddingPlans 
                 weddingPlans={weddingPlans}
                 preferredBudget="$5,000-15,000"
