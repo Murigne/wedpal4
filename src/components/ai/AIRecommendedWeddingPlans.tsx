@@ -24,7 +24,7 @@ const RecommendedWeddingPlans: React.FC<RecommendedWeddingPlansProps> = ({
   preferredBudget 
 }) => {
   return (
-    <Card className="rounded-2xl border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+    <Card className="rounded-xl border-0 shadow-lg bg-white/95 backdrop-blur-sm">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-xl">
           <HeartHandshake className="mr-2 h-5 w-5" />
@@ -35,7 +35,7 @@ const RecommendedWeddingPlans: React.FC<RecommendedWeddingPlansProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
           {weddingPlans.map((plan, index) => (
             <WeddingPlanCard
               key={index}
