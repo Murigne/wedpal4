@@ -8,11 +8,12 @@ import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import RecommendedWeddingPlans from '@/components/ai/AIRecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import ChatMessage from '@/components/ChatMessage';
 
 const AIAssistant = () => {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([
-    { sender: 'bot', message: 'Hello! I\'m Naa, your wedding planning assistant. How can I help you today?' }
+    { sender: 'ai', message: 'Hello! I\'m Naa, your wedding planning assistant. How can I help you today?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
@@ -30,7 +31,7 @@ const AIAssistant = () => {
     setTimeout(() => {
       setChatHistory(prev => [
         ...prev, 
-        { sender: 'bot', message: 'I\'m here to help with your wedding planning! Ask me about venues, budgets, timelines, or any other aspect of your wedding planning journey.' }
+        { sender: 'ai', message: 'I\'m here to help with your wedding planning! Ask me about venues, budgets, timelines, or any other aspect of your wedding planning journey.' }
       ]);
       setIsTyping(false);
     }, 1500);
@@ -86,7 +87,7 @@ const AIAssistant = () => {
     <div className="min-h-screen">
       <NavigationSidebar />
       
-      <div className="w-full animated-gradient dynamic-gradient relative flex flex-col h-screen overflow-hidden">
+      <div className="w-full ai-gradient fixed inset-0 flex flex-col h-screen overflow-hidden">
         <DashboardHeader 
           userName={dashboardData.userName}
           partnerName={dashboardData.partnerName}
@@ -105,20 +106,15 @@ const AIAssistant = () => {
           
           <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
             <div className="lg:col-span-4">
-              <Card className="overflow-hidden min-h-[70vh] flex flex-col">
+              <Card className="overflow-hidden rounded-2xl min-h-[70vh] flex flex-col shadow-lg border-0">
                 <div className="flex-grow p-4 overflow-y-auto">
                   <div className="flex flex-col gap-4">
                     {chatHistory.map((chat, index) => (
                       <div key={index} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div 
-                          className={`max-w-[75%] p-3 rounded-xl ${
-                            chat.sender === 'user' 
-                              ? 'chat-bubble-user' 
-                              : 'chat-bubble-ai'
-                          }`}
-                        >
-                          {chat.message}
-                        </div>
+                        <ChatMessage 
+                          content={chat.message}
+                          sender={chat.sender as 'ai' | 'user'}
+                        />
                       </div>
                     ))}
                     
@@ -141,9 +137,13 @@ const AIAssistant = () => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      className="flex-grow"
+                      className="flex-grow rounded-full"
                     />
-                    <Button onClick={handleSendMessage}>
+                    <Button 
+                      onClick={handleSendMessage}
+                      size="icon"
+                      className="bg-pink-500 hover:bg-pink-600 rounded-full h-10 w-10 flex items-center justify-center"
+                    >
                       <Send className="w-4 h-4" />
                       <span className="sr-only">Send</span>
                     </Button>
