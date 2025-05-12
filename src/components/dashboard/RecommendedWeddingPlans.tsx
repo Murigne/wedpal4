@@ -192,7 +192,7 @@ const DashboardSummary: React.FC<DashboardSummaryProps> = ({
                         <span className="font-medium">{activity.action}</span>
                         <span className="text-xs text-gray-500 ml-2">• {activity.date}</span>
                       </div>
-                      <span className={`font-medium flex items-center gap-1 ${activity.userName.includes("Partner") ? "text-[#de4182]" : "text-blue-800"}`}>
+                      <span className={`font-medium flex items-center gap-1 ${activity.userName.includes("Partner") ? "text-[#de4182]" : "text-pink-800"}`}>
                         <UserRound className="h-3 w-3" />
                         {activity.userName}
                       </span>
