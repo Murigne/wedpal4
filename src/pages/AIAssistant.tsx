@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Bot, Send } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import RecommendedWeddingPlans from '@/components/dashboard/RecommendedWeddingPlans';
+import RecommendedWeddingPlans from '@/components/ai/AIRecommendedWeddingPlans';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
 const AIAssistant = () => {
