@@ -106,7 +106,7 @@ const AIAssistant = () => {
           
           <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5">
             <div className="lg:col-span-3">
-              <Card className="overflow-hidden rounded-[1.5rem] min-h-[70vh] flex flex-col shadow-lg border-0">
+              <Card className="overflow-hidden rounded-[1.5rem] min-h-[70vh] flex flex-col shadow-lg border border-white/20 bg-white/30 backdrop-blur-md">
                 <div className="flex-grow p-4 overflow-y-auto">
                   <div className="flex flex-col gap-4">
                     {chatHistory.map((chat, index) => (
@@ -130,14 +130,14 @@ const AIAssistant = () => {
                   </div>
                 </div>
                 
-                <div className="p-4 bg-gray-50 border-t">
+                <div className="p-4 bg-white/40 backdrop-blur-sm border-t border-white/20">
                   <div className="flex gap-2">
                     <Input 
                       placeholder="Type your message..." 
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      className="flex-grow rounded-full"
+                      className="flex-grow rounded-full bg-white/70"
                     />
                     <Button 
                       onClick={handleSendMessage}
