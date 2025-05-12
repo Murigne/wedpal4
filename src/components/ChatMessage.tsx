@@ -13,7 +13,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, sender, className })
     <div
       className={cn(
         sender === 'ai' 
-          ? 'chat-bubble-ai bg-[#fff7fa] backdrop-blur-sm text-gray-800 p-3 rounded-xl max-w-[80%] self-start shadow-sm border border-white/20 text-sm' 
+          ? 'chat-bubble-ai bg-white text-gray-800 p-4 rounded-3xl max-w-[80%] self-start shadow-sm' 
           : 'chat-bubble-user bg-pink-500 text-white p-3 rounded-xl rounded-tr-none max-w-[80%] self-end shadow-sm text-sm',
         className
       )}
