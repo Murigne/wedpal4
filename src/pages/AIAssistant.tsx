@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Clock, Users, DollarSign, CheckCircle } from 'lucide-react';
+import { Heart, Clock, Users, DollarSign } from 'lucide-react';
 
 interface WeddingPlan {
   title: string;
@@ -61,19 +61,36 @@ const AIRecommendedWeddingPlans: React.FC<AIRecommendedWeddingPlansProps> = ({
   
   const plans = weddingPlans.length > 0 ? weddingPlans : defaultPlans;
   
-  const getButtonColor = (index: number) => {
-    const colors = [
-      'bg-yellow-500 hover:bg-yellow-600 text-black',
-      'bg-pink-500 hover:bg-pink-600 text-white',
-      'bg-purple-500 hover:bg-purple-600 text-white',
-      'bg-blue-500 hover:bg-blue-600 text-white'
+  // Card and button styling for each plan
+  const getCardStyling = (index: number) => {
+    const styles = [
+      {
+        bg: 'bg-gradient-to-b from-amber-50 to-yellow-100 border-yellow-200 border-2',
+        button: 'bg-yellow-500 hover:bg-yellow-600 text-black rounded-full font-semibold',
+        text: 'Recommended'
+      },
+      {
+        bg: 'bg-gradient-to-b from-pink-50 to-rose-100 border-pink-200',
+        button: 'bg-pink-400 hover:bg-pink-500 text-white rounded-full',
+        text: 'Select Plan'
+      },
+      {
+        bg: 'bg-gradient-to-b from-purple-50 to-violet-100 border-purple-200',
+        button: 'bg-purple-400 hover:bg-purple-500 text-white rounded-full',
+        text: 'Select Plan'
+      },
+      {
+        bg: 'bg-gradient-to-b from-blue-50 to-sky-100 border-blue-200',
+        button: 'bg-sky-400 hover:bg-sky-500 text-white rounded-full',
+        text: 'Select Plan'
+      }
     ];
-    return colors[index % colors.length];
+    return styles[index % styles.length];
   };
   
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="pb-4">
+    <Card className="border-wedding-pink/20 backdrop-blur-sm bg-white/90">
+      <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Heart className="w-5 h-5 text-pink-500" />
           <CardTitle>Recommended Wedding Plans</CardTitle>
@@ -83,52 +100,71 @@ const AIRecommendedWeddingPlans: React.FC<AIRecommendedWeddingPlansProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.highlight ? 'ring-2 ring-yellow-400' : ''}`}>
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-2">{plan.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3">
+          {plans.map((plan, index) => {
+            const styling = getCardStyling(index);
+            return (
+              <div
+                key={index}
+                className={`wedding-card flex flex-col h-full rounded-[1.5rem] shadow-md ${styling.bg}`}
+              >
+                {/* Header */}
+                <div className="text-center px-4 pt-4 pb-2">
+                  <h3 className="text-xl font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                    {plan.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mt-1 mb-4 max-w-[90%] mx-auto">
+                    {plan.description}
+                  </p>
+                </div>
                 
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="w-4 h-4 text-green-600" />
-                    <span className="font-medium">Budget:</span>
-                    <span>{plan.price}</span>
+                {/* Stats Card */}
+                <div className="bg-white/70 backdrop-blur-sm rounded-lg mx-auto px-4 p-4 mb-4 shadow-sm w-[90%]">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
+                      <DollarSign className="h-4 w-4 text-pink-600" />
+                      <span>Budget</span>
+                    </div>
+                    <span className="font-medium text-xs">{plan.price}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium">Timeline:</span>
-                    <span>{plan.timeline}</span>
+                  <div className="flex items-center justify-between gap-2 my-3">
+                    <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
+                      <Clock className="h-4 w-4 text-pink-600" />
+                      <span>Timeline</span>
+                    </div>
+                    <span className="font-medium text-xs">{plan.timeline}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="w-4 h-4 text-purple-600" />
-                    <span className="font-medium">Guests:</span>
-                    <span>{plan.guests}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-xs whitespace-nowrap font-medium">
+                      <Users className="h-4 w-4 text-pink-600" />
+                      <span>Guests</span>
+                    </div>
+                    <span className="font-medium text-xs">{plan.guests}</span>
                   </div>
                 </div>
                 
-                <div className="mb-4">
-                  <h4 className="font-medium text-sm mb-2">What's included:</h4>
-                  <ul className="space-y-1">
+                {/* Features */}
+                <div className="text-left px-4 mb-4 flex-grow">
+                  <h4 className="text-sm font-medium mb-3">What's included:</h4>
+                  <ul className="space-y-2">
                     {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center gap-2 text-xs">
-                        <CheckCircle className="w-3 h-3 text-green-500" />
+                      <li key={featureIndex} className="text-sm flex items-start">
+                        <span className="text-pink-600 mr-2 flex-shrink-0">•</span>
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 
-                <Button 
-                  className={`w-full ${getButtonColor(index)} ${plan.highlight ? 'font-semibold' : ''}`}
-                  variant={plan.highlight ? 'default' : 'outline'}
-                >
-                  {plan.highlight ? 'Recommended' : 'Select Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                {/* Button */}
+                <div className="mt-auto px-4 pb-4">
+                  <Button className={`w-full ${styling.button} transition-all`}>
+                    {styling.text}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
