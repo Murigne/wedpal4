@@ -1,28 +1,18 @@
+
 import React, { useState } from 'react';
-import { Gift, Plus, Heart, Link as LinkIcon, ExternalLink, Edit, Trash, Check, X, Mail, Facebook, Twitter, Instagram } from 'lucide-react';
+import { Gift, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import PageLayout from '@/components/dashboard/PageLayout';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
-interface GiftItem {
-  id: string;
-  name: string;
-  price: number;
-  link: string;
-  category: string;
-  purchased: boolean;
-  priority: 'high' | 'medium' | 'low';
-}
+import { GiftItem } from '@/types/gift';
+import RegistrySummaryCard from '@/components/gifts/RegistrySummaryCard';
+import ShareRegistryCard from '@/components/gifts/ShareRegistryCard';
+import GiftList from '@/components/gifts/GiftList';
+import GiftFormDialog from '@/components/gifts/GiftFormDialog';
 
-const Gifts = () => {
+const Gifts: React.FC = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [giftItems, setGiftItems] = useState<GiftItem[]>([
@@ -84,13 +74,6 @@ const Gifts = () => {
   const [currentTab, setCurrentTab] = useState('all');
   const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GiftItem | null>(null);
-  const [newGift, setNewGift] = useState({
-    name: '',
-    price: '',
-    link: '',
-    category: 'kitchen',
-    priority: 'medium' as 'high' | 'medium' | 'low'
-  });
 
   const togglePurchased = (itemId: string) => {
     setGiftItems(items => {
@@ -108,101 +91,22 @@ const Gifts = () => {
     });
   };
 
-  const copyRegistryLink = () => {
-    navigator.clipboard.writeText("https://wedpal.com/registry/smith-johnson")
-      .then(() => {
-        toast({
-          title: "Link Copied",
-          description: "Registry link has been copied to your clipboard."
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Copy Failed",
-          description: "Could not copy the link. Please try again."
-        });
-      });
-  };
-
-  const shareRegistry = (platform: string) => {
-    const registryUrl = "https://wedpal.com/registry/smith-johnson";
-    const message = "Check out our wedding registry!";
-    
-    let shareUrl = '';
-    
-    switch(platform) {
-      case 'whatsapp':
-        shareUrl = `https://wa.me/?text=${encodeURIComponent(message + ' ' + registryUrl)}`;
-        break;
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(registryUrl)}`;
-        break;
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(registryUrl)}`;
-        break;
-      case 'email':
-        shareUrl = `mailto:?subject=${encodeURIComponent('Our Wedding Registry')}&body=${encodeURIComponent(message + ' ' + registryUrl)}`;
-        break;
-      case 'instagram':
-        // Instagram doesn't have a direct share URL, so we'll just copy to clipboard
-        navigator.clipboard.writeText(registryUrl);
-        toast({
-          title: "Link Copied",
-          description: "Registry link copied. Open Instagram to share."
-        });
-        return;
-    }
-    
-    window.open(shareUrl, '_blank');
-  };
-
   const openAddDialog = () => {
     setEditingItem(null);
-    setNewGift({
-      name: '',
-      price: '',
-      link: '',
-      category: 'kitchen',
-      priority: 'medium'
-    });
     setIsAddEditDialogOpen(true);
   };
 
   const openEditDialog = (item: GiftItem) => {
     setEditingItem(item);
-    setNewGift({
-      name: item.name,
-      price: item.price.toString(),
-      link: item.link,
-      category: item.category,
-      priority: item.priority
-    });
     setIsAddEditDialogOpen(true);
   };
 
-  const handleAddEditGift = () => {
-    if (newGift.name.trim() === '' || newGift.price.trim() === '') {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in the name and price of the gift."
-      });
-      return;
-    }
-
-    const giftData = {
-      name: newGift.name,
-      price: parseFloat(newGift.price),
-      link: newGift.link,
-      category: newGift.category,
-      priority: newGift.priority,
-      purchased: false
-    };
-
+  const handleAddEditGift = (giftData: Omit<GiftItem, 'id'>) => {
     if (editingItem) {
       // Edit existing gift
       setGiftItems(items =>
         items.map(item =>
-          item.id === editingItem.id ? { ...giftData, id: item.id, purchased: item.purchased } : item
+          item.id === editingItem.id ? { ...giftData, id: item.id } : item
         )
       );
       toast({
@@ -233,33 +137,6 @@ const Gifts = () => {
     }
   };
 
-  const getPriorityBadge = (priority: string) => {
-    switch(priority) {
-      case 'high': 
-        return <Badge variant="outline" className="bg-red-50 text-red-500">High</Badge>;
-      case 'medium': 
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-500">Medium</Badge>;
-      case 'low': 
-        return <Badge variant="outline" className="bg-blue-50 text-blue-500">Low</Badge>;
-      default: 
-        return <Badge variant="outline">Normal</Badge>;
-    }
-  };
-
-  const filteredGiftItems = giftItems.filter(item => {
-    if (currentTab === 'all') return true;
-    if (currentTab === 'purchased') return item.purchased;
-    if (currentTab === 'unpurchased') return !item.purchased;
-    return true;
-  });
-
-  const stats = {
-    total: giftItems.length,
-    purchased: giftItems.filter(item => item.purchased).length,
-    totalValue: giftItems.reduce((sum, item) => sum + item.price, 0),
-    purchasedValue: giftItems.filter(item => item.purchased).reduce((sum, item) => sum + item.price, 0),
-  };
-
   return (
     <PageLayout 
       title="Gift Registry" 
@@ -269,97 +146,15 @@ const Gifts = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
           {/* Registry Summary Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Registry Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-pink-50 p-4 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-pink-600">{stats.total}</p>
-                  <p className="text-sm text-pink-700">Total Items</p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-green-600">{stats.purchased}</p>
-                  <p className="text-sm text-green-700">Purchased</p>
-                </div>
-              </div>
-              
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <p className="text-sm text-purple-700 mb-1">Registry Value</p>
-                <p className="text-2xl font-bold text-purple-600">GHS {stats.totalValue.toLocaleString()}</p>
-                <p className="text-sm text-purple-700 mt-2">Purchased Value</p>
-                <p className="text-xl font-medium text-purple-600">GHS {stats.purchasedValue.toLocaleString()}</p>
-              </div>
-              
-              <Button className="w-full" onClick={openAddDialog}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Gift Item
-              </Button>
-            </CardContent>
-          </Card>
+          <RegistrySummaryCard 
+            giftItems={giftItems} 
+            onAddItem={openAddDialog} 
+          />
           
-          {/* Share Registry Card - Updated with social media buttons */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Share Your Registry</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Input value="https://wedpal.com/registry/smith-johnson" readOnly />
-                <Button variant="outline" size="icon" onClick={copyRegistryLink}>
-                  <LinkIcon className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex justify-between mt-3">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="bg-[#25D366] text-white hover:bg-[#128C7E]" 
-                  onClick={() => shareRegistry('whatsapp')}
-                  title="Share via WhatsApp"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/><path d="M13.5 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/><path d="M9 13.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5Z"/></svg>
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="bg-[#1DA1F2] text-white hover:bg-[#0c85d0]" 
-                  onClick={() => shareRegistry('twitter')}
-                  title="Share via Twitter"
-                >
-                  <Twitter className="h-5 w-5" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="bg-[#EA4335] text-white hover:bg-[#d33426]" 
-                  onClick={() => shareRegistry('email')}
-                  title="Share via Email"
-                >
-                  <Mail className="h-5 w-5" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="bg-[#4267B2] text-white hover:bg-[#365899]" 
-                  onClick={() => shareRegistry('facebook')}
-                  title="Share via Facebook"
-                >
-                  <Facebook className="h-5 w-5" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="bg-[#E1306C] text-white hover:bg-[#c13584]" 
-                  onClick={() => shareRegistry('instagram')}
-                  title="Share via Instagram"
-                >
-                  <Instagram className="h-5 w-5" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Share Registry Card */}
+          <ShareRegistryCard 
+            registryUrl="https://wedpal.com/registry/smith-johnson" 
+          />
         </div>
         
         <div className="md:col-span-8">
@@ -377,237 +172,26 @@ const Gifts = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden flex flex-col">
-              <Tabs defaultValue="all" onValueChange={setCurrentTab} className="flex-1 flex flex-col">
-                <div className="mb-4">
-                  <TabsList className="inline-flex">
-                    <TabsTrigger value="all">All Items</TabsTrigger>
-                    <TabsTrigger value="unpurchased">Unpurchased</TabsTrigger>
-                    <TabsTrigger value="purchased">Purchased</TabsTrigger>
-                  </TabsList>
-                </div>
-                
-                <ScrollArea className="flex-1 h-[calc(100vh-320px)]">
-                  <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-                    {filteredGiftItems.map((item) => (
-                      <Card key={item.id} className={item.purchased ? "opacity-60" : ""}>
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className={`font-medium ${item.purchased ? "line-through" : ""}`}>{item.name}</h3>
-                            {getPriorityBadge(item.priority)}
-                          </div>
-                          <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2">
-                            {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                          </Badge>
-                        </CardContent>
-                        <CardFooter className="flex justify-between p-4 pt-0">
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => openEditDialog(item)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-red-500" onClick={() => handleDeleteGift(item.id)}>
-                              <Trash className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-4 h-4" />
-                              </a>
-                            </Button>
-                            <Button 
-                              size="icon"
-                              variant="outline"
-                              onClick={() => togglePurchased(item.id)}
-                              className={`w-9 h-9 ${item.purchased ? "bg-green-50 text-green-500 hover:bg-green-100 hover:text-green-600 border-green-200" : "text-gray-500 hover:bg-gray-100"}`}
-                            >
-                              {item.purchased ? <Check className="w-5 h-5" /> : <X className="w-5 h-5" />}
-                            </Button>
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </TabsContent>
-                  
-                  <TabsContent value="unpurchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-                    {filteredGiftItems.map((item) => (
-                      <Card key={item.id}>
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium">{item.name}</h3>
-                            {getPriorityBadge(item.priority)}
-                          </div>
-                          <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2">
-                            {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                          </Badge>
-                        </CardContent>
-                        <CardFooter className="flex justify-between p-4 pt-0">
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => openEditDialog(item)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-red-500" onClick={() => handleDeleteGift(item.id)}>
-                              <Trash className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-4 h-4" />
-                              </a>
-                            </Button>
-                            <Button 
-                              size="icon"
-                              variant="outline"
-                              onClick={() => togglePurchased(item.id)}
-                              className="w-9 h-9 text-gray-500 hover:bg-gray-100"
-                            >
-                              <Check className="w-5 h-5" />
-                            </Button>
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </TabsContent>
-                  
-                  <TabsContent value="purchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-                    {filteredGiftItems.map((item) => (
-                      <Card key={item.id} className="opacity-60">
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium line-through">{item.name}</h3>
-                            {getPriorityBadge(item.priority)}
-                          </div>
-                          <p className="text-lg font-bold">GHS {item.price.toLocaleString()}</p>
-                          <Badge variant="outline" className="mt-2">
-                            {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                          </Badge>
-                        </CardContent>
-                        <CardFooter className="flex justify-between p-4 pt-0">
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" onClick={() => openEditDialog(item)}>
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-red-500" onClick={() => handleDeleteGift(item.id)}>
-                              <Trash className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-4 h-4" />
-                              </a>
-                            </Button>
-                            <Button 
-                              size="icon"
-                              variant="outline"
-                              onClick={() => togglePurchased(item.id)}
-                              className="w-9 h-9 bg-green-50 text-green-500 hover:bg-green-100 hover:text-green-600 border-green-200"
-                            >
-                              <X className="w-5 h-5" />
-                            </Button>
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </TabsContent>
-                </ScrollArea>
-              </Tabs>
+              <GiftList 
+                giftItems={giftItems}
+                currentTab={currentTab}
+                onTabChange={setCurrentTab}
+                onEdit={openEditDialog}
+                onDelete={handleDeleteGift}
+                onTogglePurchased={togglePurchased}
+              />
             </CardContent>
           </Card>
         </div>
       </div>
 
       {/* Add/Edit Gift Dialog */}
-      <Dialog open={isAddEditDialogOpen} onOpenChange={setIsAddEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{editingItem ? "Edit Gift" : "Add New Gift"}</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Gift Name</label>
-              <Input 
-                placeholder="Enter gift name" 
-                value={newGift.name}
-                onChange={e => setNewGift({...newGift, name: e.target.value})}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Price (GHS)</label>
-              <Input 
-                type="number" 
-                placeholder="Enter price" 
-                value={newGift.price}
-                onChange={e => setNewGift({...newGift, price: e.target.value})}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Product Link</label>
-              <Input 
-                placeholder="https://example.com/product" 
-                value={newGift.link}
-                onChange={e => setNewGift({...newGift, link: e.target.value})}
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Category</label>
-                <Select 
-                  value={newGift.category} 
-                  onValueChange={(value) => setNewGift({...newGift, category: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="kitchen">Kitchen</SelectItem>
-                    <SelectItem value="bedroom">Bedroom</SelectItem>
-                    <SelectItem value="electronics">Electronics</SelectItem>
-                    <SelectItem value="experience">Experience</SelectItem>
-                    <SelectItem value="decor">Decor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">Priority</label>
-                <Select 
-                  value={newGift.priority} 
-                  onValueChange={(value: 'high' | 'medium' | 'low') => setNewGift({...newGift, priority: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setIsAddEditDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleAddEditGift}>
-              {editingItem ? "Update Gift" : "Add Gift"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <GiftFormDialog 
+        open={isAddEditDialogOpen}
+        onOpenChange={setIsAddEditDialogOpen}
+        editingItem={editingItem}
+        onSave={handleAddEditGift}
+      />
     </PageLayout>
   );
 };
