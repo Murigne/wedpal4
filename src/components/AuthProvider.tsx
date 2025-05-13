@@ -75,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return false;
     
     try {
+      console.log("Checking vendor status for user ID:", user.id);
+      
       const { data, error } = await supabase
         .from('vendors')
         .select('*')
@@ -86,6 +88,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       const vendorStatus = !!data;
+      console.log("Vendor status result:", vendorStatus ? "Is vendor" : "Not a vendor");
+      
       setIsVendor(vendorStatus);
       return vendorStatus;
     } catch (error) {
