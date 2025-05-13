@@ -45,17 +45,30 @@ const SignUp: React.FC = () => {
       if (user && formData) {
         try {
           console.log("Saving wedding details for user:", user.id);
+          
+          // Save temporary data from localStorage to the database for continuity
+          const localStorageData = {
+            userName: localStorage.getItem('userName'),
+            partnerName: localStorage.getItem('partnerName'),
+            weddingDate: localStorage.getItem('weddingDate'),
+            preferredBudget: localStorage.getItem('preferredBudget'),
+            weddingHashtag: localStorage.getItem('weddingHashtag'),
+            weddingColors: localStorage.getItem('weddingColors'),
+          };
+          
           const { error: detailsError } = await supabase
             .from('wedding_details')
             .upsert({
               user_id: user.id,
-              partner1_name: formData.partner1Name || '',
-              partner2_name: formData.partner2Name || '',
-              wedding_date: formData.weddingDate || '',
-              budget: formData.budget?.toString() || '',
+              partner1_name: formData.partner1Name || localStorageData.userName || '',
+              partner2_name: formData.partner2Name || localStorageData.partnerName || '',
+              wedding_date: formData.weddingDate || localStorageData.weddingDate || '',
+              budget: formData.budget?.toString() || localStorageData.preferredBudget || '',
               theme: formData.theme || '',
               guest_count: formData.guestCount?.toString() || '',
-              colors: userColors ? JSON.stringify(userColors) : null,
+              hashtag: localStorageData.weddingHashtag || '',
+              colors: userColors ? JSON.stringify(userColors) : 
+                     localStorageData.weddingColors || null,
               updated_at: new Date().toISOString()
             }, { onConflict: 'user_id' });
           

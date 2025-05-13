@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboardingState, QuestionType } from './useOnboardingState';
@@ -86,6 +87,16 @@ const OnboardingContainer: React.FC = () => {
     
     // If this is the wedding colors step (the last step), navigate to dashboard
     if (currentStep === QUESTIONS.length - 1) {
+      // Save data to localStorage for non-authenticated users
+      localStorage.setItem('userName', formData.partner1Name || '');
+      localStorage.setItem('partnerName', formData.partner2Name || '');
+      localStorage.setItem('weddingDate', formData.weddingDate || '');
+      localStorage.setItem('preferredBudget', formData.budget || '');
+      
+      if (formData.weddingColors) {
+        localStorage.setItem('weddingColors', JSON.stringify(formData.weddingColors));
+      }
+      
       // Show success message
       toast({
         title: "Welcome to your wedding dashboard!",
@@ -97,6 +108,7 @@ const OnboardingContainer: React.FC = () => {
       navigate('/dashboard', { 
         state: { 
           formData,
+          userColors: formData.weddingColors,
           isNewUser: true
         } 
       });
