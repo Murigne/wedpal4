@@ -143,7 +143,7 @@ const Gifts: React.FC = () => {
       description="Manage your wedding gift wishlist"
       icon={<Gift className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
         <div className="md:col-span-4 space-y-6">
           {/* Registry Summary Card */}
           <RegistrySummaryCard 
@@ -158,7 +158,7 @@ const Gifts: React.FC = () => {
         </div>
         
         <div className="md:col-span-8">
-          <Card className="flex flex-col">
+          <Card className="h-full flex flex-col md:max-h-[617px]">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>Your Gift Registry</CardTitle>
@@ -171,7 +171,7 @@ const Gifts: React.FC = () => {
                 Manage your wedding gift wishlist
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col">
+            <CardContent className="flex-1 overflow-hidden flex flex-col">
               <GiftList 
                 giftItems={giftItems}
                 currentTab={currentTab}

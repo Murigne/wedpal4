@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -106,7 +105,7 @@ const Guests = () => {
       description="Manage and track your wedding guests"
       icon={<Users className="w-8 h-8" />}
     >
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-170px)]">
         <div className="md:col-span-4">
           <GuestSummary 
             stats={guestStats} 
@@ -115,9 +114,9 @@ const Guests = () => {
           />
         </div>
         
-        <div className="md:col-span-8">
-          <Card className="flex flex-col">
-            <div className="flex-1 flex flex-col p-6">
+        <div className="md:col-span-8 md:max-h-[695px]">
+          <Card className="h-full flex flex-col">
+            <div className="flex-1 overflow-hidden flex flex-col p-6">
               <GuestList 
                 guests={guests}
                 searchTerm={searchTerm}
