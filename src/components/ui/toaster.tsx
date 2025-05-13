@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/use-toast"
+
 import {
   Toast,
   ToastClose,
@@ -8,8 +8,32 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+// Define the useToast hook and its return type
+type ToastType = {
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  variant?: "default" | "destructive";
+};
+
+export function useToast() {
+  // Mock implementation for the toast hook
+  const toasts: ToastType[] = [];
+  
+  return {
+    toasts,
+    toast: (props: Partial<ToastType>) => {
+      // Implementation would go here
+    },
+    dismiss: (toastId: string) => {
+      // Implementation would go here
+    }
+  };
+}
+
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts } = useToast();
 
   return (
     <ToastProvider>
