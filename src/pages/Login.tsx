@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeartAnimation from '@/components/HeartAnimation';
 import LoginFeatures from '@/components/auth/LoginFeatures';
 import LoginForm from '@/components/auth/LoginForm';
@@ -10,14 +10,18 @@ import { useAuth } from '@/components/AuthProvider';
 const Login: React.FC = () => {
   const [userType, setUserType] = useState<'couple' | 'vendor'>('couple');
   const navigate = useNavigate();
-  const { isVendor } = useAuth();
+  const { isVendor, user } = useAuth();
   
-  // Redirect vendor to vendor dashboard if they're logged in and on the couple login page
-  React.useEffect(() => {
-    if (isVendor) {
-      navigate('/vendor-dashboard');
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (isVendor) {
+        navigate('/vendor-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
-  }, [isVendor, navigate]);
+  }, [isVendor, user, navigate]);
   
   const handleUserTypeChange = (value: string) => {
     if (value === 'vendor') {

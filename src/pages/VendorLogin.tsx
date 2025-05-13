@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -26,31 +25,29 @@ const VendorLogin: React.FC = () => {
     try {
       await signIn(email, password);
       
-      // After signing in, check if the user is a vendor
+      // Check vendor status
       const isVendor = await checkVendorStatus();
       
-      toast({
-        title: "Success",
-        description: "Login successful!",
-        variant: "default",
-      });
-      
-      // Redirect to the appropriate dashboard based on vendor status
       if (isVendor) {
+        console.log("Vendor login successful, redirecting to vendor dashboard");
+        toast({
+          title: "Success",
+          description: "Welcome back! You are logged in as a vendor.",
+        });
         navigate('/vendor-dashboard');
       } else {
-        // If not a vendor but tried to log in as one, show a message
+        console.log("Not a vendor account, redirecting to regular dashboard");
         toast({
           title: "Notice",
           description: "You don't have a vendor account. Redirecting to user dashboard.",
-          variant: "default",
         });
         navigate('/dashboard');
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to login. Please try again.",
         variant: "destructive",
       });
     } finally {

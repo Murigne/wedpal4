@@ -1,9 +1,17 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import GiftItemCard from './GiftItemCard';
 import { GiftItem } from '@/types/gift';
+import { usePagination } from '@/hooks/usePagination';
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from '@/components/ui/pagination';
 
 interface GiftListProps {
   giftItems: GiftItem[];
@@ -29,6 +37,44 @@ const GiftList: React.FC<GiftListProps> = ({
     return true;
   });
 
+  const pagination = usePagination(filteredGiftItems.length, 1, 6);
+  const paginatedItems = pagination.getCurrentItems(filteredGiftItems);
+
+  const renderPagination = () => {
+    if (filteredGiftItems.length <= pagination.pageSize) return null;
+
+    return (
+      <Pagination className="mt-4">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious 
+              onClick={() => pagination.prevPage()} 
+              className={pagination.currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            />
+          </PaginationItem>
+          
+          {Array.from({ length: pagination.totalPages }).map((_, i) => (
+            <PaginationItem key={i}>
+              <PaginationLink 
+                onClick={() => pagination.setPage(i + 1)}
+                isActive={pagination.currentPage === i + 1}
+              >
+                {i + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          
+          <PaginationItem>
+            <PaginationNext 
+              onClick={() => pagination.nextPage()} 
+              className={pagination.currentPage === pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  };
+
   return (
     <Tabs defaultValue={currentTab} onValueChange={onTabChange} className="flex-1 flex flex-col">
       <div className="mb-4">
@@ -39,9 +85,9 @@ const GiftList: React.FC<GiftListProps> = ({
         </TabsList>
       </div>
       
-      <ScrollArea className="flex-1 h-[calc(100vh-320px)]">
+      <div className="flex-1">
         <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-          {filteredGiftItems.map((item) => (
+          {paginatedItems.map((item) => (
             <GiftItemCard
               key={item.id}
               item={item}
@@ -53,7 +99,7 @@ const GiftList: React.FC<GiftListProps> = ({
         </TabsContent>
         
         <TabsContent value="unpurchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-          {filteredGiftItems.map((item) => (
+          {paginatedItems.map((item) => (
             <GiftItemCard
               key={item.id}
               item={item}
@@ -65,7 +111,7 @@ const GiftList: React.FC<GiftListProps> = ({
         </TabsContent>
         
         <TabsContent value="purchased" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-0">
-          {filteredGiftItems.map((item) => (
+          {paginatedItems.map((item) => (
             <GiftItemCard
               key={item.id}
               item={item}
@@ -75,7 +121,9 @@ const GiftList: React.FC<GiftListProps> = ({
             />
           ))}
         </TabsContent>
-      </ScrollArea>
+      </div>
+      
+      {renderPagination()}
     </Tabs>
   );
 };

@@ -39,8 +39,7 @@ const ProtectedRoute = ({ children, vendorOnly = false }: { children: React.Reac
         return;
       }
       
-      // If isVendor is already determined, use that value
-      // Otherwise, check the vendor status
+      // If isVendor is undefined, check vendor status
       if (isVendor === undefined) {
         await checkVendorStatus();
       }
@@ -70,13 +69,13 @@ const ProtectedRoute = ({ children, vendorOnly = false }: { children: React.Reac
   }
   
   // Vendor page access check
-  if (vendorOnly && !isVendor) {
+  if (vendorOnly && isVendor === false) {
     console.log("Not a vendor, redirecting to dashboard");
     return <Navigate to="/dashboard" />;
   }
   
   // Couples page access check - redirect vendors to vendor dashboard
-  if (!vendorOnly && isVendor) {
+  if (!vendorOnly && isVendor === true) {
     console.log("Is a vendor on couples page, redirecting to vendor dashboard");
     return <Navigate to="/vendor-dashboard" />;
   }
@@ -93,7 +92,11 @@ const AppRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard" element={
+        <ProtectedRoute vendorOnly={false}>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
       <Route path="/edit-wedding-details" element={
         <ProtectedRoute vendorOnly={false}>
           <EditWeddingDetails />
