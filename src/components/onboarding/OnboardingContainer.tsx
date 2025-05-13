@@ -8,7 +8,7 @@ import OnboardingHeader from './OnboardingHeader';
 import OnboardingLoading from './OnboardingLoading';
 import FloatingHearts from '../FloatingHearts';
 import { useOnboardingData } from './hooks/useOnboardingData';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const OnboardingContainer: React.FC = () => {
   const { isFetchingData, user } = useOnboardingData();
@@ -91,7 +91,10 @@ const OnboardingContainer: React.FC = () => {
       localStorage.setItem('userName', formData.partner1Name || '');
       localStorage.setItem('partnerName', formData.partner2Name || '');
       localStorage.setItem('weddingDate', formData.weddingDate || '');
-      localStorage.setItem('preferredBudget', formData.budget || '');
+      // Make sure to access the budget field only if it exists on formData
+      if ('budget' in formData) {
+        localStorage.setItem('preferredBudget', String(formData.budget) || '');
+      }
       
       if (formData.weddingColors) {
         localStorage.setItem('weddingColors', JSON.stringify(formData.weddingColors));
