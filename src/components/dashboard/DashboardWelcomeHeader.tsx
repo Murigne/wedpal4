@@ -27,7 +27,6 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
   const navigate = useNavigate();
 
   const handleSignUpClick = () => {
-    // Save current dashboard data to be used during signup
     navigate('/signup', { 
       state: { 
         formData: {
@@ -42,19 +41,19 @@ const DashboardWelcomeHeader: React.FC<DashboardWelcomeHeaderProps> = ({
   return (
     <div className="mb-8 text-white max-w-[1600px] mx-auto">
       <h1 className="text-3xl md:text-4xl font-semibold mb-2">
-        Welcome back, {userName} {partnerName && `& ${partnerName}`}!
+        Welcome back, {userName} & {partnerName}!
       </h1>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-white/80 w-full">
         <p>
           Your wedding date: <span className="font-medium">{formattedWeddingDate || weddingDate}</span>
           {weddingDate && (
             <span> · Only {calculateDaysUntil(weddingDate)} days to go! 
-              <span className="ml-2 text-gold font-semibold">{weddingHashtag}</span>
+              <span className="ml-2 text-gold font-semibold">#ForeverTogether</span>
             </span>
           )}
         </p>
         
-        {/* Action button for non-logged in users */}
+        {/* Action button for non-logged in users - remove duplicate button */}
         {!user && (
           <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
             <Button 
