@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboardingState, QuestionType } from './useOnboardingState';
@@ -8,7 +7,7 @@ import OnboardingHeader from './OnboardingHeader';
 import OnboardingLoading from './OnboardingLoading';
 import FloatingHearts from '../FloatingHearts';
 import { useOnboardingData } from './hooks/useOnboardingData';
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 const OnboardingContainer: React.FC = () => {
   const { isFetchingData, user } = useOnboardingData();
@@ -87,19 +86,6 @@ const OnboardingContainer: React.FC = () => {
     
     // If this is the wedding colors step (the last step), navigate to dashboard
     if (currentStep === QUESTIONS.length - 1) {
-      // Save data to localStorage for non-authenticated users
-      localStorage.setItem('userName', formData.partner1Name || '');
-      localStorage.setItem('partnerName', formData.partner2Name || '');
-      localStorage.setItem('weddingDate', formData.weddingDate || '');
-      // Make sure to access the budget field only if it exists on formData
-      if ('budget' in formData) {
-        localStorage.setItem('preferredBudget', String(formData.budget) || '');
-      }
-      
-      if (formData.weddingColors) {
-        localStorage.setItem('weddingColors', JSON.stringify(formData.weddingColors));
-      }
-      
       // Show success message
       toast({
         title: "Welcome to your wedding dashboard!",
@@ -111,7 +97,6 @@ const OnboardingContainer: React.FC = () => {
       navigate('/dashboard', { 
         state: { 
           formData,
-          userColors: formData.weddingColors,
           isNewUser: true
         } 
       });
