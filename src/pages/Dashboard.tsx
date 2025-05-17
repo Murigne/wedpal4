@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import DashboardWelcomeHeader from '@/components/dashboard/DashboardWelcomeHeader';
@@ -7,12 +8,59 @@ import DashboardMainContent from '@/components/dashboard/DashboardMainContent';
 import PartnerInviteDialog from '@/components/dashboard/PartnerInviteDialog';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { GuestStats } from '@/types/guest';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const dashboardData = useDashboardData();
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [invitePartnerDialogOpen, setInvitePartnerDialogOpen] = useState(false);
+  const location = useLocation();
+  
+  // If user is coming from onboarding or signup with formData, save it to the database
+  useEffect(() => {
+    const saveOnboardingData = async () => {
+      const formData = location.state?.formData;
+      const userColors = location.state?.userColors;
+      
+      if (user && formData) {
+        console.log("Saving onboarding data to Supabase:", formData);
+        try {
+          const { error } = await supabase
+            .from('wedding_details')
+            .upsert({
+              user_id: user.id,
+              partner1_name: formData.partner1Name || '',
+              partner2_name: formData.partner2Name || '',
+              wedding_date: formData.weddingDate || '',
+              budget: formData.budget?.toString() || '',
+              theme: formData.theme || '',
+              guest_count: formData.guestCount?.toString() || '',
+              colors: userColors ? JSON.stringify(userColors) : null,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+          
+          if (error) {
+            console.error('Error saving wedding details:', error);
+            toast({
+              title: "Warning",
+              description: "Failed to save your wedding details.",
+              variant: "destructive",
+            });
+          } else {
+            console.log("Wedding details saved successfully");
+            // Clear the state now that we've saved it
+            window.history.replaceState({}, document.title);
+          }
+        } catch (error) {
+          console.error('Exception saving wedding details:', error);
+        }
+      }
+    };
+    
+    saveOnboardingData();
+  }, [user, location.state]);
   
   // Guest statistics data
   const guestStats: GuestStats = {
