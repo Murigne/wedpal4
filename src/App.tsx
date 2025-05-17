@@ -25,8 +25,6 @@ import Gifts from "./pages/Gifts";
 import MoodBoard from "./pages/MoodBoard";
 import Theme from "./pages/Theme";
 import AccountSettings from "./pages/AccountSettings";
-import Onboarding from "./components/Onboarding";
-import ChatOnboarding from "./components/ChatOnboarding";
 import { useState, useEffect } from "react";
 
 // Protected route component with vendor check
@@ -94,8 +92,6 @@ const AppRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/chat-onboarding" element={<ChatOnboarding />} />
       <Route path="/dashboard" element={
         <ProtectedRoute vendorOnly={false}>
           <Dashboard />
