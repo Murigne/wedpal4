@@ -1,10 +1,15 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import LandingSearchBox from '@/components/LandingSearchBox';
 import HeartAnimation from '@/components/HeartAnimation';
 import WedPalLogo from '@/components/WedPalLogo';
+import LandingHero from '@/components/landing/LandingHero';
+import LandingFeatures from '@/components/landing/LandingFeatures';
+import LandingHowItWorks from '@/components/landing/LandingHowItWorks';
+import LandingTestimonials from '@/components/landing/LandingTestimonials';
+import LandingCTA from '@/components/landing/LandingCTA';
+import LandingFooter from '@/components/landing/LandingFooter';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -32,24 +37,54 @@ const Index = () => {
   const handleVendorSignupClick = () => {
     navigate('/vendor-signup');
   };
+  
+  const handleGetStartedClick = () => {
+    navigate('/onboarding');
+  };
+  
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
   return (
-    <div className="min-h-screen animated-gradient flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <header className="absolute top-0 left-0 right-0 pt-8 z-10 w-full">
-        <div className="w-full flex justify-between items-center px-8 md:px-12">
-          <WedPalLogo className="text-4xl md:text-5xl text-white drop-shadow-lg" />
+    <div className="min-h-screen animated-gradient flex flex-col relative overflow-hidden">
+      {/* Fixed header */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full backdrop-blur-sm bg-white/10">
+        <div className="w-full flex justify-between items-center px-4 sm:px-8 py-4 md:py-5 max-w-7xl mx-auto">
+          <WedPalLogo className="text-3xl md:text-4xl text-white drop-shadow-md" linkToHome={true} />
           
-          <Button 
-            onClick={handleVendorSignupClick}
-            className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm"
-          >
-            Sign Up as a Vendor
-          </Button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button 
+              onClick={handleLoginClick}
+              variant="ghost"
+              className="text-white hover:bg-white/20"
+            >
+              Log In
+            </Button>
+            
+            <Button 
+              onClick={handleVendorSignupClick}
+              className="bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-sm"
+            >
+              Vendor Sign Up
+            </Button>
+          </div>
         </div>
       </header>
       
-      <HeartAnimation avoidTextAreas={true} />
-      <LandingSearchBox />
+      {/* Background animation */}
+      <HeartAnimation avoidTextAreas={true} count={15} />
+      
+      {/* Main content */}
+      <main className="flex-1 pt-20">
+        <LandingHero onGetStarted={handleGetStartedClick} />
+        <LandingFeatures />
+        <LandingHowItWorks />
+        <LandingTestimonials />
+        <LandingCTA onGetStarted={handleGetStartedClick} />
+      </main>
+      
+      <LandingFooter />
       
       <div className="absolute bottom-0 left-0 w-full h-40 gradient-overlay" />
     </div>
