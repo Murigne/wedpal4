@@ -1,25 +1,13 @@
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext, useState } from 'react';
 
 type User = {
   id: string;
   email?: string;
-  user_metadata?: any;
-  app_metadata?: any;
-};
-
-type Session = {
-  access_token: string;
-  refresh_token: string;
-  user: User;
-  expires_at?: number;
-  expires_in?: number;
 };
 
 type AuthContextType = {
   user: User | null;
-  session: Session | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -29,7 +17,6 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  session: null,
   isLoading: false,
   signIn: async () => {},
   signOut: async () => {},
@@ -40,97 +27,20 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isVendor, setIsVendor] = useState<boolean | undefined>(undefined);
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        console.log("Auth state changed:", event);
-        
-        // Update session and user state
-        setSession(newSession as Session | null);
-        setUser(newSession?.user as User | null);
-        
-        // Check vendor status on login
-        if (event === 'SIGNED_IN' && newSession?.user) {
-          console.log("User signed in successfully:", newSession.user.id);
-          await checkVendorStatus();
-        } else if (event === 'SIGNED_OUT') {
-          setIsVendor(undefined);
-        }
-        
-        setIsLoading(false);
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
-      console.log("Initial session check:", currentSession ? "Session found" : "No session");
-      setSession(currentSession as Session | null);
-      setUser(currentSession?.user as User | null);
-      
-      if (currentSession?.user) {
-        await checkVendorStatus();
-      }
-      
-      setIsLoading(false);
-    });
-
-    // Clean up subscription
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   const checkVendorStatus = async (): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      console.log("Checking vendor status for user ID:", user.id);
-      
-      const { data, error } = await supabase
-        .from('vendors')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-        
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking vendor status:', error);
-      }
-      
-      const vendorStatus = !!data;
-      console.log("Vendor status result:", vendorStatus ? "Is vendor" : "Not a vendor");
-      
-      setIsVendor(vendorStatus);
-      return vendorStatus;
-    } catch (error) {
-      console.error('Error checking vendor status:', error);
-      return false;
-    }
+    // Mock implementation without Supabase
+    return false;
   };
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
-    
     try {
-      console.log("Attempting to sign in:", email);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      console.log("Sign in successful:", data.user?.id);
-      
-      // Check vendor status after login
-      if (data.user) {
-        await checkVendorStatus();
-      }
-      
+      // Mock sign in without Supabase
+      console.log("Mock sign in:", email);
+      setUser({ id: '1', email });
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -142,9 +52,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     setIsLoading(true);
     try {
-      await supabase.auth.signOut();
-      console.log("User signed out");
+      setUser(null);
       setIsVendor(undefined);
+      console.log("User signed out");
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
@@ -155,7 +65,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ 
       user, 
-      session, 
       isLoading, 
       signIn, 
       signOut,
