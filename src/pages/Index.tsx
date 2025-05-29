@@ -39,7 +39,7 @@ const Index = () => {
   };
 
   const handleGetStartedClick = () => {
-    navigate('/signup');
+    navigate('/onboarding');
   };
 
   const handleLoginClick = () => {
