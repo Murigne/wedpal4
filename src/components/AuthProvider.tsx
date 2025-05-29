@@ -1,7 +1,21 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import type { Session, User } from '@supabase/supabase-js';
+
+type User = {
+  id: string;
+  email?: string;
+  user_metadata?: any;
+  app_metadata?: any;
+};
+
+type Session = {
+  access_token: string;
+  refresh_token: string;
+  user: User;
+  expires_at?: number;
+  expires_in?: number;
+};
 
 type AuthContextType = {
   user: User | null;
@@ -37,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log("Auth state changed:", event);
         
         // Update session and user state
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+        setSession(newSession as Session | null);
+        setUser(newSession?.user as User | null);
         
         // Check vendor status on login
         if (event === 'SIGNED_IN' && newSession?.user) {
@@ -55,8 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for existing session
     supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       console.log("Initial session check:", currentSession ? "Session found" : "No session");
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+      setSession(currentSession as Session | null);
+      setUser(currentSession?.user as User | null);
       
       if (currentSession?.user) {
         await checkVendorStatus();
