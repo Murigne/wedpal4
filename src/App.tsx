@@ -25,7 +25,6 @@ import Gifts from "./pages/Gifts";
 import MoodBoard from "./pages/MoodBoard";
 import Theme from "./pages/Theme";
 import AccountSettings from "./pages/AccountSettings";
-import Onboarding from "./components/Onboarding";
 import { useState, useEffect } from "react";
 
 // Protected route component with vendor check
@@ -91,7 +90,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/dashboard" element={
