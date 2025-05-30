@@ -50,8 +50,13 @@ declare module '@supabase/supabase-js' {
         data: { user: User | null; session: Session | null };
         error: any;
       }>;
+      signUp(credentials: { email: string; password: string; options?: any }): Promise<{
+        data: { user: User | null; session: Session | null };
+        error: any;
+      }>;
       signOut(): Promise<{ error: any }>;
       getSession(): Promise<{ data: { session: Session | null }; error: any }>;
+      getUser(): Promise<{ data: { user: User | null }; error: any }>;
       onAuthStateChange(callback: (event: string, session: Session | null) => void): {
         data: { subscription: { unsubscribe: () => void } };
       };
@@ -62,6 +67,8 @@ declare module '@supabase/supabase-js' {
           single(): Promise<{ data: any; error: any }>;
         };
       };
+      insert(data: any): Promise<{ data: any; error: any }>;
+      upsert(data: any, options?: any): Promise<{ data: any; error: any }>;
     };
   }
 
