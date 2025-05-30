@@ -1,8 +1,8 @@
 
-import OnboardingContainer from './onboarding/OnboardingContainer';
+import ChatOnboardingContainer from './onboarding/ChatOnboardingContainer';
 
 const Onboarding = () => {
-  return <OnboardingContainer />;
+  return <ChatOnboardingContainer />;
 };
 
 export default Onboarding;
